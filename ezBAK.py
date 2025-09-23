@@ -17,6 +17,10 @@ import re
 import time
 import json
 
+# ㄴ Check Space : 실행시 '계산중 등 메시지 필요'
+# ㄴ Keep Log for : X
+# ㄴ Schedule Backup : 로그 생성시 시분초 표시됨(기존 백업 날짜까지), NTUSER데이터 생성됨(4파일) 
+
 # Try to import pywin32 (win32api/win32con). When running as a bundled exe,
 # pywin32 might not be included by PyInstaller; provide a ctypes-based
 # fallback that uses GetFileAttributesW so attribute checks still work.
@@ -776,7 +780,7 @@ class App(tk.Tk):
     # Hidden/System options removed from UI as requested; defaults remain 'exclude'
 
     def open_github_link(self, event):
-        webbrowser.open_new("https://github.com/gloriouslegacy/sc_ezBAK/releases")
+        webbrowser.open_new("https://github.com/gloriouslegacy/ezBAK/releases")
 
     # UI log (summarized)
     def log(self, message):
