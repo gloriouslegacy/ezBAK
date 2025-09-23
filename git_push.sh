@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# $1은 스크립트 실행 시 첫 번째 인자로 전달되는 값을 의미합니다.
 # chmod +x git_push.sh
 # ./git_push.sh "기능 추가: 로그인 페이지 구현"
 commit_message="$1"
@@ -19,4 +18,5 @@ git push origin main
 echo "-----------------------------------"
 echo "Git 자동화 완료!"
 echo "커밋 메시지: $commit_message"
+
 echo "-----------------------------------"
