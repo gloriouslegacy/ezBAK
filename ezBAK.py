@@ -17,9 +17,9 @@ import re
 import time
 import json
 
-# ㄴ Check Space : 실행시 '계산중 등 메시지 필요'
-# ㄴ Keep Log for : X
-# ㄴ Schedule Backup : 로그 생성시 시분초 표시됨(기존 백업 날짜까지), NTUSER데이터 생성됨(4파일) 
+# Check Space : 실행시 '계산중 등 메시지 필요'
+# Keep Log for : X
+# Schedule Backup : 로그 생성시 시분초 표시됨(기존 백업 날짜까지), NTUSER데이터 생성됨(4파일) 
 
 # Try to import pywin32 (win32api/win32con). When running as a bundled exe,
 # pywin32 might not be included by PyInstaller; provide a ctypes-based
