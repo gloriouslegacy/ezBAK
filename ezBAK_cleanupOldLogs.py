@@ -419,7 +419,12 @@ class HeadlessBackupRunner:
 
             self.backup_browser_bookmarks(destination_dir)
             self._cleanup_old_backups(backup_path, user_name)
-            self._cleanup_old_logs(backup_path, self.log_retention_days)
+            try:
+                retention_days = int(self.log_retention_days_var.get())
+            except (ValueError, TypeError):
+                retention_days = 30
+            self._cleanup_old_logs(backup_path, retention_days)
+            # self._cleanup_old_logs(backup_path, self.log_retention_days)
 
             self.message_queue.put(('log', "Backup complete (detailed log saved)."))
             self.message_queue.put(('update_status', "Backup complete!"))
@@ -838,26 +843,48 @@ class App(tk.Tk):
             self._log_file = None
             self.log_file_path = None
             
-    # def _cleanup_old_logs(log_folder, retention_days):
-    #     if not os.path.isdir(log_folder) or retention_days <= 0:
-    #         return
-    #     now = time.time()
-    #     cutoff = now - (retention_days * 86400)
-    #     log_message(f"[old log cleanup in '{log_folder}']", log_folder=log_folder)
-    #     log_message(f"scanning for log files older than {retention_days} days...", log_folder=log_folder)
-    #     print(f"[old log cleanup in '{log_folder}']")
-    #     print(f"scanning for log files older than {retention_days} days...")
-    #     for filename in os.listdir(log_folder):
-    #         if filename.endswith(".log"):
-    #             filepath = os.path.join(log_folder, filename)
-    #             try:
-    #                 if os.path.isfile(filepath) and os.path.getmtime(filepath) < cutoff:
-    #                     os.remove(filepath)
-    #                     write_detailed_log(f"  - deleting old log: {filename}", log_folder=log_folder)
-    #                     print(f"  - deleting old log: {filename}")
-    #             except Exception as e:
-    #                 log_message(f"  - error: could not process or delete log file {filename}: {e}", log_folder=log_folder)
-    #                 print(f"  - error: could not process or delete log file {filename}: {e}")
+    
+    def _cleanup_old_logs(self, log_folder, retention_days):
+        """오래된 로그 파일을 정리합니다."""
+        try:
+            try:
+                retention_days = int(retention_days)
+            except (ValueError, TypeError):
+                retention_days = 30  # 기본값
+            
+            if retention_days <= 0:
+                self.write_detailed_log("Log cleanup disabled (retention days <= 0)")
+                return
+            
+            if not os.path.isdir(log_folder):
+                return
+            
+            import time
+            now = time.time()
+            cutoff = now - (retention_days * 86400)
+        
+            self.write_detailed_log(f"\n[Old log cleanup]")
+            self.write_detailed_log(f"Scanning '{log_folder}' for logs older than {retention_days} days...")
+        
+            deleted_count = 0
+            for filename in os.listdir(log_folder):
+                if filename.endswith(".log"):
+                    filepath = os.path.join(log_folder, filename)
+                    try:
+                        if os.path.isfile(filepath) and os.path.getmtime(filepath) < cutoff:
+                            os.remove(filepath)
+                            self.write_detailed_log(f"  - Deleted old log: {filename}")
+                            deleted_count += 1
+                    except Exception as e:
+                        self.write_detailed_log(f"  - Error deleting {filename}: {e}")
+        
+            if deleted_count > 0:
+                self.write_detailed_log(f"Log cleanup completed. Deleted {deleted_count} files.")
+            else:
+                self.write_detailed_log("No old log files found to delete.")
+            
+        except Exception as e:
+            self.write_detailed_log(f"Error during log cleanup: {e}")
 
     def process_queue(self):
         """Processes messages from the message queue to update the GUI."""
@@ -1259,6 +1286,12 @@ class App(tk.Tk):
             self.backup_browser_bookmarks(backup_path)
             self.write_detailed_log("Backup successfully completed.")
             self._cleanup_old_backups(backup_path, user_name)
+            try:
+                retention_days = int(self.log_retention_days_var.get())
+            except (ValueError, TypeError):
+                retention_days = 30
+            self._cleanup_old_logs(backup_path, retention_days)
+            
             self.message_queue.put(('log', "Backup complete (detailed log saved)."))
             self.message_queue.put(('update_status', "Backup complete!"))
             self.message_queue.put(('open_folder', destination_dir))
@@ -1376,10 +1409,6 @@ class App(tk.Tk):
         restore_thread = threading.Thread(target=self.run_restore, args=(backup_folder,), daemon=True)
         restore_thread.start()
 
-
-
-
-
     def run_restore(self, backup_folder):
         """Executes the actual restore logic (byte-based progress)."""
         bytes_copied = 0
@@ -1410,7 +1439,6 @@ class App(tk.Tk):
                 self.write_detailed_log("Restore failed: backup folder not found.")
                 return
 
-            # --- 무조건 시작 로그 ---
             self.message_queue.put(('log', f"Selected backup folder: {backup_folder}"))
             self.write_detailed_log(f"Restore start for user '{user_name}' from {backup_folder}")
 
@@ -1470,13 +1498,19 @@ class App(tk.Tk):
                         self.message_queue.put(('log', f"Restored {files_processed} files..."))
                         self.write_detailed_log(f"{files_processed} files restored so far; bytes_copied={bytes_copied}")
 
-        # --- 무조건 완료 로그 ---
             self.message_queue.put(('update_progress', bytes_copied))
             self.write_detailed_log(f"Restore completed. Files restored: {files_processed}, "
                                     f"Total size: {self.format_bytes(bytes_copied)}")
             self.write_detailed_log("Restore successfully completed.")
 
             self.restore_browser_bookmarks(backup_folder)
+            
+            try:
+                retention_days = int(self.log_retention_days_var.get())
+            except (ValueError, TypeError):
+                retention_days = 30
+            self._cleanup_old_logs(backup_folder, retention_days)
+            
             self.message_queue.put(('log', "Restore complete (detailed log saved)."))
             self.message_queue.put(('update_status', "Restore complete!"))
 
@@ -1490,10 +1524,6 @@ class App(tk.Tk):
             except Exception:
                 pass
             self.message_queue.put(('enable_buttons', None))
-
-
-
-
 
     def restore_browser_bookmarks(self, backup_path):
         """Restores backed-up bookmark files to their original location."""
