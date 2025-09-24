@@ -350,7 +350,6 @@ class HeadlessBackupRunner:
                 self.write_detailed_log(f"Backup failed: user folder not found at {user_profile_path}")
                 return
 
-        # --- 무조건 시작 로그 ---
             self.write_detailed_log(f"Backup start for user '{user_name}': {user_profile_path} -> {backup_path}")
             self.message_queue.put(('log', f"Backing up user: {user_name}"))
 
@@ -410,7 +409,6 @@ class HeadlessBackupRunner:
                     self.copy_file_with_progress(src_file, dest_file, progress_cb)
                     files_processed += 1
 
-        # --- 무조건 완료 로그 ---
             self.message_queue.put(('update_progress', bytes_copied))
             self.write_detailed_log(f"Backup completed. Files backed up: {files_processed}, "
                                     f"Total size: {self.format_bytes(bytes_copied)}")
@@ -438,10 +436,6 @@ class HeadlessBackupRunner:
             except Exception:
                 pass
             self.message_queue.put(('enable_buttons', None))
-
-
-
-
 
 class App(tk.Tk):
     def __init__(self):
@@ -624,9 +618,9 @@ class App(tk.Tk):
 
         # Button styling
         button_font_size = 8
-        button_width = 14
+        button_width = 15
         button_padx = 5
-        button_pady = 5
+        button_pady = 3
 
         # Row 1: Main Data Operations
         self.backup_btn = tk.Button(button_grid_frame, text="Backup User Data", bg="#FF5733", fg="white", 
@@ -978,11 +972,6 @@ class App(tk.Tk):
     #         self._cleanup_old_logs(folder, days)
     #     except Exception as e:
     #         print(f"Test error: {e}")   
-
-
-
-
-
 
     def process_queue(self):
         """Processes messages from the message queue to update the GUI."""
@@ -3220,7 +3209,7 @@ class SelectSourcesDialog(tk.Toplevel):
         self.selected_paths = []
 
         # Instruction
-        tk.Label(self, text="Select folders and files to copy (checkbox tree).",
+        tk.Label(self, text="Select folders and files to copy",
                  bg="#2D3250", fg="white", font=("Arial", 11, "bold")).pack(anchor='w', padx=10, pady=(10, 5))
 
         # Top controls
