@@ -742,6 +742,11 @@ class App(tk.Tk):
         self.nas_disconnect_btn.bind("<Enter>", lambda e: e.widget.config(bg="#D32F2F"))
         self.nas_disconnect_btn.bind("<Leave>", lambda e: e.widget.config(bg="#B71C1C"))
 
+        # self.test_btn = tk.Button(button_grid_frame, text="Test Log Cleanup", bg="#8E44AD", fg="white", 
+        #                                     font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
+        #                                     relief="flat", width=button_width, command=self.test_log_cleanup)
+        # self.test_btn.grid(row=3, column=0, padx=2, pady=2, sticky="ew")
+
         # Progress Bar and Status Label
         self.progress_frame = tk.Frame(main_frame, bg="#2D3250")
         self.progress_frame.pack(fill="x", pady=(10, 0))
@@ -843,40 +848,116 @@ class App(tk.Tk):
             self._log_file = None
             self.log_file_path = None
             
-    
+
     def _cleanup_old_logs(self, log_folder, retention_days):
         """오래된 로그 파일을 정리합니다."""
         try:
             try:
                 retention_days = int(retention_days)
             except (ValueError, TypeError):
-                retention_days = 30  # 기본값
+                retention_days = 30
             
             if retention_days <= 0:
                 self.write_detailed_log("Log cleanup disabled (retention days <= 0)")
                 return
             
             if not os.path.isdir(log_folder):
+                self.write_detailed_log(f"Log folder does not exist: {log_folder}")
                 return
             
             import time
+            from datetime import datetime
+        
             now = time.time()
             cutoff = now - (retention_days * 86400)
+            cutoff_date = datetime.fromtimestamp(cutoff).strftime('%Y-%m-%d %H:%M:%S')
         
             self.write_detailed_log(f"\n[Old log cleanup]")
             self.write_detailed_log(f"Scanning '{log_folder}' for logs older than {retention_days} days...")
-        
+            self.write_detailed_log(f"Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            self.write_detailed_log(f"Cutoff time: {cutoff_date}")
+            
+            # 변수를 try 블록 밖에서 초기화
             deleted_count = 0
-            for filename in os.listdir(log_folder):
-                if filename.endswith(".log"):
+            log_files = []
+        
+            # 디버그: 폴더의 모든 파일 확인
+            try:
+                all_files = os.listdir(log_folder)
+                self.write_detailed_log(f"Total files in folder: {len(all_files)}")
+                
+                log_files = [f for f in all_files if f.endswith('.log')]
+                self.write_detailed_log(f"Log files found: {len(log_files)}")
+                
+                if not log_files:
+                    self.write_detailed_log("No .log files found in the folder.")
+                    return
+                
+                for filename in log_files:
                     filepath = os.path.join(log_folder, filename)
                     try:
-                        if os.path.isfile(filepath) and os.path.getmtime(filepath) < cutoff:
-                            os.remove(filepath)
-                            self.write_detailed_log(f"  - Deleted old log: {filename}")
-                            deleted_count += 1
+                        if os.path.isfile(filepath):
+                            file_mtime = os.path.getmtime(filepath)
+                            file_date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d %H:%M:%S')
+                            age_days = (now - file_mtime) / 86400
+                        
+                            self.write_detailed_log(f"  File: {filename}")
+                            self.write_detailed_log(f"    Modified: {file_date}")
+                            self.write_detailed_log(f"    Age: {age_days:.1f} days")
+                            self.write_detailed_log(f"    Should delete: {file_mtime < cutoff}")
+                        
+                            if file_mtime < cutoff:
+                                try:
+                                    os.remove(filepath)
+                                    self.write_detailed_log(f"    ✓ Deleted: {filename}")
+                                    deleted_count += 1
+                                except Exception as e:
+                                    self.write_detailed_log(f"    ✗ Delete failed: {e}")
                     except Exception as e:
-                        self.write_detailed_log(f"  - Error deleting {filename}: {e}")
+                        self.write_detailed_log(f"  Error checking {filename}: {e}")
+                        
+            except Exception as e:
+                
+                log_files = [f for f in all_files if f.endswith('.log')]
+                self.write_detailed_log(f"Log files found: {len(log_files)}")
+            
+                for filename in log_files:
+                    filepath = os.path.join(log_folder, filename)
+                    try:
+                        if os.path.isfile(filepath):
+                            file_mtime = os.path.getmtime(filepath)
+                            file_date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d %H:%M:%S')
+                            age_days = (now - file_mtime) / 86400
+                        
+                            self.write_detailed_log(f"  File: {filename}")
+                            self.write_detailed_log(f"    Modified: {file_date}")
+                            self.write_detailed_log(f"    Age: {age_days:.1f} days")
+                            self.write_detailed_log(f"    Should delete: {file_mtime < cutoff}")
+                        
+                            if file_mtime < cutoff:
+                                try:
+                                    os.remove(filepath)
+                                    self.write_detailed_log(f"    ✓ Deleted: {filename}")
+                                    deleted_count += 1
+                                except Exception as e:
+                                    self.write_detailed_log(f"    ✗ Delete failed: {e}")
+                    except Exception as e:
+                        self.write_detailed_log(f"  Error checking {filename}: {e}")
+            
+            except Exception as e:
+                self.write_detailed_log(f"Error listing files: {e}")
+                return
+        
+            # deleted_count = 0
+            for filename in log_files:
+                filepath = os.path.join(log_folder, filename)
+                try:
+                    if os.path.isfile(filepath) and os.path.getmtime(filepath) < cutoff:
+                        os.remove(filepath)
+                        self.write_detailed_log(f"  ✓ Deleted: {filename}")
+                        deleted_count += 1
+                except Exception as e:
+                    self.write_detailed_log(f"  ✗ Error deleting {filename}: {e}")
         
             if deleted_count > 0:
                 self.write_detailed_log(f"Log cleanup completed. Deleted {deleted_count} files.")
@@ -885,6 +966,24 @@ class App(tk.Tk):
             
         except Exception as e:
             self.write_detailed_log(f"Error during log cleanup: {e}")
+            import traceback
+            self.write_detailed_log(f"Traceback: {traceback.format_exc()}")
+
+    # # 추가 디버그용 - 수동으로 로그 정리 테스트하는 버튼 (임시)
+    # def test_log_cleanup(self):
+    #     """테스트용: 로그 정리 수동 실행"""
+    #     try:
+    #         folder = "F:\\"  # 또는 실제 로그가 있는 폴더
+    #         days = 1
+    #         self.write_detailed_log(f"=== Manual log cleanup test ===")
+    #         self._cleanup_old_logs(folder, days)
+    #     except Exception as e:
+    #         print(f"Test error: {e}")   
+
+
+
+
+
 
     def process_queue(self):
         """Processes messages from the message queue to update the GUI."""
