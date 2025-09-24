@@ -18,8 +18,7 @@ import time
 import json
 
 # Check Space : 실행시 '계산중 등 메시지 필요'
-# Keep Log for : X
-# Schedule Backup : 로그 생성시 시분초 표시됨(기존 백업 날짜까지), NTUSER데이터 생성됨(4파일) 
+# Schedule Backup : 'Logs to Keep'적용 안됨. 로그 생성시 시분초 표시됨(기존 백업 날짜까지), NTUSER데이터 생성됨(4파일) 
 
 # 필수/안전
 #   중지/취소: 진행 중 작업을 즉시 중단k
