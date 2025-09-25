@@ -1,5 +1,5 @@
 # ezBAK
-Windows 사용자 데이터를 GUI로 손쉽게 백업/복원할 수 있는 도구
+Windows 사용자 데이터 GUI 환경 손쉽게 백업/복원할 수 있는 도구
 
 ---
 
@@ -7,7 +7,7 @@ Windows 사용자 데이터를 GUI로 손쉽게 백업/복원할 수 있는 도�
 
 ### 데이터 백업/복원
 - **사용자 데이터 백업**
-  - 선택한 Windows 사용자 폴더 전체를 지정한 경로로 백업
+  - 선택한 Windows 사용자 폴더 전체 지정한 경로로 백업
   - 숨김/시스템 파일 포함 여부 선택 가능
   - 브라우저(Chrome/Edge) 북마크 자동 백업
   - 지정한 보관 개수 이상일 경우 오래된 백업 데이터 자동 정리 → 스캐줄러 백업(일)
@@ -44,8 +44,8 @@ Windows 사용자 데이터를 GUI로 손쉽게 백업/복원할 수 있는 도�
    - 프로그램 상단 `Select User`에서 백업/복원할 계정을 선택
 
 3. **주요 버튼**
-   - `Backup User Data` → 사용자 데이터 전체 백업
-   - `Restore User Data` → 선택한 백업 폴더에서 데이터 복원
+   - `Backup User Data` → 사용자 데이터 전체 백업 → 브라우저(Chrome/Edge) 북마크 포함
+   - `Restore User Data` → 선택한 백업 폴더에서 백업 데이터 복원
    - `Backup Drivers` / `Restore Drivers` → 드라이버 관리
    - `Export Apps` → 설치 프로그램 목록 내보내기
    - `Backup Browser Profiles` → Chrome/Edge/Firefox 프로필 백업
