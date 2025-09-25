@@ -18,6 +18,29 @@ import re
 import time
 import json
 
+        # finally:
+        #     # 항상 실행되는 정리 작업
+        #     try:
+        #         self.close_log_file()
+        #     except Exception:
+        #         pass
+            
+        #     try:
+        #         # 진행률을 100%로 설정
+        #         max_val = self.progress_bar['maximum'] if self.progress_bar['maximum'] > 0 else 1
+        #         self.message_queue.put(('update_progress', max_val))
+        #     except Exception:
+        #         pass
+            
+        #     # 버튼 활성화
+        #     self.message_queue.put(('enable_buttons', None))
+            
+        #     # 최종 상태 메시지
+        #     if hasattr(self, '_backup_completed') and self._backup_completed:
+        #         self.message_queue.put(('update_status', "Backup complete!"))
+        #     else:
+        #         self.message_queue.put(('update_status', "Operation finished"))
+
 
 try:
     import win32api
@@ -214,6 +237,28 @@ class HeadlessBackupRunner:
         except Exception as e:
             print(f"[{timestamp}] ERROR during headless backup: {e}")
             return False
+        finally:
+            # 항상 실행되는 정리 작업
+            try:
+                self.close_log_file()
+            except Exception:
+                pass
+            
+            try:
+                # 진행률을 100%로 설정
+                max_val = self.progress_bar['maximum'] if self.progress_bar['maximum'] > 0 else 1
+                self.message_queue.put(('update_progress', max_val))
+            except Exception:
+                pass
+            
+            # 버튼 활성화
+            self.message_queue.put(('enable_buttons', None))
+            
+            # 최종 상태 메시지
+            if hasattr(self, '_backup_completed') and self._backup_completed:
+                self.message_queue.put(('update_status', "Backup complete!"))
+            else:
+                self.message_queue.put(('update_status', "Operation finished"))
 
 class App(tk.Tk):
     def __init__(self):
@@ -731,7 +776,6 @@ class App(tk.Tk):
             import traceback
             self.write_detailed_log(f"Traceback: {traceback.format_exc()}")
 
- 
     def process_queue(self):
         """Processes messages from the message queue to update the GUI."""
         try:
@@ -755,7 +799,7 @@ class App(tk.Tk):
                                 percent = int(min(100, (float(value) / maxv) * 100))
                             except Exception:
                                 percent = 0
-                        self.status_label.config(text=f"Progression rate: {percent}%")
+                        self.status_label.config(text=f"Progress: {percent}%") 
                     except Exception:
                         pass
                 elif task == 'space_check_result':
@@ -763,7 +807,7 @@ class App(tk.Tk):
                 elif task == 'update_progress_max':
                     try:
                         self.progress_bar['maximum'] = value
-                        self.status_label.config(text="진행률: 0%")
+                        self.status_label.config(text="Progress: 0%")
                     except Exception:
                         pass
                 elif task == 'update_status':
@@ -781,11 +825,18 @@ class App(tk.Tk):
                         os.startfile(value)
                     except Exception:
                         pass
+                elif task == 'stop_progress':
+                    try:
+                        self.progress_bar.stop()  # indeterminate 모드 정지
+                        self.progress_bar['mode'] = "determinate"
+                    except Exception:
+                        pass
                 self.message_queue.task_done()
         except queue.Empty:
             pass
         finally:
-            self.after(100, self.process_queue)
+            self.after(100, self.process_queue) 
+
 
     def show_space_check_result(self, result):
         """용량 체크 결과를 사용자에게 표시"""
@@ -856,6 +907,25 @@ class App(tk.Tk):
             pass
         try:
             self.exit_btn.config(state=state)
+        except Exception:
+            pass
+
+    def reset_progress_bar(self):
+        """진행률 바 초기화"""
+        try:
+            self.progress_bar.stop()  # indeterminate 모드 정지
+            self.progress_bar['mode'] = "determinate"
+            self.progress_bar['value'] = 0
+            self.progress_bar['maximum'] = 100
+            self.status_label.config(text="Ready")
+        except Exception:
+            pass
+
+    def set_progress_indeterminate(self):
+        """진행률 바를 indeterminate 모드로 설정"""
+        try:
+            self.progress_bar['mode'] = "indeterminate"
+            self.progress_bar.start()
         except Exception:
             pass
 
@@ -1260,18 +1330,19 @@ class App(tk.Tk):
             self.write_detailed_log(f"Backup traceback: {traceback.format_exc()}")
             self.message_queue.put(('show_error', f"An error occurred during backup: {e}"))
         finally:  # 전체 함수의 finally 블록
-            # 반드시 실행되는 정리 작업
+            # 항상 실행되는 정리 작업
             try:
                 self.close_log_file()
             except Exception:
                 pass
             
             try:
-                self.message_queue.put(('update_progress', self.progress_bar['maximum']))
+                max_val = self.progress_bar['maximum'] if self.progress_bar['maximum'] > 0 else 1
+                self.message_queue.put(('update_progress', max_val))
             except Exception:
                 pass
             
-            # 버튼 활성화를 확실히 수행
+            # 버튼 활성화
             self.message_queue.put(('enable_buttons', None))
             
             # 추가 안전장치: 직접 버튼 활성화도 시도
@@ -1279,6 +1350,12 @@ class App(tk.Tk):
                 self.after(1000, lambda: self.set_buttons_state("normal"))
             except Exception:
                 pass
+
+            if hasattr(self, '_backup_completed') and self._backup_completed:
+                self.message_queue.put(('update_status', "Backup complete!"))
+            else:
+                self.message_queue.put(('update_status', "Operation finished"))          
+            
             
     def copy_file_with_progress_safe(self, src, dst, progress_callback, buffer_size=64*1024, timeout_seconds=30):
         """
@@ -1665,12 +1742,27 @@ class App(tk.Tk):
             self.write_detailed_log(f"Restore error: {e}")
             self.message_queue.put(('show_error', f"An error occurred during restore: {e}"))
         finally:
-            self.close_log_file()
+            # 항상 실행되는 정리 작업
             try:
-                self.message_queue.put(('update_progress', self.progress_bar['maximum']))
+                self.close_log_file()
             except Exception:
                 pass
+            
+            try:
+                # 진행률을 100%로 설정
+                max_val = self.progress_bar['maximum'] if self.progress_bar['maximum'] > 0 else 1
+                self.message_queue.put(('update_progress', max_val))
+            except Exception:
+                pass
+            
+            # 버튼 활성화
             self.message_queue.put(('enable_buttons', None))
+            
+            # 최종 상태 메시지
+            if hasattr(self, '_restore_completed') and self._restore_completed:
+                self.message_queue.put(('update_status', "Restore complete!"))
+            else:
+                self.message_queue.put(('update_status', "Operation finished"))
 
     def restore_browser_bookmarks(self, backup_path):
         """Restores backed-up bookmark files to their original location."""
@@ -1722,8 +1814,13 @@ class App(tk.Tk):
             self.message_queue.put(('log', "Destination selection cancelled."))
             return
 
+        # Copy Data용 로그명: 'copy_년월일_시분초'
+        from datetime import datetime
+        timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+        log_prefix = f"copy_{timestamp_str}"
+        
         # open log file in destination folder
-        self.open_log_file(destination_dir, "copy")
+        self.open_log_file(destination_dir, log_prefix)
 
         self.message_queue.put(('log', "Copy process started."))
         self.set_buttons_state("disabled")
@@ -1881,89 +1978,300 @@ class App(tk.Tk):
         except Exception:
             return ''
 
-    
     def create_scheduled_task(self, task_name, schedule, time_str, user, dest, include_hidden=False, include_system=False, retention_count=2, log_retention_days=30):
         """
-        스케줄된 작업 생성 (retention 설정값 포함)
+        스케줄된 작업 생성 (관리자 권한으로 실행되도록 설정)
         """
         import sys
         import subprocess
+        import os
 
-        # 스케줄 타입 매핑
-        if schedule.lower() == "daily":
-            sc_type = "DAILY"
-        elif schedule.lower() == "weekly":
-            sc_type = "WEEKLY"
-        elif schedule.lower() == "monthly":
-            sc_type = "MONTHLY"
-        else:
-            raise ValueError(f"Unsupported schedule type: {schedule}")
-
-        # 실행할 명령어 구성 (retention 옵션 추가)
-        base_cmd = (
-            f'"{sys.executable}" "{__file__}" '
-            f'--user "{user}" '
-            f'--dest "{dest}" '
-            f'--retention {retention_count} '
-            f'--log-retention {log_retention_days}'
-        )
-
-        if include_hidden:
-            base_cmd += " --include-hidden"
-        if include_system:
-            base_cmd += " --include-system"
-            
-        cmd = [
-            "schtasks", "/create",
-            "/tn", task_name,
-            "/sc", sc_type,
-            "/tr", base_cmd,
-            "/st", time_str,
-            "/f"
-        ]        
-
-        # 실행
         try:
-            print(f"DEBUG: Running command: {' '.join(cmd)}")
-            result = subprocess.run(cmd, check=True, shell=False, capture_output=True, text=True)
-            print(f"DEBUG: Command successful. Return code: {result.returncode}")
-            print(f"DEBUG: stdout: {result.stdout}")
-            if result.stderr:
-                print(f"DEBUG: stderr: {result.stderr}")
-                
-            print(f"[Scheduler] Created task '{task_name}' with schedule={schedule}, "
-                  f"time={time_str}, retention={retention_count}, log_retention_days={log_retention_days}")
-            
+            # 시간 형식 검증 및 정규화
+            from datetime import datetime
             try:
-                messagebox.showinfo(
-                    "Schedule Created",
-                    f"Task '{task_name}' created successfully.\n"
-                    f"Schedule: {schedule} at {time_str}\n"
-                    f"Retention: {retention_count} backups, {log_retention_days} days logs"
+                time_obj = datetime.strptime(time_str.strip(), "%H:%M")
+                formatted_time = time_obj.strftime("%H:%M")
+                self.write_detailed_log(f"Time format validated: {time_str} -> {formatted_time}")
+            except ValueError as ve:
+                raise ValueError(f"Invalid time format '{time_str}'. Please use HH:MM format (e.g., 14:30)")
+
+            # 스케줄 타입 매핑 및 검증
+            schedule_lower = schedule.lower().strip()
+            if schedule_lower == "daily":
+                sc_type = "DAILY"
+            elif schedule_lower == "weekly":
+                sc_type = "WEEKLY"
+            elif schedule_lower == "monthly":
+                sc_type = "MONTHLY"
+            else:
+                raise ValueError(f"Unsupported schedule type: {schedule}. Use Daily, Weekly, or Monthly")
+
+            # 실행 파일 경로 확인
+            if getattr(sys, 'frozen', False):
+                exe_path = sys.executable
+                script_path = ""
+            else:
+                exe_path = sys.executable
+                script_path = f'"{os.path.abspath(__file__)}"'
+
+            # 명령어 구성 (retention 옵션 포함)
+            if script_path:
+                base_cmd = f'"{exe_path}" {script_path} --user "{user}" --dest "{dest}" --retention {retention_count} --log-retention {log_retention_days}'
+            else:
+                base_cmd = f'"{exe_path}" --user "{user}" --dest "{dest}" --retention {retention_count} --log-retention {log_retention_days}'
+
+            if include_hidden:
+                base_cmd += " --include-hidden"
+            if include_system:
+                base_cmd += " --include-system"
+                
+            self.write_detailed_log(f"Task command: {base_cmd}")
+            self.write_detailed_log(f"Creating scheduled task with retention_count={retention_count}, log_retention_days={log_retention_days}")
+
+            # 현재 사용자 정보 가져오기
+            current_user = os.environ.get('USERNAME', 'Administrator')
+            domain = os.environ.get('USERDOMAIN', os.environ.get('COMPUTERNAME', ''))
+            
+            # 사용자 계정 형식 결정
+            if domain and domain.upper() != current_user.upper():
+                run_as_user = f"{domain}\\{current_user}"
+            else:
+                run_as_user = current_user
+
+            # schtasks 명령어 구성 (관리자 권한 포함)
+            cmd_args = [
+                "schtasks", "/create",
+                "/tn", task_name,
+                "/sc", sc_type,
+                "/tr", base_cmd,
+                "/st", formatted_time,
+                "/rl", "HIGHEST",     # 최고 권한 레벨 (관리자 권한)
+                "/ru", run_as_user,   # 현재 사용자로 실행
+                "/it",                # Interactive token (로그인 시에만 실행)
+                "/f"                  # 기존 작업이 있으면 덮어쓰기
+            ]
+            
+            # 추가 옵션들
+            if sc_type == "WEEKLY":
+                cmd_args.extend(["/d", "SUN"])
+            elif sc_type == "MONTHLY":
+                cmd_args.extend(["/d", "1"])
+
+            # 로그에 실행할 명령어 기록
+            self.write_detailed_log(f"schtasks command with admin privileges: {' '.join(cmd_args)}")
+            self.write_detailed_log(f"Task will run as: {run_as_user} with HIGHEST privileges")
+            
+            # 명령어 실행
+            try:
+                result = subprocess.run(
+                    cmd_args, 
+                    check=False,
+                    shell=False, 
+                    capture_output=True, 
+                    text=True, 
+                    encoding='utf-8',
+                    errors='ignore',
+                    timeout=30
                 )
-            except Exception as mb_error:
-                print(f"DEBUG: messagebox.showinfo failed: {mb_error}")
                 
-        except subprocess.CalledProcessError as e:
-            error_msg = f"Failed to create scheduled task '{task_name}'"
-            print(f"DEBUG: subprocess.CalledProcessError: {e}")
-            print(f"DEBUG: Return code: {e.returncode}")
-            print(f"DEBUG: stdout: {e.stdout}")
-            print(f"DEBUG: stderr: {e.stderr}")
-            
-            if e.stderr:
-                error_msg += f"\nError: {e.stderr}"
-            elif e.stdout:
-                error_msg += f"\nOutput: {e.stdout}"
+                # 결과 로깅
+                self.write_detailed_log(f"schtasks return code: {result.returncode}")
+                if result.stdout:
+                    self.write_detailed_log(f"schtasks stdout: {result.stdout}")
+                if result.stderr:
+                    self.write_detailed_log(f"schtasks stderr: {result.stderr}")
+                    
+                # 성공 여부 확인
+                if result.returncode == 0:
+                    success_msg = (
+                        f"Scheduled task '{task_name}' created successfully!\n\n"
+                        f"Schedule: {schedule} at {formatted_time}\n"
+                        f"User: {user}\n"
+                        f"Destination: {dest}\n"
+                        f"Retention: {retention_count} backups, {log_retention_days} days logs\n"
+                        f"Hidden files: {'Included' if include_hidden else 'Excluded'}\n"
+                        f"System files: {'Included' if include_system else 'Excluded'}\n\n"
+                        f"Run Level: Administrator (Highest Privileges)\n"
+                        f"Run As: {run_as_user}"
+                    )
+                    
+                    self.write_detailed_log(f"Task creation successful: {task_name} (with admin privileges)")
+                    self.message_queue.put(('log', f"Scheduled task '{task_name}' created with administrator privileges"))
+                    
+                    try:
+                        messagebox.showinfo("Schedule Created", success_msg)
+                    except Exception as mb_error:
+                        self.write_detailed_log(f"messagebox.showinfo failed: {mb_error}")
+                        print(f"Task created successfully with admin privileges: {task_name}")
+                        
+                    return True
+                    
+                else:
+                    # 실패한 경우 상세한 오류 분석
+                    error_details = self._analyze_schtasks_error(result.returncode, result.stderr, result.stdout)
+                    raise RuntimeError(error_details)
+                    
+            except subprocess.TimeoutExpired:
+                error_msg = "Task creation timed out. The system may be busy."
+                self.write_detailed_log(f"schtasks command timed out")
+                raise RuntimeError(error_msg)
                 
-            print(f"[Scheduler] Failed to create task '{task_name}': {e}")
-            raise RuntimeError(error_msg) from e
-            
         except Exception as e:
-            error_msg = f"Unexpected error creating scheduled task: {e}"
-            print(f"DEBUG: Unexpected exception: {type(e).__name__}: {e}")
-            print(f"[Scheduler] Unexpected error creating task '{task_name}': {e}")
+            error_msg = f"Failed to create scheduled task '{task_name}': {str(e)}"
+            self.write_detailed_log(f"Task creation failed: {e}")
+            
+            # 상세한 오류 정보를 로그에 기록
+            import traceback
+            self.write_detailed_log(f"Full error traceback: {traceback.format_exc()}")
+            
+            print(f"ERROR: {error_msg}")
             raise RuntimeError(error_msg) from e
+
+    def _analyze_schtasks_error(self, return_code, stderr, stdout):
+        """schtasks 오류 코드 분석 및 해결방안 제시 (관리자 권한 관련 추가)"""
+        error_msg = f"schtasks failed with return code {return_code}"
+        
+        # 일반적인 오류 코드들과 해결방안
+        error_solutions = {
+            1: "General error. Check if task name is valid and you have admin privileges.",
+            2: "Access denied. Try running as administrator.",
+            267: "Invalid task name or path. Avoid special characters in task name.",
+            2147942487: "Access denied. Administrator privileges required.",
+            2147943711: "Object already exists. Task with this name already exists.",
+            -2147024809: "Invalid parameter. Check task settings.",
+            -2147216609: "Task Scheduler service is not available.",
+        }
+        
+        # stderr에서 특정 오류 패턴 검색 (관리자 권한 관련 추가)
+        if stderr:
+            stderr_lower = stderr.lower()
+            if "access" in stderr_lower and "denied" in stderr_lower:
+                error_msg += "\n\nSolution: Run the application as Administrator"
+            elif "invalid" in stderr_lower and "time" in stderr_lower:
+                error_msg += "\n\nSolution: Check time format (use HH:MM, e.g., 14:30)"
+            elif "task" in stderr_lower and "exist" in stderr_lower:
+                error_msg += "\n\nSolution: Choose a different task name or delete existing task"
+            elif "privilege" in stderr_lower or "permission" in stderr_lower:
+                error_msg += "\n\nSolution: Administrator privileges required for task creation"
+            elif "user" in stderr_lower and ("not found" in stderr_lower or "invalid" in stderr_lower):
+                error_msg += "\n\nSolution: Check user account format (try DOMAIN\\Username or just Username)"
+            elif "service" in stderr_lower and "not" in stderr_lower:
+                error_msg += "\n\nSolution: Task Scheduler service may not be running. Try: net start schedule"
+        
+        # 알려진 오류 코드에 대한 해결책 추가
+        if return_code in error_solutions:
+            error_msg += f"\n\n{error_solutions[return_code]}"
+        
+        # 관리자 권한 관련 추가 안내
+        if return_code in [2, 2147942487] or "access" in (stderr or "").lower():
+            error_msg += (
+                "\n\nAdditional Info:"
+                "\n- Make sure ezBAK is running as Administrator"
+                "\n- The scheduled task will run with HIGHEST privilege level"
+                "\n- Check Windows Task Scheduler service is running"
+            )
+        
+        # stderr와 stdout 내용 추가
+        if stderr:
+            error_msg += f"\n\nSystem Error: {stderr}"
+        if stdout:
+            error_msg += f"\n\nSystem Output: {stdout}"
+            
+        return error_msg
+
+    # ScheduleBackupDialog의 시간 검증도 개선
+    def _validate_time_input(self, time_str):
+        """시간 입력 검증 (ScheduleBackupDialog에서 사용)"""
+        try:
+            from datetime import datetime
+            time_obj = datetime.strptime(time_str.strip(), "%H:%M")
+            return True, time_obj.strftime("%H:%M")
+        except ValueError:
+            return False, "Invalid time format. Please use HH:MM (e.g., 14:30 for 2:30 PM)"
+    
+    # def create_scheduled_task(self, task_name, schedule, time_str, user, dest, include_hidden=False, include_system=False, retention_count=2, log_retention_days=30):
+    #     """
+    #     스케줄된 작업 생성 (retention 설정값 포함)
+    #     """
+    #     import sys
+    #     import subprocess
+
+    #     # 스케줄 타입 매핑
+    #     if schedule.lower() == "daily":
+    #         sc_type = "DAILY"
+    #     elif schedule.lower() == "weekly":
+    #         sc_type = "WEEKLY"
+    #     elif schedule.lower() == "monthly":
+    #         sc_type = "MONTHLY"
+    #     else:
+    #         raise ValueError(f"Unsupported schedule type: {schedule}")
+
+    #     # 실행할 명령어 구성 (retention 옵션 추가)
+    #     base_cmd = (
+    #         f'"{sys.executable}" "{__file__}" '
+    #         f'--user "{user}" '
+    #         f'--dest "{dest}" '
+    #         f'--retention {retention_count} '
+    #         f'--log-retention {log_retention_days}'
+    #     )
+
+    #     if include_hidden:
+    #         base_cmd += " --include-hidden"
+    #     if include_system:
+    #         base_cmd += " --include-system"
+            
+    #     cmd = [
+    #         "schtasks", "/create",
+    #         "/tn", task_name,
+    #         "/sc", sc_type,
+    #         "/tr", base_cmd,
+    #         "/st", time_str,
+    #         "/f"
+    #     ]        
+
+    #     # 실행
+    #     try:
+    #         print(f"DEBUG: Running command: {' '.join(cmd)}")
+    #         result = subprocess.run(cmd, check=True, shell=False, capture_output=True, text=True)
+    #         print(f"DEBUG: Command successful. Return code: {result.returncode}")
+    #         print(f"DEBUG: stdout: {result.stdout}")
+    #         if result.stderr:
+    #             print(f"DEBUG: stderr: {result.stderr}")
+                
+    #         print(f"[Scheduler] Created task '{task_name}' with schedule={schedule}, "
+    #               f"time={time_str}, retention={retention_count}, log_retention_days={log_retention_days}")
+            
+    #         try:
+    #             messagebox.showinfo(
+    #                 "Schedule Created",
+    #                 f"Task '{task_name}' created successfully.\n"
+    #                 f"Schedule: {schedule} at {time_str}\n"
+    #                 f"Retention: {retention_count} backups, {log_retention_days} days logs"
+    #             )
+    #         except Exception as mb_error:
+    #             print(f"DEBUG: messagebox.showinfo failed: {mb_error}")
+                
+    #     except subprocess.CalledProcessError as e:
+    #         error_msg = f"Failed to create scheduled task '{task_name}'"
+    #         print(f"DEBUG: subprocess.CalledProcessError: {e}")
+    #         print(f"DEBUG: Return code: {e.returncode}")
+    #         print(f"DEBUG: stdout: {e.stdout}")
+    #         print(f"DEBUG: stderr: {e.stderr}")
+            
+    #         if e.stderr:
+    #             error_msg += f"\nError: {e.stderr}"
+    #         elif e.stdout:
+    #             error_msg += f"\nOutput: {e.stdout}"
+                
+    #         print(f"[Scheduler] Failed to create task '{task_name}': {e}")
+    #         raise RuntimeError(error_msg) from e
+            
+    #     except Exception as e:
+    #         error_msg = f"Unexpected error creating scheduled task: {e}"
+    #         print(f"DEBUG: Unexpected exception: {type(e).__name__}: {e}")
+    #         print(f"[Scheduler] Unexpected error creating task '{task_name}': {e}")
+    #         raise RuntimeError(error_msg) from e
 
 
     def delete_scheduled_task(self, task_name):
@@ -2025,9 +2333,7 @@ class App(tk.Tk):
         calc_thread.start()
         
     def run_space_calculation(self, sources, dest):
-        """
-        별도 스레드에서 용량 계산 실행
-        """
+        """별도 스레드에서 용량 계산 실행"""
         try:
             total = 0
             file_count = 0
@@ -2090,6 +2396,7 @@ class App(tk.Tk):
         except Exception as e:
             self.message_queue.put(('show_error', f"Space calculation error: {e}"))
         finally:
+            # 수정: progress bar 
             self.message_queue.put(('stop_progress', None))
             self.message_queue.put(('enable_buttons', None))
 
@@ -2579,7 +2886,7 @@ class App(tk.Tk):
 
         t = threading.Thread(target=self.run_winget_export, args=(output_path,), daemon=True)
         t.start()
-
+        
     def run_winget_export(self, output_path):
         """Runs winget export to create a JSON of installed apps. On failure, falls back to 'winget list' text."""
         folder = os.path.dirname(output_path)
@@ -2591,8 +2898,12 @@ class App(tk.Tk):
             except Exception:
                 pass
 
+            # 수정된 winget export 명령어 - 문제가 되는 옵션 제거 --accept-package-agreements
             cmd = ['winget', 'export', '--output', output_path, '--include-versions',
-                   '--accept-source-agreements', '--accept-package-agreements', '--disable-interactivity']
+                   '--accept-source-agreements', '--disable-interactivity']
+            
+            self.write_detailed_log(f"Executing winget export command: {' '.join(cmd)}")
+            
             process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                        universal_newlines=True, encoding='utf-8', errors='ignore')
 
@@ -2608,17 +2919,47 @@ class App(tk.Tk):
 
             err = process.stderr.read()
             if err:
-                self.write_detailed_log(err.strip())
+                self.write_detailed_log(f"winget export stderr: {err.strip()}")
 
             rc = process.returncode
+            self.write_detailed_log(f"winget export completed with return code: {rc}")
+            
             if rc != 0:
-                # Attempt fallback using 'winget list'
-                self.write_detailed_log(f"winget export failed with code {rc}. Attempting fallback: winget list.")
+                # 첫 번째 대안: 더 기본적인 winget export 시도
+                self.write_detailed_log(f"winget export failed with code {rc}. Trying basic export command.")
+                try:
+                    basic_cmd = ['winget', 'export', '--output', output_path]
+                    self.write_detailed_log(f"Executing basic winget export: {' '.join(basic_cmd)}")
+                    
+                    basic_result = subprocess.run(basic_cmd, shell=False, capture_output=True, 
+                                                text=True, encoding='utf-8', errors='ignore', timeout=300)
+                    
+                    if basic_result.returncode == 0:
+                        self.write_detailed_log("Basic winget export succeeded!")
+                        self.write_detailed_log(f"Winget export completed: {output_path}")
+                        self.message_queue.put(('log', f"Winget export completed: {output_path}"))
+                        self.message_queue.put(('open_folder', folder))
+                        return
+                    else:
+                        self.write_detailed_log(f"Basic export also failed with code {basic_result.returncode}")
+                        if basic_result.stderr:
+                            self.write_detailed_log(f"Basic export stderr: {basic_result.stderr.strip()}")
+                except Exception as basic_e:
+                    self.write_detailed_log(f"Basic export attempt failed: {basic_e}")
+
+                # 두 번째 대안: winget list fallback
+                self.write_detailed_log("Attempting fallback: winget list.")
                 fb_name = f"winget_list_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
                 fb_path = os.path.join(folder, fb_name)
+                
                 try:
-                    p2 = subprocess.run(['winget', 'list', '--accept-source-agreements', '--disable-interactivity'],
-                                        shell=False, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+                    # 더 안전한 winget list 명령어
+                    list_cmd = ['winget', 'list', '--accept-source-agreements']
+                    self.write_detailed_log(f"Executing winget list: {' '.join(list_cmd)}")
+                    
+                    p2 = subprocess.run(list_cmd, shell=False, capture_output=True, 
+                                      text=True, encoding='utf-8', errors='ignore', timeout=300)
+                    
                     if p2.returncode == 0:
                         try:
                             with open(fb_path, 'w', encoding='utf-8', errors='ignore') as f:
@@ -2630,33 +2971,151 @@ class App(tk.Tk):
                         except Exception as fe:
                             self.write_detailed_log(f"Failed writing fallback file: {fe}")
                     else:
-                        self.write_detailed_log(f"winget list fallback failed with code {p2.returncode}. stderr={p2.stderr.strip()}")
+                        self.write_detailed_log(f"winget list fallback failed with code {p2.returncode}")
+                        if p2.stderr:
+                            self.write_detailed_log(f"winget list stderr: {p2.stderr.strip()}")
+                except subprocess.TimeoutExpired:
+                    self.write_detailed_log("winget list command timed out after 300 seconds")
                 except Exception as e2:
                     self.write_detailed_log(f"winget list fallback error: {e2}")
-                # If reached here, both export and fallback failed
-                raise RuntimeError(f"winget export failed with code {rc}")
+                
+                # 세 번째 대안: 매우 기본적인 winget list
+                self.write_detailed_log("Attempting most basic winget list.")
+                try:
+                    simple_cmd = ['winget', 'list']
+                    p3 = subprocess.run(simple_cmd, shell=False, capture_output=True, 
+                                      text=True, encoding='utf-8', errors='ignore', timeout=180)
+                    
+                    if p3.returncode == 0:
+                        simple_fb_name = f"winget_simple_list_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+                        simple_fb_path = os.path.join(folder, simple_fb_name)
+                        with open(simple_fb_path, 'w', encoding='utf-8', errors='ignore') as f:
+                            f.write(p3.stdout)
+                        self.write_detailed_log(f"Saved simple fallback list to {simple_fb_path}")
+                        self.message_queue.put(('log', f"All winget export attempts failed. Saved basic list to {simple_fb_path}"))
+                        self.message_queue.put(('open_folder', folder))
+                        return
+                except Exception as e3:
+                    self.write_detailed_log(f"Simple winget list also failed: {e3}")
+                    
+                # 모든 시도가 실패한 경우
+                raise RuntimeError(f"All winget export/list attempts failed. Primary error code: {rc}")
 
-            self.write_detailed_log(f"Winget export completed: {output_path}")
+            # winget export가 성공한 경우
+            self.write_detailed_log(f"Winget export completed successfully: {output_path}")
             self.message_queue.put(('log', f"Winget export completed: {output_path}"))
             self.message_queue.put(('open_folder', os.path.dirname(output_path)))
+            
         except FileNotFoundError:
             self.write_detailed_log("winget not found on system.")
             self.message_queue.put(('show_error', "winget is not available. Install 'App Installer' from Microsoft Store."))
         except Exception as e:
             self.write_detailed_log(f"Winget export error: {e}")
-            # Add friendly guidance for common causes
-            self.message_queue.put(('log', "Winget export failed. Possible causes: old winget version, disabled export feature (older versions), or corrupted sources. Try:\n- Update 'App Installer' from Microsoft Store\n- winget source reset --force\n- winget settings and enable export (older versions)\n- Re-run Export Apps"))
-            self.message_queue.put(('show_error', f"An error occurred during winget export: {e}"))
+            # 더 구체적인 오류 메시지와 해결 방안 제시
+            error_msg = (
+                f"Winget export failed: {e}\n\n"
+                f"Possible solutions:\n"
+                f"1. Update 'App Installer' from Microsoft Store\n"
+                f"2. Run: winget source reset --force\n"
+                f"3. Check if winget export is enabled in settings\n"
+                f"4. Try running as administrator"
+            )
+            self.message_queue.put(('show_error', error_msg))
         finally:
             self.close_log_file()
             self.message_queue.put(('stop_progress', None))
             self.message_queue.put(('update_status', "Winget export complete!"))
             self.message_queue.put(('enable_buttons', None))
+
+    # def run_winget_export(self, output_path):
+    #     """Runs winget export to create a JSON of installed apps. On failure, falls back to 'winget list' text."""
+    #     folder = os.path.dirname(output_path)
+    #     try:
+    #         # Log winget version for diagnostics
+    #         try:
+    #             ver = subprocess.run(['winget', '--version'], shell=False, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+    #             self.write_detailed_log(f"winget --version -> rc={ver.returncode}, out={ver.stdout.strip() or ver.stderr.strip()}")
+    #         except Exception:
+    #             pass
+
+    #         cmd = ['winget', 'export', '--output', output_path, '--include-versions',
+    #                '--accept-source-agreements', '--accept-package-agreements', '--disable-interactivity']
+    #         process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    #                                    universal_newlines=True, encoding='utf-8', errors='ignore')
+
+    #         # Stream output to detailed log
+    #         while True:
+    #             line = process.stdout.readline()
+    #             if not line:
+    #                 if process.poll() is not None:
+    #                     break
+    #                 time.sleep(0.05)
+    #                 continue
+    #             self.write_detailed_log(line.strip())
+
+    #         err = process.stderr.read()
+    #         if err:
+    #             self.write_detailed_log(err.strip())
+
+    #         rc = process.returncode
+    #         if rc != 0:
+    #             # Attempt fallback using 'winget list'
+    #             self.write_detailed_log(f"winget export failed with code {rc}. Attempting fallback: winget list.")
+    #             fb_name = f"winget_list_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    #             fb_path = os.path.join(folder, fb_name)
+    #             try:
+    #                 p2 = subprocess.run(['winget', 'list', '--accept-source-agreements', '--disable-interactivity'],
+    #                                     shell=False, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+    #                 if p2.returncode == 0:
+    #                     try:
+    #                         with open(fb_path, 'w', encoding='utf-8', errors='ignore') as f:
+    #                             f.write(p2.stdout)
+    #                         self.write_detailed_log(f"Saved fallback list to {fb_path}")
+    #                         self.message_queue.put(('log', f"winget export failed (code {rc}). Saved fallback (winget list) to {fb_path}"))
+    #                         self.message_queue.put(('open_folder', folder))
+    #                         return
+    #                     except Exception as fe:
+    #                         self.write_detailed_log(f"Failed writing fallback file: {fe}")
+    #                 else:
+    #                     self.write_detailed_log(f"winget list fallback failed with code {p2.returncode}. stderr={p2.stderr.strip()}")
+    #             except Exception as e2:
+    #                 self.write_detailed_log(f"winget list fallback error: {e2}")
+    #             # If reached here, both export and fallback failed
+    #             raise RuntimeError(f"winget export failed with code {rc}")
+
+    #         self.write_detailed_log(f"Winget export completed: {output_path}")
+    #         self.message_queue.put(('log', f"Winget export completed: {output_path}"))
+    #         self.message_queue.put(('open_folder', os.path.dirname(output_path)))
+    #     except FileNotFoundError:
+    #         self.write_detailed_log("winget not found on system.")
+    #         self.message_queue.put(('show_error', "winget is not available. Install 'App Installer' from Microsoft Store."))
+    #     except Exception as e:
+    #         self.write_detailed_log(f"Winget export error: {e}")
+    #         # Add friendly guidance for common causes
+    #         self.message_queue.put(('log', "Winget export failed. Possible causes: old winget version, disabled export feature (older versions), or corrupted sources. Try:\n- Update 'App Installer' from Microsoft Store\n- winget source reset --force\n- winget settings and enable export (older versions)\n- Re-run Export Apps"))
+    #         self.message_queue.put(('show_error', f"An error occurred during winget export: {e}"))
+    #     finally:
+    #         self.close_log_file()
+    #         self.message_queue.put(('stop_progress', None))
+    #         self.message_queue.put(('update_status', "Winget export complete!"))
+    #         self.message_queue.put(('enable_buttons', None))
             
     def run_copy_thread(self, source_paths, destination_dir):
         """Performs the actual file and folder copying in a separate thread (byte progress)."""
         bytes_copied = 0
         try:
+            # 타임스탬프 생성
+            from datetime import datetime
+            timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+            
+            # Copy Data용 폴더명: 'copy_년월일_시분초'
+            copy_folder_name = f"copy_{timestamp_str}"
+            final_destination = os.path.join(destination_dir, copy_folder_name)
+            
+            # 폴더 생성 (기존 폴더 삭제하지 않음)
+            os.makedirs(final_destination, exist_ok=True)
+            self.write_detailed_log(f"Created copy destination folder: {final_destination}")
+            
             # --- 총 용량 계산 ---
             self.message_queue.put(('update_status', "Calculating total size..."))
             total_bytes = 0
@@ -2689,20 +3148,24 @@ class App(tk.Tk):
                 if now - self._last_progress_ts >= self.progress_throttle_secs:
                     self._last_progress_ts = now
                     self.message_queue.put(('update_progress', bytes_copied))
-                    # 디버깅 로그 (진행률 표시)
-                    self.message_queue.put(('log',
-                        f"Progress: {self.format_bytes(bytes_copied)} / {self.format_bytes(total_bytes)}"))
 
             # --- 실제 복사 루프 ---
             files_processed = 0
             for path in source_paths:
                 if os.path.isdir(path):
+                    # 디렉토리의 경우: 원본 디렉토리명을 유지하면서 복사
+                    dir_name = os.path.basename(path)
+                    dest_base = os.path.join(final_destination, dir_name)
+                    
                     for dirpath, dirnames, filenames in os.walk(path, topdown=True, onerror=None):
                         dirnames[:] = [d for d in dirnames if not self.is_hidden(os.path.join(dirpath, d))]
 
                         # 목적지 디렉토리 생성
                         rel_dir = os.path.relpath(dirpath, path)
-                        dest_dir = os.path.join(destination_dir, rel_dir) if rel_dir != "." else destination_dir
+                        if rel_dir == ".":
+                            dest_dir = dest_base
+                        else:
+                            dest_dir = os.path.join(dest_base, rel_dir)
                         os.makedirs(dest_dir, exist_ok=True)
 
                         for f in filenames:
@@ -2719,8 +3182,10 @@ class App(tk.Tk):
                             if files_processed % 10 == 0:
                                 self.message_queue.put(('log', f"Copied {files_processed} files..."))
                                 self.message_queue.put(('update_status', f"Copied {files_processed} files"))
+                                
                 elif os.path.isfile(path) and not self.is_hidden(path):
-                    dest_file = os.path.join(destination_dir, os.path.basename(path))
+                    # 단일 파일의 경우
+                    dest_file = os.path.join(final_destination, os.path.basename(path))
                     self.write_detailed_log(f"Copying file: {path} -> {dest_file}")
                     self.copy_file_with_progress_safe(path, dest_file, progress_cb)
                     files_processed += 1
@@ -2730,7 +3195,7 @@ class App(tk.Tk):
             self.write_detailed_log(f"Copy completed: {files_processed} files, {self.format_bytes(bytes_copied)}")
             self.message_queue.put(('log', f"Copy complete ({files_processed} files)."))
             self.message_queue.put(('update_status', "Copy complete!"))
-            self.message_queue.put(('open_folder', destination_dir))
+            self.message_queue.put(('open_folder', final_destination))
 
         except Exception as e:
             self.write_detailed_log(f"Copy error: {e}")
@@ -2738,10 +3203,28 @@ class App(tk.Tk):
             self.write_detailed_log(f"Copy traceback: {traceback.format_exc()}")
             self.message_queue.put(('show_error', f"An error occurred during copy: {e}"))
         finally:
-            self.close_log_file()
+            # 항상 실행되는 정리 작업
+            try:
+                self.close_log_file()
+            except Exception:
+                pass
+            
+            try:
+                # 진행률을 100%로 설정
+                max_val = self.progress_bar['maximum'] if self.progress_bar['maximum'] > 0 else 1
+                self.message_queue.put(('update_progress', max_val))
+            except Exception:
+                pass
+            
+            # 버튼 활성화
             self.message_queue.put(('enable_buttons', None))
+            
+            # 최종 상태 메시지
+            if hasattr(self, '_Copy_completed') and self._Copy_completed:
+                self.message_queue.put(('update_status', "Copy complete!"))
+            else:
+                self.message_queue.put(('update_status', "Operation finished"))
 
-    # --- Driver Backup & Restore Functions ---
     def start_browser_profiles_backup_thread(self):
         """Starts backup of full browser profiles (Chrome/Edge/Firefox)."""
         dest_root = filedialog.askdirectory(title="Select Folder to Save Browser Profiles")
@@ -2751,7 +3234,7 @@ class App(tk.Tk):
 
         # Prepare destination and log
         self.open_log_file(dest_root, "browser_profiles")
-        self.message_queue.put(('log', "브라우저 프로필 백업: Chrome/Edge/Firefox 프로필 전체(확장/설정 포함)"))
+        self.message_queue.put(('log', "backup Browser profiles : Chrome/Edge/Firefox profiles (inc. passwords, cookies, extensions)"))
         self.set_buttons_state("disabled")
         self.progress_bar['value'] = 0
         self.progress_bar['mode'] = "determinate"
@@ -2885,9 +3368,11 @@ class App(tk.Tk):
         finally:
             self.close_log_file()
             try:
-                self.message_queue.put(('update_progress', self.progress_bar['maximum']))
+                max_val = self.progress_bar['maximum'] if self.progress_bar['maximum'] > 0 else 1
+                self.message_queue.put(('update_progress', max_val))                
             except Exception:
                 pass
+            self.message_queue.put(('update_status', "Browser profiles backup complete!"))
             self.message_queue.put(('enable_buttons', None))
 
     def start_driver_backup_thread(self):
@@ -2925,11 +3410,33 @@ class App(tk.Tk):
         except Exception as e:
             self.write_detailed_log(f"Driver backup error: {e}")
             self.message_queue.put(('show_error', f"An error occurred during driver backup: {e}"))
+        # finally:
+        #     self.close_log_file()
+        #     self.message_queue.put(('stop_progress', None))
+        #     self.message_queue.put(('update_status', "Driver backup complete!"))
+        #     self.message_queue.put(('enable_buttons', None))
         finally:
-            self.close_log_file()
-            self.message_queue.put(('stop_progress', None))
-            self.message_queue.put(('update_status', "Driver backup complete!"))
+            # 항상 실행되는 정리 작업
+            try:
+                self.close_log_file()
+            except Exception:
+                pass
+            
+            try:
+                # 진행률을 100%로 설정
+                max_val = self.progress_bar['maximum'] if self.progress_bar['maximum'] > 0 else 1
+                self.message_queue.put(('update_progress', max_val))
+            except Exception:
+                pass
+            
+            # 버튼 활성화
             self.message_queue.put(('enable_buttons', None))
+            
+            # 최종 상태 메시지
+            if hasattr(self, '_backup_completed') and self._backup_completed:
+                self.message_queue.put(('update_status', "Driver Backup complete!"))
+            else:
+                self.message_queue.put(('update_status', "Operation finished"))
 
     def start_driver_restore_thread(self):
         """Starts the driver restore process in a separate thread."""
@@ -3276,7 +3783,6 @@ class ScheduleBackupDialog(tk.Toplevel):
                 print(f"DEBUG: Destination set to: {folder}")
         except Exception as browse_error:
             print(f"DEBUG: Browse failed: {browse_error}")
-
     def on_create(self):
         """생성 버튼 핸들러"""
         print("DEBUG: on_create called")
@@ -3299,13 +3805,14 @@ class ScheduleBackupDialog(tk.Toplevel):
                     parent=self):
                     return
             
-            # 시간 형식 검증
+            # 시간 형식 검증 (간단한 버전)
             time_str = self.time_var.get().strip()
             try:
                 from datetime import datetime
-                datetime.strptime(time_str, "%H:%M")
+                time_obj = datetime.strptime(time_str, "%H:%M")
+                time_str = time_obj.strftime("%H:%M")  # 정규화된 시간
             except ValueError:
-                messagebox.showerror("Error", "Invalid time format. Use HH:MM (e.g., 14:30).", parent=self)
+                messagebox.showerror("Error", "Invalid time format. Use HH:MM (e.g., 14:30)", parent=self)
                 return
 
             # 사용자 이름 가져오기
@@ -3997,7 +4504,9 @@ if __name__ == "__main__":
         if args.user and args.dest:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             print(f"[{timestamp}] Headless backup start for user '{args.user}'")
-            print(f"[{timestamp}] Settings: retention={args.retention}, log_retention={args.log_retention}")
+            
+            # 수정: 실제 전달된 retention 값들을 로그에 표시
+            print(f"[{timestamp}] Command line args: retention={args.retention}, log_retention={args.log_retention}")
             
             try:
                 backup_path, log_path = core_run_backup(
@@ -4006,32 +4515,14 @@ if __name__ == "__main__":
                     include_hidden=args.include_hidden,
                     include_system=args.include_system,
                     log_folder=args.log_folder,
-                    retention_count=args.retention,
-                    log_retention_days=args.log_retention
+                    retention_count=args.retention,  # 명령행에서 전달된 값 사용
+                    log_retention_days=args.log_retention  # 명령행에서 전달된 값 사용
                 )
                 print(f"[{timestamp}] Backup finished → {backup_path}")
                 print(f"[{timestamp}] Log saved at {log_path}")
                 
-                # Windows 알림 표시 (선택사항)
-                try:
-                    show_notification(
-                        "ezBAK Backup Complete", 
-                        f"User '{args.user}' backup completed successfully."
-                    )
-                except Exception:
-                    pass
-                    
             except Exception as e:
                 print(f"[{timestamp}] ERROR during headless backup: {e}")
-                
-                # 오류 알림 표시 (선택사항)
-                try:
-                    show_notification(
-                        "ezBAK Backup Failed", 
-                        f"User '{args.user}' backup failed: {str(e)}"
-                    )
-                except Exception:
-                    pass
                     
             sys.exit(0)
 
