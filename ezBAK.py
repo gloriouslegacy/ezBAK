@@ -6,6 +6,7 @@ import shutil
 import threading
 import queue
 from datetime import datetime, timedelta
+
 import sys
 import ctypes
 import subprocess
@@ -16,45 +17,6 @@ import stat
 import re
 import time
 import json
-
-# Check Space : 실행시 '계산중 등 메시지 필요'
-# Schedule Backup : 'Logs to Keep'적용 안됨. 로그 생성시 시분초 표시됨(기존 백업 날짜까지), NTUSER데이터 생성됨(4파일) 
-
-# 필수/안전
-#   중지/취소: 진행 중 작업을 즉시 중단k
-#    일시정지/재개: 대용량 복사 시 일시 정지/재개
-# 	용량/공간 체크: 소스 총 용량 계산 및 대상 여유공간 검사
-# 무결성 검증: 완료 후 해시 검증(선택 항목만)으로 복사 검증
-#   오래된 백업 정리: 보관 정책(예: 최근 N개 유지)으로 자동 삭제
-
-# 편의/생산성
-# 빠른 폴더 선택: 문서/바탕화면/다운로드/사진/음악/동영상 빠른 선택
-# 	포함/제외 규칙: 확장자/이름/경로 패턴 기반 필터 관리
-#   백업 폴더 열기: 마지막 작업의 대상 폴더 즉시 열기ㅎㅎ
-#   최근 로그 열기: 상세 로그 저장 폴더 열기
-#   설정 내보내기/가져오기: 숨김/시스템/규칙 등 구성 백업
-# 고급/자동화
-
-# 	스케줄 백업: 작업 스케줄러 등록/해제(UI로 간단히 주기/시간 설정)
-# 압축 백업: 선택 항목을 ZIP으로 백업(옵션: 분할/암호)
-# 	설치 프로그램 목록 내보내기: winget export로 현재 설치 목록 백업
-#  드라이버 목록 내보내기: pnputil/driverquery 결과를 텍스트로 저장
-# 	브라우저 프로필 백업: Chrome/Edge/Firefox 프로필 전체(확장/설정 포함)
-# UI/유틸
-
-# 테마/언어 전환: Light/Dark 및 언어 스위치
-# 업데이트 확인: GitHub 릴리즈 페이지 열기
-# 	네트워크 공유 연결: 백업 대상 NAS 경로 연결/해제 도우미
-
-# 중지/취소, 일시정지/재개, 용량/공간 체크
-# 빠른 폴더 선택, 포함/제외 규칙, 백업 폴더/로그 열기
-# 스케줄 백업, 압축 백업, 무결성 검증
-# 현 구조에 쉽게 추가 가능한 항목
-
-# 중지/취소, 일시정지/재개: 현재 스레드/큐 구조에 플래그만 추가해 제어 가능
-# 빠른 폴더 선택: 버튼에서 미리 정의된 경로를 소스 선택 다이얼로그에 추가
-# 백업 폴더 열기/최근 로그 열기: os.startfile 호출만 추가
-# 용량/공간 체크: 기존 compute_total_bytes와 shutil.disk_usage로 즉시 구현 가능
 
 
 try:
@@ -146,9 +108,22 @@ def _handle_rmtree_error(func, path, exc_info):
     else:
         log_message(f"ERROR: Deletion failed for {path}: {exc_info[1]}")
 
-
-
-
+def _handle_rmtree_error_headless(func, path, exc_info, log, timestamp):
+    """
+    오류 처리기 for shutil.rmtree (headless 모드용 - 로그에 기록)
+    """
+    import stat
+    import os
+    
+    if isinstance(exc_info[1], PermissionError):
+        try:
+            os.chmod(path, stat.S_IWRITE)
+            func(path)
+            log.write(f"[{timestamp}] INFO: Removed read-only and successfully deleted {path}\n")
+        except Exception as e:
+            log.write(f"[{timestamp}] ERROR: Could not delete {path} even after removing read-only flag: {e}\n")
+    else:
+        log.write(f"[{timestamp}] ERROR: Deletion failed for {path}: {exc_info[1]}\n")
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -213,229 +188,32 @@ class HeadlessBackupRunner:
     def __init__(self, user, dest, include_hidden, include_system, retention_count, log_retention_days):
         self.user = user
         self.dest = dest
-        self.hidden_mode = 'include' if include_hidden else 'exclude'
-        self.system_mode = 'include' if include_system else 'exclude'
+        self.include_hidden = include_hidden
+        self.include_system = include_system
         self.retention_count = retention_count
         self.log_retention_days = log_retention_days
-        # Headless mode does not use complex filters from the UI
-        self.filters = {'include': [], 'exclude': []}
 
-    def is_hidden(self, filepath):
-        if not os.path.exists(filepath):
+    def run_backup(self):
+        """헤드리스 모드 백업 실행"""
+        from datetime import datetime
+        try:
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+            backup_path, log_path = core_run_backup(
+                self.user,
+                self.dest,
+                include_hidden=self.include_hidden,
+                include_system=self.include_system,
+                log_folder=self.dest,
+                retention_count=self.retention_count,
+                log_retention_days=self.log_retention_days
+            )
+            print(f"[{timestamp}] Backup finished → {backup_path}")
+            print(f"[{timestamp}] Log saved at {log_path}")
+            return True
+        except Exception as e:
+            print(f"[{timestamp}] ERROR during headless backup: {e}")
             return False
-
-        base = os.path.basename(filepath).lower()
-        if base in ('appdata', 'application data', 'local settings'):
-            if not (self.hidden_mode == 'include' and self.system_mode == 'include'):
-                return True
-
-        try:
-            if _have_pywin32 and win32api:
-                attrs = win32api.GetFileAttributes(filepath)
-                is_hidden_attr = bool(attrs & win32con.FILE_ATTRIBUTE_HIDDEN)
-                is_system_attr = bool(attrs & win32con.FILE_ATTRIBUTE_SYSTEM)
-                is_reparse = bool(attrs & win32con.FILE_ATTRIBUTE_REPARSE_POINT)
-            else:
-                attrs = _get_file_attributes(filepath)
-                is_hidden_attr = bool(attrs & FILE_ATTRIBUTE_HIDDEN)
-                is_system_attr = bool(attrs & FILE_ATTRIBUTE_SYSTEM)
-                is_reparse = bool(attrs & FILE_ATTRIBUTE_REPARSE_POINT)
-            
-            if is_reparse: return True
-            if is_hidden_attr and self.hidden_mode == 'exclude': return True
-            if is_system_attr and self.system_mode == 'exclude': return True
-        except Exception as e:
-            log_message(f"WARN: is_hidden check failed for {filepath}: {e}")
-        return False
-
-    def copy_file_with_progress(self, src, dst, progress_callback, buffer_size=64*1024):
-        try:
-            os.makedirs(os.path.dirname(dst), exist_ok=True)
-            copied = 0
-            with open(src, "rb") as fsrc, open(dst, "wb") as fdst:
-                while True:
-
-
-
-
-
-
-                    buf = fsrc.read(buffer_size)
-                    if not buf: break
-                    fdst.write(buf)
-                    copied += len(buf)
-                    progress_callback(len(buf))
-            try: shutil.copystat(src, dst)
-            except Exception: pass
-            return copied
-        except Exception as e:
-            log_message(f"ERROR: copying file {src} -> {dst}: {e}")
-            return 0
-
-    def compute_total_bytes(self, root_path):
-        total = 0
-        for dirpath, dirnames, filenames in os.walk(root_path, topdown=True, onerror=lambda e: None):
-            dirnames[:] = [d for d in dirnames if not self.is_hidden(os.path.join(dirpath, d))]
-            for f in filenames:
-                fp = os.path.join(dirpath, f)
-                if not self.is_hidden(fp):
-                    try: total += os.path.getsize(fp)
-                    except Exception: pass
-        return total
-
-    def backup_browser_bookmarks(self, backup_path):
-        log_message("Backing up Chrome and Edge browser bookmarks...")
-        chrome_bookmark_path = os.path.join(os.path.expandvars('%LOCALAPPDATA%'), 'Google', 'Chrome', 'User Data', 'Default', 'Bookmarks')
-        edge_bookmark_path = os.path.join(os.path.expandvars('%LOCALAPPDATA%'), 'Microsoft', 'Edge', 'User Data', 'Default', 'Bookmarks')
-
-        try:
-            if os.path.exists(chrome_bookmark_path):
-                shutil.copy(chrome_bookmark_path, os.path.join(backup_path, 'Chrome_Bookmarks'))
-                log_message("- Chrome bookmarks backed up.")
-            else:
-                log_message("- Chrome bookmark file not found.")
-        except Exception as e:
-            log_message(f"- Chrome bookmark backup error: {e}")
-
-        try:
-            if os.path.exists(edge_bookmark_path):
-                shutil.copy(edge_bookmark_path, os.path.join(backup_path, 'Edge_Bookmarks'))
-                log_message("- Edge bookmarks backed up.")
-            else:
-                log_message("- Edge bookmark file not found.")
-        except Exception as e:
-            log_message(f"- Edge bookmark backup error: {e}")
-
-    def _cleanup_old_backups(self, backup_path, user_name):
-        try:
-            if self.retention_count <= 0:
-                log_message("\n[Old backup cleanup]")
-                log_message("Backup cleanup is disabled (retention count is 0 or less).")
-                return
-
-            log_message("\n[Old backup cleanup]")
-            backup_prefix = f"{user_name}_backup_"
-            
-            all_backups = [d for d in os.listdir(backup_path) if os.path.isdir(os.path.join(backup_path, d)) and d.startswith(backup_prefix)]
-            
-            if len(all_backups) > self.retention_count:
-                log_message(f"Found {len(all_backups)} backups. Keeping the {self.retention_count} most recent.")
-                all_backups.sort()
-                backups_to_delete = all_backups[:-self.retention_count]
-                for backup_dir_name in backups_to_delete:
-                    dir_to_delete = os.path.join(backup_path, backup_dir_name)
-                    log_message(f"  Deleting old backup: {dir_to_delete}")
-                    shutil.rmtree(dir_to_delete, onerror=_handle_rmtree_error)
-                log_message("Cleanup finished.")
-            else:
-                log_message(f"Found {len(all_backups)} backups. No old backups to clean up (retention policy: keep {self.retention_count}).")
-        except Exception as e:
-            log_message(f"ERROR: An error occurred during backup cleanup: {e}")
-
-
-
-
-
-
-    def run_backup(self, backup_path):
-        """Executes the actual backup logic with hidden file exclusion and byte-based progress."""
-        bytes_copied = 0
-        files_processed = 0
-        try:
-            user_name = self.user_var.get()
-            user_profile_path = os.path.join("C:", os.sep, "Users", user_name)
-
-            if not os.path.exists(user_profile_path):
-                self.message_queue.put(('show_error', f"User folder '{user_profile_path}' not found."))
-                self.write_detailed_log(f"Backup failed: user folder not found at {user_profile_path}")
-                return
-
-            self.write_detailed_log(f"Backup start for user '{user_name}': {user_profile_path} -> {backup_path}")
-            self.message_queue.put(('log', f"Backing up user: {user_name}"))
-
-            timestamp = datetime.now().strftime("%Y-%m-%d")
-            destination_dir = os.path.join(backup_path, f"{user_name}_backup_{timestamp}")
-
-            if os.path.exists(destination_dir):
-                try:
-                    shutil.rmtree(destination_dir)
-                    self.write_detailed_log(f"Deleted existing backup folder '{destination_dir}'.")
-                except Exception as e:
-                    self.write_detailed_log(f"Failed to delete existing backup folder: {e}")
-
-            os.makedirs(destination_dir, exist_ok=True)
-            self.write_detailed_log(f"Created new backup folder '{destination_dir}'.")
-
-        # Compute total bytes (excluding hidden)
-            total_bytes = self.compute_total_bytes(user_profile_path)
-            self.message_queue.put(('update_progress_max', total_bytes))
-            self.write_detailed_log(f"Total bytes to copy: {total_bytes}")
-
-        # Free space pre-check
-            try:
-                free = shutil.disk_usage(backup_path).free
-            except Exception:
-                free = self.get_free_space(backup_path)
-            if total_bytes > free:
-                self.write_detailed_log(f"Insufficient free space. Required={total_bytes}, Free={free}")
-                self.message_queue.put(('show_error',
-                    f"Not enough free space in destination.\n"
-                    f"Required: {self.format_bytes(total_bytes)}\nAvailable: {self.format_bytes(free)}"))
-                return
-
-            def progress_cb(delta):
-                nonlocal bytes_copied
-                bytes_copied += delta
-                now = time.time()
-                if now - self._last_progress_ts >= self.progress_throttle_secs:
-                    self._last_progress_ts = now
-                    self.message_queue.put(('update_progress', bytes_copied))
-
-            for dirpath, dirnames, filenames in os.walk(user_profile_path, topdown=True,
-                                                        onerror=lambda e: self.write_detailed_log(f"os.walk error: {e}")):
-                dirnames[:] = [d for d in dirnames if not self.is_hidden(os.path.join(dirpath, d))]
-                rel_dir = os.path.relpath(dirpath, user_profile_path)
-                dest_dir = os.path.join(destination_dir, rel_dir) if rel_dir != '.' else destination_dir
-                os.makedirs(dest_dir, exist_ok=True)
-                self.write_detailed_log(f"Created folder: {dest_dir}")
-
-                for f in filenames:
-                    src_file = os.path.join(dirpath, f)
-                    if self.is_hidden(src_file):
-                        self.write_detailed_log(f"Skipping hidden file: {src_file}")
-                        continue
-                    dest_file = os.path.join(dest_dir, f)
-                    self.write_detailed_log(f"Copying file: {src_file} -> {dest_file}")
-                    self.copy_file_with_progress(src_file, dest_file, progress_cb)
-                    files_processed += 1
-
-            self.message_queue.put(('update_progress', bytes_copied))
-            self.write_detailed_log(f"Backup completed. Files backed up: {files_processed}, "
-                                    f"Total size: {self.format_bytes(bytes_copied)}")
-            self.write_detailed_log("Backup successfully completed.")
-
-            self.backup_browser_bookmarks(destination_dir)
-            self._cleanup_old_backups(backup_path, user_name)
-            try:
-                retention_days = int(self.log_retention_days_var.get())
-            except (ValueError, TypeError):
-                retention_days = 30
-            self._cleanup_old_logs(backup_path, retention_days)
-            # self._cleanup_old_logs(backup_path, self.log_retention_days)
-
-            self.message_queue.put(('log', "Backup complete (detailed log saved)."))
-            self.message_queue.put(('update_status', "Backup complete!"))
-
-        except Exception as e:
-            self.write_detailed_log(f"Backup error: {e}")
-            self.message_queue.put(('show_error', f"An error occurred during backup: {e}"))
-        finally:
-            self.close_log_file()
-            try:
-                self.message_queue.put(('update_progress', self.progress_bar['maximum']))
-            except Exception:
-                pass
-            self.message_queue.put(('enable_buttons', None))
 
 class App(tk.Tk):
     def __init__(self):
@@ -451,7 +229,7 @@ class App(tk.Tk):
                 self.iconbitmap(resource_path('./icon/ezbak.ico'))
             except tk.TclError:
                 pass 
-        self.geometry("1024x439")
+        self.geometry("1024x420")
         self.configure(bg="#2D3250")
 
         # UI elements setup
@@ -810,15 +588,6 @@ class App(tk.Tk):
             with self.log_lock:
                 self._log_file = open(path, "a", encoding="utf-8", errors="ignore")
                 self.log_file_path = path
-
-                # After opening the new log, clean up old logs in the same folder.
-                # try:
-                #     retention_days = int(self.log_retention_days_var.get())
-                # except (ValueError, TypeError):
-                #     retention_days = 30 # Fallback
-                # self._cleanup_old_logs(base_folder, retention_days)
-
-                # write selected backup policies at top of detailed log
                 try:
                     self._log_file.write(f"[POLICY] Hidden={self.hidden_mode_var.get()} System={self.system_mode_var.get()}\n")
                     self._log_file.flush()
@@ -962,33 +731,20 @@ class App(tk.Tk):
             import traceback
             self.write_detailed_log(f"Traceback: {traceback.format_exc()}")
 
-    # # 추가 디버그용 - 수동으로 로그 정리 테스트하는 버튼 (임시)
-    # def test_log_cleanup(self):
-    #     """테스트용: 로그 정리 수동 실행"""
-    #     try:
-    #         folder = "F:\\"  # 또는 실제 로그가 있는 폴더
-    #         days = 1
-    #         self.write_detailed_log(f"=== Manual log cleanup test ===")
-    #         self._cleanup_old_logs(folder, days)
-    #     except Exception as e:
-    #         print(f"Test error: {e}")   
-
+ 
     def process_queue(self):
         """Processes messages from the message queue to update the GUI."""
         try:
             while True:
                 task, value = self.message_queue.get_nowait()
                 if task == 'log':
-                    # UI shows only summarized logs
                     now = time.time()
                     if now - self._last_ui_log_ts >= self.ui_log_throttle_secs:
                         self._last_ui_log_ts = now
                         self.log(value)
                 elif task == 'update_progress':
-                    # value is bytes copied
                     try:
                         self.progress_bar['value'] = value
-                        # update percentage in status_label
                         try:
                             maxv = float(self.progress_bar['maximum'])
                         except Exception:
@@ -999,27 +755,25 @@ class App(tk.Tk):
                                 percent = int(min(100, (float(value) / maxv) * 100))
                             except Exception:
                                 percent = 0
-                        # show percentage only
                         self.status_label.config(text=f"Progression rate: {percent}%")
                     except Exception:
                         pass
+                elif task == 'space_check_result':
+                    self.show_space_check_result(value)
                 elif task == 'update_progress_max':
                     try:
                         self.progress_bar['maximum'] = value
-                        # reset percent display
                         self.status_label.config(text="진행률: 0%")
                     except Exception:
                         pass
                 elif task == 'update_status':
                     self.status_label.config(text=value)
-                elif task == 'set_progress_mode':
-                    self.progress_bar['mode'] = value
-                elif task == 'start_progress':
-                    self.progress_bar.start()
-                elif task == 'stop_progress':
-                    self.progress_bar.stop()
                 elif task == 'enable_buttons':
-                    self.set_buttons_state("normal")
+                    try:
+                        self.set_buttons_state("normal")
+                        print("DEBUG: Buttons enabled")
+                    except Exception as e:
+                        print(f"DEBUG: Button enable failed: {e}")
                 elif task == 'show_error':
                     messagebox.showerror("Error", value)
                 elif task == 'open_folder':
@@ -1032,6 +786,34 @@ class App(tk.Tk):
             pass
         finally:
             self.after(100, self.process_queue)
+
+    def show_space_check_result(self, result):
+        """용량 체크 결과를 사용자에게 표시"""
+        required = result['required']
+        available = result['available']
+        file_count = result['file_count']
+        sources_count = result['sources_count']
+        
+        margin = available - required
+        
+        msg = (
+            f"Complete:\n\n"
+            f"Sources: {sources_count} items\n"
+            f"Files: {file_count:,} items\n"
+            f"Required Space: {self.format_bytes(required)}\n"
+            f"Available: {self.format_bytes(available)}\n"
+            f"Margin: {self.format_bytes(margin)}\n"
+        )
+        
+        if required <= available:
+            messagebox.showinfo("Space Check", f"✓ Sufficient space available.\n\n{msg}")
+            self.message_queue.put(('log', f"Space OK. Required={self.format_bytes(required)} Available={self.format_bytes(available)}"))
+            self.message_queue.put(('update_status', "Space check completed - OK"))
+        else:
+            messagebox.showwarning("Space Check", f"⚠ Insufficient space available.\n\n{msg}")
+            self.message_queue.put(('log', f"Space LOW. Required={self.format_bytes(required)} Available={self.format_bytes(available)}"))
+            self.message_queue.put(('update_status', "Space check completed - Insufficient"))
+
 
     def set_buttons_state(self, state):
         """Enable or disable all action buttons."""
@@ -1257,20 +1039,43 @@ class App(tk.Tk):
             self.write_detailed_log(f"Error copying file {src} -> {dst}: {e}")
             return 0
 
-    # Helper: walk and sum bytes excluding hidden files/dirs
-    def compute_total_bytes(self, root_path):
+    def compute_total_bytes_fast(self, root_path, max_files_per_update=100):
+        """
+        빠른 용량 계산 - 중간 결과를 UI에 업데이트하면서 계산
+        """
         total = 0
-        for dirpath, dirnames, filenames in os.walk(root_path, topdown=True, onerror=lambda e: None):
-            # skip hidden directories
-            dirnames[:] = [d for d in dirnames if not self.is_hidden(os.path.join(dirpath, d))]
-            for f in filenames:
-                fp = os.path.join(dirpath, f)
-                if self.is_hidden(fp):
-                    continue
-                try:
-                    total += os.path.getsize(fp)
-                except Exception:
-                    pass
+        file_count = 0
+        last_update_time = time.time()
+        
+        try:
+            for dirpath, dirnames, filenames in os.walk(root_path, topdown=True, onerror=lambda e: None):
+                # 숨김 디렉토리 필터링
+                dirnames[:] = [d for d in dirnames if not self.is_hidden(os.path.join(dirpath, d))]
+                
+                for f in filenames:
+                    fp = os.path.join(dirpath, f)
+                    if self.is_hidden(fp):
+                        continue
+                        
+                    try:
+                        size = os.path.getsize(fp)
+                        total += size
+                        file_count += 1
+                        
+                        # 주기적으로 UI 업데이트 (응답성 향상)
+                        if file_count % max_files_per_update == 0:
+                            current_time = time.time()
+                            if current_time - last_update_time >= 0.1:  # 0.1초마다 업데이트
+                                self.message_queue.put(('update_status', f"계산 중... {file_count}개 파일, {self.format_bytes(total)}"))
+                                self.update_idletasks()  # UI 업데이트
+                                last_update_time = current_time
+                                
+                    except (OSError, IOError):
+                        continue
+                        
+        except Exception as e:
+            self.write_detailed_log(f"Fast compute error: {e}")
+        
         return total
 
     # --- User Data Backup & Restore Functions ---
@@ -1297,7 +1102,7 @@ class App(tk.Tk):
         backup_thread.start()
 
     def run_backup(self, backup_path):
-        """Executes the actual backup logic with hidden file exclusion and byte-based progress."""
+        """Executes the actual backup logic with improved error handling and debugging."""
         bytes_copied = 0
         try:
             user_name = self.user_var.get()
@@ -1323,77 +1128,314 @@ class App(tk.Tk):
             os.makedirs(destination_dir, exist_ok=True)
             self.write_detailed_log(f"Created new backup folder '{destination_dir}'.")
 
-            # Compute total bytes (excluding hidden)
-            total_bytes = self.compute_total_bytes(user_profile_path)
+            self.message_queue.put(('update_status', "Calculating total size..."))
+            total_bytes = self.compute_total_bytes_safe(user_profile_path)
             self.message_queue.put(('update_progress_max', total_bytes))
             self.write_detailed_log(f"Total bytes to copy: {total_bytes}")
-            # Free space pre-check (backup destination)
-            try:
-                free = shutil.disk_usage(backup_path).free
-            except Exception:
-                free = self.get_free_space(backup_path)
+            
+            # 여유 공간 검사
+            self.message_queue.put(('update_status', "Checking available space..."))
+            free = self.get_free_space_reliable(backup_path)
+            
             if total_bytes > free:
                 self.write_detailed_log(f"Insufficient free space for backup. Required={total_bytes} Free={free}")
-                self.message_queue.put(('show_error', f"Not enough free space in destination.\nRequired: {self.format_bytes(total_bytes)}\nAvailable: {self.format_bytes(free)}"))
+                self.message_queue.put(('show_error', f"목적지에 공간이 부족합니다.\n필요: {self.format_bytes(total_bytes)}\n사용가능: {self.format_bytes(free)}"))
                 return
 
+            self.message_queue.put(('update_status', "Starting backup..."))
+            
             def progress_cb(delta):
                 nonlocal bytes_copied
                 bytes_copied += delta
-                # throttle UI progress updates
                 now = time.time()
                 if now - self._last_progress_ts >= self.progress_throttle_secs:
                     self._last_progress_ts = now
                     self.message_queue.put(('update_progress', bytes_copied))
 
             files_processed = 0
-            for dirpath, dirnames, filenames in os.walk(user_profile_path, topdown=True, onerror=lambda e: None):
-                dirnames[:] = [d for d in dirnames if not self.is_hidden(os.path.join(dirpath, d))]
-                rel_dir = os.path.relpath(dirpath, user_profile_path)
-                dest_dir = os.path.join(destination_dir, rel_dir) if rel_dir != "." else destination_dir
-                os.makedirs(dest_dir, exist_ok=True)
-                self.write_detailed_log(f"Created folder: {dest_dir}")
-
-                for f in filenames:
-                    src_file = os.path.join(dirpath, f)
-                    if self.is_hidden(src_file):
-                        self.write_detailed_log(f"Skipping hidden file: {src_file}")
-                        continue
-                    dest_file = os.path.join(dest_dir, f)
-                    self.write_detailed_log(f"Copying file: {src_file} -> {dest_file}")
-                    copied = self.copy_file_with_progress(src_file, dest_file, progress_cb)
-                    files_processed += 1
-                    # occasionally show UI summary
-                    if files_processed % 50 == 0:
-                        self.message_queue.put(('log', f"Copied {files_processed} files..."))
-                        self.write_detailed_log(f"{files_processed} files copied so far; bytes_copied={bytes_copied}")
-            # ensure final progress update
-            self.message_queue.put(('update_progress', bytes_copied))
-            self.write_detailed_log("User folder backup completed.")
-            self.backup_browser_bookmarks(backup_path)
-            self.write_detailed_log("Backup successfully completed.")
-            self._cleanup_old_backups(backup_path, user_name)
-            try:
-                retention_days = int(self.log_retention_days_var.get())
-            except (ValueError, TypeError):
-                retention_days = 30
-            self._cleanup_old_logs(backup_path, retention_days)
+            folders_processed = 0
             
+            try:
+                for dirpath, dirnames, filenames in os.walk(user_profile_path, topdown=True, onerror=None):
+                    try:
+                        # 현재 처리 중인 폴더 로깅
+                        rel_path = os.path.relpath(dirpath, user_profile_path)
+                        self.write_detailed_log(f"Processing directory: {dirpath} (relative: {rel_path})")
+                        
+                        # 숨김 디렉토리 필터링 - 안전한 방식
+                        original_dirnames = dirnames.copy()
+                        dirnames.clear()
+                        
+                        for d in original_dirnames:
+                            full_dir_path = os.path.join(dirpath, d)
+                            try:
+                                if not self.is_hidden_safe(full_dir_path):
+                                    dirnames.append(d)
+                                else:
+                                    self.write_detailed_log(f"Skipping hidden directory: {full_dir_path}")
+                            except Exception as e:
+                                self.write_detailed_log(f"Error checking directory {full_dir_path}: {e}")
+                                # 에러 발생 시 디렉토리 포함 (안전한 선택)
+                                dirnames.append(d)
+                        
+                        # 목적지 폴더 생성
+                        rel_dir = os.path.relpath(dirpath, user_profile_path)
+                        dest_dir = os.path.join(destination_dir, rel_dir) if rel_dir != "." else destination_dir
+                        
+                        try:
+                            os.makedirs(dest_dir, exist_ok=True)
+                            self.write_detailed_log(f"Created folder: {dest_dir}")
+                            folders_processed += 1
+                            
+                            # 진행상황 업데이트
+                            if folders_processed % 5 == 0:
+                                self.message_queue.put(('update_status', f"Processing folder {folders_processed}: {os.path.basename(dirpath)}"))
+                        except Exception as e:
+                            self.write_detailed_log(f"ERROR: Failed to create folder {dest_dir}: {e}")
+                            continue
+
+                        # 파일 복사
+                        for f in filenames:
+                            try:
+                                src_file = os.path.join(dirpath, f)
+                                dest_file = os.path.join(dest_dir, f)
+                                
+                                # 숨김 파일 체크 
+                                if self.is_hidden_safe(src_file):
+                                    self.write_detailed_log(f"Skipping hidden file: {src_file}")
+                                    continue
+                                
+                                # 파일 복사
+                                self.write_detailed_log(f"Copying file: {src_file} -> {dest_file}")
+                                copied = self.copy_file_with_progress_safe(src_file, dest_file, progress_cb)
+                                files_processed += 1
+                                
+                                # 진행상황 업데이트
+                                if files_processed % 10 == 0:
+                                    self.message_queue.put(('log', f"Copied {files_processed} files..."))
+                                    self.message_queue.put(('update_status', f"Copied {files_processed} files"))
+                                    
+                            except Exception as e:
+                                self.write_detailed_log(f"ERROR: Failed to copy file {src_file}: {e}")
+                                continue
+                                
+                    except Exception as e:
+                        self.write_detailed_log(f"ERROR: Failed to process directory {dirpath}: {e}")
+                        continue
+                        
+            except Exception as e:
+                self.write_detailed_log(f"CRITICAL ERROR in backup loop: {e}")
+                self.message_queue.put(('show_error', f"백업 중 심각한 오류 발생: {e}"))
+                return
+
+            # 최종 진행률 업데이트
+            self.message_queue.put(('update_progress', bytes_copied))
+            self.write_detailed_log(f"Backup completed. Files backed up: {files_processed}, Folders: {folders_processed}, Total size: {self.format_bytes(bytes_copied)}")
+            
+            # 브라우저 북마크 백업
+            try:
+                self.backup_browser_bookmarks(backup_path)
+            except Exception as e:
+                self.write_detailed_log(f"Browser bookmark backup failed: {e}")
+            
+            # 정리 작업
+            try:
+                self._cleanup_old_backups(backup_path, user_name)
+                try:
+                    retention_days = int(self.log_retention_days_var.get())
+                except (ValueError, TypeError):
+                    retention_days = 30
+                self._cleanup_old_logs(backup_path, retention_days)
+            except Exception as e:
+                self.write_detailed_log(f"Cleanup failed: {e}")
+            
+            self.write_detailed_log("Backup successfully completed.")
             self.message_queue.put(('log', "Backup complete (detailed log saved)."))
             self.message_queue.put(('update_status', "Backup complete!"))
             self.message_queue.put(('open_folder', destination_dir))
 
         except Exception as e:
             self.write_detailed_log(f"Backup error: {e}")
+            import traceback
+            self.write_detailed_log(f"Backup traceback: {traceback.format_exc()}")
             self.message_queue.put(('show_error', f"An error occurred during backup: {e}"))
-        finally:
-            self.close_log_file()
-            # ensure progress bar completes
+        finally:  # 전체 함수의 finally 블록
+            # 반드시 실행되는 정리 작업
+            try:
+                self.close_log_file()
+            except Exception:
+                pass
+            
             try:
                 self.message_queue.put(('update_progress', self.progress_bar['maximum']))
             except Exception:
                 pass
+            
+            # 버튼 활성화를 확실히 수행
             self.message_queue.put(('enable_buttons', None))
+            
+            # 추가 안전장치: 직접 버튼 활성화도 시도
+            try:
+                self.after(1000, lambda: self.set_buttons_state("normal"))
+            except Exception:
+                pass
+            
+    def copy_file_with_progress_safe(self, src, dst, progress_callback, buffer_size=64*1024, timeout_seconds=30):
+        """
+        타임아웃이 있는 안전한 파일 복사
+        """
+        try:
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            copied = 0
+            start_time = time.time()
+            
+            with open(src, "rb") as fsrc, open(dst, "wb") as fdst:
+                while True:
+                    # 타임아웃 체크
+                    if time.time() - start_time > timeout_seconds:
+                        self.write_detailed_log(f"TIMEOUT: File copy timeout for {src}")
+                        raise TimeoutError(f"File copy timeout: {src}")
+                    
+                    buf = fsrc.read(buffer_size)
+                    if not buf:
+                        break
+                    fdst.write(buf)
+                    copied += len(buf)
+                    progress_callback(len(buf))
+            
+            # 파일 속성 복사 (타임아웃 적용)
+            try:
+                shutil.copystat(src, dst)
+            except Exception:
+                pass  # 속성 복사 실패는 무시
+                
+            return copied
+        except Exception as e:
+            self.write_detailed_log(f"ERROR: copying file {src} -> {dst}: {e}")
+            return 0
+
+    def compute_total_bytes_safe(self, root_path):
+        """
+        안전한 총 용량 계산
+        """
+        total = 0
+        file_count = 0
+        
+        try:
+            for dirpath, dirnames, filenames in os.walk(root_path, topdown=True, onerror=lambda e: self.write_detailed_log(f"Walk error: {e}")):
+                # 안전한 디렉토리 필터링
+                original_dirnames = dirnames.copy()
+                dirnames.clear()
+                
+                for d in original_dirnames:
+                    try:
+                        if not self.is_hidden_safe(os.path.join(dirpath, d), timeout_seconds=1):
+                            dirnames.append(d)
+                    except Exception:
+                        dirnames.append(d)  # 에러 시 포함
+                
+                for f in filenames:
+                    fp = os.path.join(dirpath, f)
+                    try:
+                        if not self.is_hidden_safe(fp, timeout_seconds=1):
+                            size = os.path.getsize(fp)
+                            total += size
+                            file_count += 1
+                            
+                            # 100개마다 진행상황 업데이트
+                            if file_count % 100 == 0:
+                                self.message_queue.put(('update_status', f"Calculating total size... {file_count} files, {self.format_bytes(total)}"))
+                                
+                    except Exception as e:
+                        self.write_detailed_log(f"Size calculation error for {fp}: {e}")
+                        continue
+                        
+        except Exception as e:
+            self.write_detailed_log(f"Total bytes calculation error: {e}")
+        
+        return total
+
+    def is_hidden_safe(self, filepath, timeout_seconds=2):
+        """
+        타임아웃이 있는 안전한 is_hidden 함수
+        """
+        try:
+            # 빠른 기본 검사들
+            if not os.path.exists(filepath):
+                return False
+                
+            # 이름 기반 검사 (빠름)
+            base = os.path.basename(filepath).lower()
+            if base.startswith('.') or base in ('thumbs.db', 'desktop.ini', '$recycle.bin'):
+                return True
+                
+            if base in ('appdata', 'application data', 'local settings'):
+                if not (self.hidden_mode_var.get() == 'include' and self.system_mode_var.get() == 'include'):
+                    return True
+
+            # Windows 속성 검사 (느릴 수 있음) - 타임아웃 적용
+            import signal
+            
+            def timeout_handler(signum, frame):
+                raise TimeoutError("is_hidden check timeout")
+            
+            # Windows에서는 signal.alarm이 작동하지 않으므로 threading 사용
+            import threading
+            result = [False]  # 결과를 저장할 리스트
+            exception = [None]  # 예외를 저장할 리스트
+            
+            def check_attributes():
+                try:
+                    if _have_pywin32 and win32api and win32con:
+                        attrs = win32api.GetFileAttributes(filepath)
+                        is_hidden_attr = bool(attrs & win32con.FILE_ATTRIBUTE_HIDDEN)
+                        is_system_attr = bool(attrs & win32con.FILE_ATTRIBUTE_SYSTEM)
+                        is_reparse = bool(attrs & win32con.FILE_ATTRIBUTE_REPARSE_POINT)
+                    else:
+                        try:
+                            attrs = _get_file_attributes(filepath)
+                        except Exception:
+                            result[0] = False
+                            return
+                        is_hidden_attr = bool(attrs & FILE_ATTRIBUTE_HIDDEN)
+                        is_system_attr = bool(attrs & FILE_ATTRIBUTE_SYSTEM)
+                        is_reparse = bool(attrs & FILE_ATTRIBUTE_REPARSE_POINT)
+                    
+                    if is_reparse:
+                        result[0] = True
+                        return
+                    if is_hidden_attr and self.hidden_mode_var.get() == 'exclude':
+                        result[0] = True
+                        return
+                    if is_system_attr and self.system_mode_var.get() == 'exclude':
+                        result[0] = True
+                        return
+                        
+                    result[0] = False
+                except Exception as e:
+                    exception[0] = e
+                    result[0] = False
+            
+            # 별도 스레드에서 속성 검사 실행
+            thread = threading.Thread(target=check_attributes, daemon=True)
+            thread.start()
+            thread.join(timeout=timeout_seconds)
+            
+            if thread.is_alive():
+                # 타임아웃 발생
+                self.write_detailed_log(f"TIMEOUT: is_hidden check for {filepath}")
+                return False  # 타임아웃 시 숨김이 아닌 것으로 처리
+                
+            if exception[0]:
+                self.write_detailed_log(f"ERROR in is_hidden check for {filepath}: {exception[0]}")
+                return False
+                
+            return result[0]
+            
+        except Exception as e:
+            self.write_detailed_log(f"WARN: is_hidden_safe check failed for {filepath}: {e}")
+            return False
+
 
     def _cleanup_old_backups(self, backup_path, user_name):
         """Deletes old backups, keeping N most recent ones based on UI setting."""
@@ -1484,6 +1526,8 @@ class App(tk.Tk):
         if not backup_folder:
             self.message_queue.put(('log', "Restore folder selection cancelled."))
             return
+        
+        log_folder = os.path.dirname(backup_folder)
 
         # open log file in backup folder
         self.open_log_file(backup_folder, f"{self.user_var.get()}_restore")
@@ -1541,7 +1585,23 @@ class App(tk.Tk):
             destination_dir = os.path.join("C:", os.sep, "Users", user_name)
             self.write_detailed_log(f"Restoring from {source_dir} to {destination_dir}")
 
-            total_bytes = self.compute_total_bytes(source_dir)
+             
+            total_bytes = 0
+            try:
+                for dirpath, dirnames, filenames in os.walk(source_dir, topdown=True, onerror=lambda e: None):
+                    dirnames[:] = [d for d in dirnames if not self.is_hidden(os.path.join(dirpath, d))]
+                    for f in filenames:
+                        fp = os.path.join(dirpath, f)
+                        if not self.is_hidden(fp):
+                            try:
+                                total_bytes += os.path.getsize(fp)
+                            except Exception:
+                                pass
+            except Exception as e:
+                self.write_detailed_log(f"Total size calculation error: {e}")
+                total_bytes = 1024 * 1024 * 100  # 100MB 기본값          
+            
+            
             self.message_queue.put(('update_progress_max', total_bytes))
             self.write_detailed_log(f"Total bytes to restore: {total_bytes}")
 
@@ -1685,44 +1745,124 @@ class App(tk.Tk):
                 return f"{size:.2f} {unit}"
             size /= 1024.0
 
-    def get_free_space(self, path):
+    def get_free_space_reliable(self, path):
+        """
+        더 안정적인 여유 공간 계산
+        """
         try:
-            return shutil.disk_usage(path).free
+            # 우선 shutil.disk_usage 시도
+            usage = shutil.disk_usage(path)
+            return usage.free
         except Exception:
-            # Try drive root as fallback
             try:
-                drive = os.path.splitdrive(path)[0] or path
-                root = drive if drive.endswith(':') else (drive + ':')
-                return shutil.disk_usage(root + os.sep).free
+                # Windows API를 통한 여유 공간 계산
+                import ctypes
+                free_bytes = ctypes.c_ulonglong(0)
+                ctypes.windll.kernel32.GetDiskFreeSpaceExW(
+                    ctypes.c_wchar_p(path),
+                    ctypes.pointer(free_bytes),
+                    None,
+                    None
+                )
+                return free_bytes.value
             except Exception:
-                return 0
+                try:
+                    # 드라이브 루트로 재시도
+                    drive = os.path.splitdrive(path)[0]
+                    if drive:
+                        root_path = drive + os.sep
+                        usage = shutil.disk_usage(root_path)
+                        return usage.free
+                except Exception:
+                    pass
+        
+        # 모든 방법이 실패하면 충분히 큰 값 반환 (계속 진행)
+        return 999 * 1024**4  # 999 TB
+    
 
     def schedule_backup(self):
+        dlg = None
         try:
+            print("DEBUG: Creating ScheduleBackupDialog...")
             dlg = ScheduleBackupDialog(self)
+            print(f"DEBUG: Dialog created, action={getattr(dlg, 'action', 'NOT_SET')}")
+            
+            print("DEBUG: Calling wait_window...")
             self.wait_window(dlg)
-            if getattr(dlg, 'action', None) == 'create':
-                data = dlg.result or {}
-                self.create_scheduled_task(
-                    task_name=data.get('task_name'),
-                    schedule=data.get('schedule'),
-                    time_str=data.get('time_str'),
-                    days=data.get('days'),
-                    user=data.get('user'),
-                    dest=data.get('dest'),
-                    include_hidden=data.get('include_hidden', False),
-                    include_system=data.get('include_system', False)
-                )
-            elif getattr(dlg, 'action', None) == 'delete':
-                name = getattr(dlg, 'task_name', None)
-                if name:
-                    self.delete_scheduled_task(name)
-        except Exception as e:
-            try:
-                messagebox.showerror("Error", f"Schedule dialog error: {e}")
-            except Exception:
-                pass
+            print("DEBUG: wait_window completed")
 
+            # dlg가 여전히 존재하고 유효한지 확인
+            if dlg and hasattr(dlg, 'action'):
+                action = dlg.action
+                print(f"DEBUG: Dialog action = {action}")
+                
+                if action == 'create':
+                    if hasattr(dlg, 'result') and dlg.result:
+                        data = dlg.result
+                        print(f"DEBUG: Creating scheduled task with data: {data}")
+                        
+                        try:
+                            self.create_scheduled_task(
+                                task_name=data.get('task_name'),
+                                dest=data.get('dest'),
+                                schedule=data.get('schedule'),
+                                time_str=data.get('time_str'),
+                                include_hidden=data.get('include_hidden', False),
+                                include_system=data.get('include_system', False),
+                                retention_count=int(data.get('retention_count', 2)),
+                                log_retention_days=int(data.get('log_retention_days', 30)),
+                                user=data.get('user')
+                            )
+                            print("DEBUG: Scheduled task created successfully")
+                            # 성공 메시지는 create_scheduled_task 내부에서 처리
+                            
+                        except Exception as task_error:
+                            print(f"DEBUG: Task creation failed: {task_error}")
+                            # 예외를 다시 던지지 말고 사용자에게 표시
+                            error_msg = f"Failed to create scheduled task: {str(task_error)}"
+                            self.message_queue.put(('log', error_msg))
+                            try:
+                                messagebox.showerror("Task Creation Failed", error_msg)
+                            except Exception:
+                                print(f"ERROR: {error_msg}")
+                    else:
+                        print("DEBUG: No result data found")
+                        
+                elif action == 'delete':
+                    task_name = getattr(dlg, 'task_name', None)
+                    print(f"DEBUG: Deleting task: {task_name}")
+                    if task_name:
+                        try:
+                            self.delete_scheduled_task(task_name)
+                        except Exception as delete_error:
+                            print(f"DEBUG: Task deletion failed: {delete_error}")
+                            error_msg = f"Failed to delete scheduled task: {str(delete_error)}"
+                            self.message_queue.put(('log', error_msg))
+                            try:
+                                messagebox.showerror("Task Deletion Failed", error_msg)
+                            except Exception:
+                                print(f"ERROR: {error_msg}")
+                else:
+                    print(f"DEBUG: Action '{action}' - no operation needed")
+            else:
+                print("DEBUG: Dialog has no action attribute or is None")
+                
+        except Exception as e:
+            print(f"DEBUG: Exception in schedule_backup: {type(e).__name__}: {e}")
+            import traceback
+            print(f"DEBUG: Traceback: {traceback.format_exc()}")
+            
+            error_msg = f"Schedule dialog error: {str(e)}"
+            self.message_queue.put(('log', error_msg))
+            
+            # messagebox 호출도 안전하게 처리
+            try:
+                messagebox.showerror("Error", error_msg)
+            except Exception as mb_error:
+                print(f"DEBUG: messagebox.showerror failed: {mb_error}")
+
+            
+    ############# Schedule Backup Functions #############
     def _build_auto_backup_command(self, user, dest, include_hidden=False, include_system=False):
         # Build the command string used by Task Scheduler (/TR argument)
         try:
@@ -1741,54 +1881,90 @@ class App(tk.Tk):
         except Exception:
             return ''
 
-    def create_scheduled_task(self, task_name, schedule, time_str, days, user, dest, include_hidden=False, include_system=False):
-        if not task_name or not user or not dest or not schedule or not time_str:
-            try:
-                messagebox.showwarning("Warning", "Please fill all required fields (Task Name, User, Destination, Schedule, Time).")
-            except Exception:
-                pass
-            return
-        tr_cmd = self._build_auto_backup_command(user, dest, include_hidden, include_system)
-        if not tr_cmd:
-            try:
-                messagebox.showerror("Error", "Failed to build task command.")
-            except Exception:
-                pass
-            return
-        base = ["schtasks", "/Create", "/TN", task_name, "/TR", tr_cmd, "/ST", time_str, "/F"]
-        if schedule.lower() == 'daily':
-            base += ["/SC", "DAILY"]
-        elif schedule.lower() == 'weekly':
-            base += ["/SC", "WEEKLY"]
-            if days:
-                base += ["/D", ','.join(days)]
+    
+    def create_scheduled_task(self, task_name, schedule, time_str, user, dest, include_hidden=False, include_system=False, retention_count=2, log_retention_days=30):
+        """
+        스케줄된 작업 생성 (retention 설정값 포함)
+        """
+        import sys
+        import subprocess
+
+        # 스케줄 타입 매핑
+        if schedule.lower() == "daily":
+            sc_type = "DAILY"
+        elif schedule.lower() == "weekly":
+            sc_type = "WEEKLY"
+        elif schedule.lower() == "monthly":
+            sc_type = "MONTHLY"
         else:
-            try:
-                messagebox.showerror("Error", f"Unsupported schedule: {schedule}")
-            except Exception:
-                pass
-            return
-        # Try with highest privileges, fallback without if it fails
-        cmd1 = base + ["/RL", "HIGHEST"]
+            raise ValueError(f"Unsupported schedule type: {schedule}")
+
+        # 실행할 명령어 구성 (retention 옵션 추가)
+        base_cmd = (
+            f'"{sys.executable}" "{__file__}" '
+            f'--user "{user}" '
+            f'--dest "{dest}" '
+            f'--retention {retention_count} '
+            f'--log-retention {log_retention_days}'
+        )
+
+        if include_hidden:
+            base_cmd += " --include-hidden"
+        if include_system:
+            base_cmd += " --include-system"
+            
+        cmd = [
+            "schtasks", "/create",
+            "/tn", task_name,
+            "/sc", sc_type,
+            "/tr", base_cmd,
+            "/st", time_str,
+            "/f"
+        ]        
+
+        # 실행
         try:
-            res = subprocess.run(cmd1, shell=True, capture_output=True, text=True)
-            if res.returncode != 0:
-                # fallback without /RL HIGHEST
-                res2 = subprocess.run(base, shell=True, capture_output=True, text=True)
-                if res2.returncode != 0:
-                    raise RuntimeError(res2.stderr or res2.stdout)
+            print(f"DEBUG: Running command: {' '.join(cmd)}")
+            result = subprocess.run(cmd, check=True, shell=False, capture_output=True, text=True)
+            print(f"DEBUG: Command successful. Return code: {result.returncode}")
+            print(f"DEBUG: stdout: {result.stdout}")
+            if result.stderr:
+                print(f"DEBUG: stderr: {result.stderr}")
+                
+            print(f"[Scheduler] Created task '{task_name}' with schedule={schedule}, "
+                  f"time={time_str}, retention={retention_count}, log_retention_days={log_retention_days}")
+            
+            try:
+                messagebox.showinfo(
+                    "Schedule Created",
+                    f"Task '{task_name}' created successfully.\n"
+                    f"Schedule: {schedule} at {time_str}\n"
+                    f"Retention: {retention_count} backups, {log_retention_days} days logs"
+                )
+            except Exception as mb_error:
+                print(f"DEBUG: messagebox.showinfo failed: {mb_error}")
+                
+        except subprocess.CalledProcessError as e:
+            error_msg = f"Failed to create scheduled task '{task_name}'"
+            print(f"DEBUG: subprocess.CalledProcessError: {e}")
+            print(f"DEBUG: Return code: {e.returncode}")
+            print(f"DEBUG: stdout: {e.stdout}")
+            print(f"DEBUG: stderr: {e.stderr}")
+            
+            if e.stderr:
+                error_msg += f"\nError: {e.stderr}"
+            elif e.stdout:
+                error_msg += f"\nOutput: {e.stdout}"
+                
+            print(f"[Scheduler] Failed to create task '{task_name}': {e}")
+            raise RuntimeError(error_msg) from e
+            
         except Exception as e:
-            try:
-                messagebox.showerror("Error", f"Failed to create task:\n{e}")
-            except Exception:
-                pass
-            self.message_queue.put(('log', f"Schedule create failed: {e}"))
-            return
-        try:
-            messagebox.showinfo("Task Scheduler", f"Task '{task_name}' created.")
-        except Exception:
-            pass
-        self.message_queue.put(('log', f"Task created: {task_name} -> {schedule} {time_str}"))
+            error_msg = f"Unexpected error creating scheduled task: {e}"
+            print(f"DEBUG: Unexpected exception: {type(e).__name__}: {e}")
+            print(f"[Scheduler] Unexpected error creating task '{task_name}': {e}")
+            raise RuntimeError(error_msg) from e
+
 
     def delete_scheduled_task(self, task_name):
         if not task_name:
@@ -1815,6 +1991,9 @@ class App(tk.Tk):
         self.message_queue.put(('log', f"Task deleted: {task_name}"))
 
     def check_space(self):
+        """
+        용량 체크를 별도 스레드에서 실행 (UI 응답성 향상)
+        """
         # 1) Select sources via checkbox tree
         try:
             dlg = SelectSourcesDialog(self, is_hidden_fn=self.is_hidden, title="Check Required Space")
@@ -1823,6 +2002,7 @@ class App(tk.Tk):
         except Exception as e:
             messagebox.showerror("Error", f"Source selection failed: {e}")
             return
+        
         if not sources:
             self.message_queue.put(('log', "Space check cancelled (no sources)."))
             return
@@ -1833,29 +2013,85 @@ class App(tk.Tk):
             self.message_queue.put(('log', "Space check cancelled (no destination)."))
             return
 
-        # 3) Compute total bytes (blocking in UI thread by design for simplicity)
-        total = 0
-        for p in sources:
-            if os.path.isdir(p):
-                total += self.compute_total_bytes(p)
-            elif os.path.isfile(p) and not self.is_hidden(p):
-                try:
-                    total += os.path.getsize(p)
-                except Exception:
-                    pass
+        # 3) 별도 스레드에서 용량 계산 시작
+        self.message_queue.put(('log', "Calculating required space..."))
+        self.set_buttons_state("disabled")
+        self.progress_bar['mode'] = "indeterminate"
+        self.progress_bar.start()
+        self.message_queue.put(('update_status', "Calculating space..."))
 
-        free = self.get_free_space(dest)
-        msg = (
-            f"Required: {self.format_bytes(total)}\n"
-            f"Available: {self.format_bytes(free)}\n"
-            f"Margin: {self.format_bytes(free - total)}\n"
-        )
-        if total <= free:
-            messagebox.showinfo("Space Check", "Enough space available.\n\n" + msg)
-            self.message_queue.put(('log', f"Space OK. Required={self.format_bytes(total)} Free={self.format_bytes(free)}"))
-        else:
-            messagebox.showwarning("Space Check", "Not enough space.\n\n" + msg)
-            self.message_queue.put(('log', f"Space LOW. Required={self.format_bytes(total)} Free={self.format_bytes(free)}"))
+        # 스레드에서 용량 계산 실행
+        calc_thread = threading.Thread(target=self.run_space_calculation, args=(sources, dest), daemon=True)
+        calc_thread.start()
+        
+    def run_space_calculation(self, sources, dest):
+        """
+        별도 스레드에서 용량 계산 실행
+        """
+        try:
+            total = 0
+            file_count = 0
+            
+            self.message_queue.put(('update_status', "Calculating required space..."))
+            
+            for i, source_path in enumerate(sources):
+                self.message_queue.put(('update_status', f"Checking {i+1}/{len(sources)}: {os.path.basename(source_path)}"))
+                
+                if os.path.isdir(source_path):
+                    # 디렉토리 용량 계산
+                    dir_total = 0
+                    dir_files = 0
+                    
+                    for dirpath, dirnames, filenames in os.walk(source_path, topdown=True, onerror=lambda e: None):
+                        # 숨김 디렉토리 스킵
+                        dirnames[:] = [d for d in dirnames if not self.is_hidden(os.path.join(dirpath, d))]
+                        
+                        for f in filenames:
+                            fp = os.path.join(dirpath, f)
+                            if self.is_hidden(fp):
+                                continue
+                                
+                            try:
+                                size = os.path.getsize(fp)
+                                dir_total += size
+                                dir_files += 1
+                                
+                                # 100개 파일마다 UI 업데이트
+                                if dir_files % 100 == 0:
+                                    self.message_queue.put(('update_status', 
+                                        f"Checking {os.path.basename(source_path)}: {dir_files} files, {self.format_bytes(dir_total)}"))
+                            except (OSError, IOError):
+                                continue
+                    
+                    total += dir_total
+                    file_count += dir_files
+                    
+                elif os.path.isfile(source_path) and not self.is_hidden(source_path):
+                    # 단일 파일
+                    try:
+                        size = os.path.getsize(source_path)
+                        total += size
+                        file_count += 1
+                    except (OSError, IOError):
+                        continue
+            
+            # 여유 공간 계산
+            self.message_queue.put(('update_status', "Checking available space..."))
+            free = self.get_free_space_reliable(dest)
+            
+            # 결과 표시
+            self.message_queue.put(('space_check_result', {
+                'required': total,
+                'available': free,
+                'file_count': file_count,
+                'sources_count': len(sources)
+            }))
+            
+        except Exception as e:
+            self.message_queue.put(('show_error', f"Space calculation error: {e}"))
+        finally:
+            self.message_queue.put(('stop_progress', None))
+            self.message_queue.put(('enable_buttons', None))
 
     def open_filter_manager(self):
         try:
@@ -2416,35 +2652,36 @@ class App(tk.Tk):
             self.message_queue.put(('stop_progress', None))
             self.message_queue.put(('update_status', "Winget export complete!"))
             self.message_queue.put(('enable_buttons', None))
-
+            
     def run_copy_thread(self, source_paths, destination_dir):
         """Performs the actual file and folder copying in a separate thread (byte progress)."""
         bytes_copied = 0
         try:
-            # compute total bytes
+            # --- 총 용량 계산 ---
+            self.message_queue.put(('update_status', "Calculating total size..."))
             total_bytes = 0
             for path in source_paths:
-                if os.path.isdir(path):
-                    total_bytes += self.compute_total_bytes(path)
-                elif os.path.isfile(path) and not self.is_hidden(path):
-                    try:
-                        total_bytes += os.path.getsize(path)
-                    except Exception:
-                        pass
+                total_bytes += self.compute_total_bytes_safe(path)
 
             self.message_queue.put(('update_progress_max', total_bytes))
             self.write_detailed_log(f"Copy total bytes: {total_bytes}")
-            self.message_queue.put(('log', f"Found {total_bytes} bytes to copy."))
-            # Free space pre-check
-            try:
-                free = shutil.disk_usage(destination_dir).free
-            except Exception:
-                free = self.get_free_space(destination_dir)
+            self.message_queue.put(('log', f"Found {self.format_bytes(total_bytes)} to copy."))
+
+            # --- 대상 여유 공간 검사 ---
+            self.message_queue.put(('update_status', "Checking available space..."))
+            free = self.get_free_space_reliable(destination_dir)
+
             if total_bytes > free:
                 self.write_detailed_log(f"Insufficient free space. Required={total_bytes} Free={free}")
-                self.message_queue.put(('show_error', f"Not enough free space.\nRequired: {self.format_bytes(total_bytes)}\nAvailable: {self.format_bytes(free)}"))
+                self.message_queue.put((
+                    'show_error',
+                    f"Not enough free space.\n"
+                    f"Required: {self.format_bytes(total_bytes)}\n"
+                    f"Available: {self.format_bytes(free)}"
+                ))
                 return
 
+            # --- 진행률 콜백 ---
             def progress_cb(delta):
                 nonlocal bytes_copied
                 bytes_copied += delta
@@ -2452,66 +2689,56 @@ class App(tk.Tk):
                 if now - self._last_progress_ts >= self.progress_throttle_secs:
                     self._last_progress_ts = now
                     self.message_queue.put(('update_progress', bytes_copied))
+                    # 디버깅 로그 (진행률 표시)
+                    self.message_queue.put(('log',
+                        f"Progress: {self.format_bytes(bytes_copied)} / {self.format_bytes(total_bytes)}"))
 
-            items_processed = 0
-            for source in source_paths:
-                base = os.path.basename(source.rstrip("\\/"))
-                # If base is empty (e.g., when source is a drive root like C:\), make a safe folder name
-                if not base:
-                    drive, _ = os.path.splitdrive(source)
-                    base = (drive.rstrip(':') or 'root') + "_root"
-                dest_path = os.path.join(destination_dir, base)
-                if os.path.isdir(source):
-                    self.write_detailed_log(f"Copying directory: {source} -> {dest_path}")
-                    if os.path.exists(dest_path):
-                        try:
-                            shutil.rmtree(dest_path)
-                            self.write_detailed_log(f"  - Removed existing destination {dest_path}")
-                        except Exception as e:
-                            self.write_detailed_log(f"  - Failed to remove existing destination: {e}")
-                    os.makedirs(dest_path, exist_ok=True)
-                    for dirpath, dirnames, filenames in os.walk(source, topdown=True, onerror=lambda e: None):
+            # --- 실제 복사 루프 ---
+            files_processed = 0
+            for path in source_paths:
+                if os.path.isdir(path):
+                    for dirpath, dirnames, filenames in os.walk(path, topdown=True, onerror=None):
                         dirnames[:] = [d for d in dirnames if not self.is_hidden(os.path.join(dirpath, d))]
-                        rel = os.path.relpath(dirpath, source)
-                        target_dir = os.path.join(dest_path, rel) if rel != "." else dest_path
-                        os.makedirs(target_dir, exist_ok=True)
+
+                        # 목적지 디렉토리 생성
+                        rel_dir = os.path.relpath(dirpath, path)
+                        dest_dir = os.path.join(destination_dir, rel_dir) if rel_dir != "." else destination_dir
+                        os.makedirs(dest_dir, exist_ok=True)
+
                         for f in filenames:
                             src_file = os.path.join(dirpath, f)
-                            if self.is_hidden(src_file):
-                                self.write_detailed_log(f"Skipping hidden file: {src_file}")
-                                continue
-                            dest_file = os.path.join(target_dir, f)
-                            self.write_detailed_log(f"Copying file: {src_file} -> {dest_file}")
-                            self.copy_file_with_progress(src_file, dest_file, progress_cb)
-                            items_processed += 1
-                            if items_processed % 50 == 0:
-                                self.message_queue.put(('log', f"Copied {items_processed} files..."))
-                elif os.path.isfile(source):
-                    if self.is_hidden(source):
-                        self.write_detailed_log(f"Skipping hidden file: {source}")
-                        continue
-                    self.write_detailed_log(f"Copying file: {source} -> {dest_path}")
-                    self.copy_file_with_progress(source, dest_path, progress_cb)
-                    items_processed += 1
-                    if items_processed % 50 == 0:
-                        self.message_queue.put(('log', f"Copied {items_processed} files..."))
+                            dest_file = os.path.join(dest_dir, f)
 
-            # final update
+                            if self.is_hidden(src_file):
+                                continue
+
+                            self.write_detailed_log(f"Copying file: {src_file} -> {dest_file}")
+                            self.copy_file_with_progress_safe(src_file, dest_file, progress_cb)
+                            files_processed += 1
+
+                            if files_processed % 10 == 0:
+                                self.message_queue.put(('log', f"Copied {files_processed} files..."))
+                                self.message_queue.put(('update_status', f"Copied {files_processed} files"))
+                elif os.path.isfile(path) and not self.is_hidden(path):
+                    dest_file = os.path.join(destination_dir, os.path.basename(path))
+                    self.write_detailed_log(f"Copying file: {path} -> {dest_file}")
+                    self.copy_file_with_progress_safe(path, dest_file, progress_cb)
+                    files_processed += 1
+
+            # 최종 진행률
             self.message_queue.put(('update_progress', bytes_copied))
-            self.write_detailed_log("Copying process successfully completed.")
-            self.message_queue.put(('log', "Copy complete (detailed log saved)."))
+            self.write_detailed_log(f"Copy completed: {files_processed} files, {self.format_bytes(bytes_copied)}")
+            self.message_queue.put(('log', f"Copy complete ({files_processed} files)."))
             self.message_queue.put(('update_status', "Copy complete!"))
             self.message_queue.put(('open_folder', destination_dir))
 
         except Exception as e:
             self.write_detailed_log(f"Copy error: {e}")
+            import traceback
+            self.write_detailed_log(f"Copy traceback: {traceback.format_exc()}")
             self.message_queue.put(('show_error', f"An error occurred during copy: {e}"))
         finally:
             self.close_log_file()
-            try:
-                self.message_queue.put(('update_progress', self.progress_bar['maximum']))
-            except Exception:
-                pass
             self.message_queue.put(('enable_buttons', None))
 
     # --- Driver Backup & Restore Functions ---
@@ -2862,174 +3089,295 @@ class App(tk.Tk):
             pass
 
 class ScheduleBackupDialog(tk.Toplevel):
-    def __init__(self, master):
-        super().__init__(master)
-        self.title("Schedule Backup")
-        try:
-            self.iconbitmap(resource_path('./icon/ezbak.ico'))
-        except Exception:
-            pass
-        self.configure(bg="#2D3250")
-        self.geometry("520x420")
-        self.transient(master)
-        try:
-            self.grab_set()
-        except Exception:
-            pass
-
+    def __init__(self, parent):
+        print("DEBUG: ScheduleBackupDialog.__init__ started")
+        
+        # 초기화 순서 중요: 먼저 기본 속성들을 설정
         self.action = None
         self.result = None
-        users = []
+        self.task_name = None
+        self.parent = parent
+        
         try:
-            users = list(master.user_combo['values']) if getattr(master, 'user_combo', None) else []
-        except Exception:
-            users = []
-        if not users:
+            super().__init__(parent)
+            print("DEBUG: Toplevel initialized")
+            
+            self.title("Schedule Backup")
+            self.configure(bg="#2D3250")
+            
+            # 창이 닫힐 때 안전하게 처리 - 가장 먼저 설정
+            self.protocol("WM_DELETE_WINDOW", self.on_close)
+            print("DEBUG: WM_DELETE_WINDOW protocol set")
+            
+            # 아이콘 설정 (실패해도 계속 진행)
             try:
-                users_path = os.path.join("C:", os.sep, "Users")
-                users = [d for d in os.listdir(users_path) if os.path.isdir(os.path.join(users_path, d)) and not d.startswith('.')]
+                self.iconbitmap(resource_path('./icon/ezbak.ico'))
+            except Exception as icon_error:
+                print(f"DEBUG: Icon setting failed: {icon_error}")
+                pass
+                
+            # 창 크기 및 위치 설정
+            w, h = 500, 290
+            self.geometry(f"{w}x{h}")
+            
+            try:
+                self.update_idletasks()
+                parent_x = parent.winfo_rootx()
+                parent_y = parent.winfo_rooty()
+                x = parent_x + 50  # 500은 너무 멀리 이동
+                y = parent_y + 50
+                self.geometry(f"{w}x{h}+{x}+{y}")
+                print(f"DEBUG: Window positioned at {x},{y}")
+            except Exception as pos_error:
+                print(f"DEBUG: Window positioning failed: {pos_error}")
+                pass
+
+            try:
+                self.transient(parent)
+                print("DEBUG: Transient set")
+                self.grab_set()
+                print("DEBUG: Grab set")
+            except Exception as modal_error:
+                print(f"DEBUG: Modal setting failed: {modal_error}")
+                pass
+
+            # UI 구성요소들 생성
+            print("DEBUG: Creating UI widgets...")
+            self._create_widgets()
+            print("DEBUG: UI widgets created successfully")
+            
+        except Exception as init_error:
+            print(f"DEBUG: ScheduleBackupDialog init failed: {init_error}")
+            self.action = 'error'
+            # 초기화 실패시 안전하게 정리
+            try:
+                self.destroy()
             except Exception:
-                users = []
+                pass
+            raise init_error
+    def _create_widgets(self):
+        """UI 위젯들을 생성"""
+        try:
+            # 사용자 이름 안전하게 가져오기
+            user_name = "Unknown"
+            try:
+                if hasattr(self.parent, 'user_var') and self.parent.user_var.get():
+                    user_name = self.parent.user_var.get()
+            except Exception:
+                pass
 
-        # Defaults
-        default_user = master.user_var.get() if getattr(master, 'user_var', None) and master.user_var.get() else (users[0] if users else "")
-        default_time = "02:00"
-        default_task_name = f"ezBAK_Backup_{default_user}" if default_user else "ezBAK_Backup"
+            # Task Name
+            row = 0
+            tk.Label(self, text="Task Name", bg="#2D3250", fg="white").grid(
+                row=row, column=0, sticky="w", padx=10, pady=5
+            )
+            self.task_var = tk.StringVar(value=f"ezBAK_Backup_{user_name}")
+            tk.Entry(self, textvariable=self.task_var, width=40).grid(
+                row=row, column=1, columnspan=2, sticky="w", padx=10, pady=5
+            )
 
-        # Form
-        frm = tk.Frame(self, bg="#2D3250")
-        frm.pack(fill="both", expand=True, padx=12, pady=12)
-
-        row = 0
-        def add_label(text):
-            nonlocal row
-            tk.Label(frm, text=text, bg="#2D3250", fg="white", font=("Arial", 10, "bold")).grid(row=row, column=0, sticky='w', pady=4)
-
-        def add_entry(var, width=34):
-            nonlocal row
-            e = tk.Entry(frm, textvariable=var, width=width)
-            e.grid(row=row, column=1, sticky='w', pady=4)
+            # Destination Folder
             row += 1
-            return e
+            tk.Label(self, text="Destination Folder", bg="#2D3250", fg="white").grid(
+                row=row, column=0, sticky="w", padx=10, pady=5
+            )
+            self.dest_var = tk.StringVar()
+            tk.Entry(self, textvariable=self.dest_var, width=30).grid(
+                row=row, column=1, sticky="w", padx=10, pady=5
+            )
+            tk.Button(
+                self, text="Browse...", 
+                command=self._browse_destination
+            ).grid(row=row, column=2, padx=5, pady=5, sticky="w")
 
-        # Task name
-        add_label("Task Name")
-        self.task_name_var = tk.StringVar(value=default_task_name)
-        add_entry(self.task_name_var)
+            # Schedule
+            row += 1
+            tk.Label(self, text="Schedule", bg="#2D3250", fg="white").grid(
+                row=row, column=0, sticky="w", padx=10, pady=5
+            )
+            self.schedule_var = tk.StringVar(value="Daily")
+            ttk.Combobox(
+                self, textvariable=self.schedule_var,
+                values=["Daily", "Weekly", "Monthly"], state="readonly", width=15
+            ).grid(row=row, column=1, sticky="w", padx=10, pady=5)
 
+            # Time
+            row += 1
+            tk.Label(self, text="Time (HH:MM)", bg="#2D3250", fg="white").grid(
+                row=row, column=0, sticky="w", padx=10, pady=5
+            )
+            self.time_var = tk.StringVar(value="02:00")
+            tk.Entry(self, textvariable=self.time_var, width=15).grid(
+                row=row, column=1, sticky="w", padx=10, pady=5
+            )
 
-        # Destination
-        add_label("Destination Folder")
-        self.dest_var = tk.StringVar()
-        dest_entry = tk.Entry(frm, textvariable=self.dest_var, width=28)
-        dest_entry.grid(row=row, column=1, sticky='w', pady=4)
-        browse_btn = tk.Button(frm, text="Browse...", command=self._browse_dest, bg="#7D98A1", fg="white", relief="flat")
-        browse_btn.grid(row=row, column=2, sticky='w', padx=6)
-        row += 1
+            # Attributes - 한 줄에 배치
+            row += 1
+            tk.Label(self, text="Attributes", bg="#2D3250", fg="white").grid(
+                row=row, column=0, sticky="w", padx=10, pady=5
+            )
+            
+            # 체크박스들을 담을 프레임 생성
+            attr_frame = tk.Frame(self, bg="#2D3250")
+            attr_frame.grid(row=row, column=1, columnspan=2, sticky="w", padx=10, pady=5)
+            
+            # Include Hidden과 Include System을 한 줄에 배치
+            self.hidden_var = tk.BooleanVar(value=False)
+            self.system_var = tk.BooleanVar(value=False)
+            
+            tk.Checkbutton(attr_frame, text="Include Hidden", variable=self.hidden_var,
+                           bg="#2D3250", fg="white", selectcolor="#2D3250").pack(side="left")
+            
+            tk.Checkbutton(attr_frame, text="Include System", variable=self.system_var,
+                           bg="#2D3250", fg="white", selectcolor="#2D3250").pack(side="left", padx=(15, 0))
 
-        # Schedule type
-        add_label("Schedule")
-        self.schedule_var = tk.StringVar(value='Daily')
-        self.schedule_combo = ttk.Combobox(frm, textvariable=self.schedule_var, values=['Daily', 'Weekly'], state='readonly', width=12)
-        self.schedule_combo.grid(row=row, column=1, sticky='w', pady=4)
-        self.schedule_combo.bind('<<ComboboxSelected>>', self._toggle_weekly)
-        row += 1
+            # Backups to Keep
+            row += 1
+            tk.Label(self, text="Backups to Keep (0=all):", bg="#2D3250", fg="white").grid(
+                row=row, column=0, sticky="w", padx=10, pady=5
+            )
+            self.retention_count_var = tk.StringVar(value="2")
+            tk.Spinbox(self, from_=0, to=99, textvariable=self.retention_count_var, width=8).grid(
+                row=row, column=1, sticky="w", padx=10, pady=5
+            )
 
-        # Time
-        add_label("Time (HH:MM)")
-        self.time_var = tk.StringVar(value=default_time)
-        add_entry(self.time_var)
+            # Logs to Keep
+            row += 1
+            tk.Label(self, text="Logs to Keep (days, 0=disable):", bg="#2D3250", fg="white").grid(
+                row=row, column=0, sticky="w", padx=10, pady=5
+            )
+            self.log_retention_days_var = tk.StringVar(value="30")
+            tk.Spinbox(self, from_=0, to=365, textvariable=self.log_retention_days_var, width=8).grid(
+                row=row, column=1, sticky="w", padx=10, pady=5
+            )
 
-        # Weekly days
-        self.days_vars = {k: tk.BooleanVar(value=(k == 'MON')) for k in ['MON','TUE','WED','THU','FRI','SAT','SUN']}
-        self.days_frame = tk.Frame(frm, bg="#2D3250")
-        tk.Label(self.days_frame, text="Days:", bg="#2D3250", fg="white").pack(side='left', padx=(0,6))
-        for k in ['MON','TUE','WED','THU','FRI','SAT','SUN']:
-            tk.Checkbutton(self.days_frame, text=k, variable=self.days_vars[k], bg="#2D3250", fg="white", selectcolor="#2D3250").pack(side='left')
-        self.days_frame.grid(row=row, column=1, sticky='w', pady=4)
-        row += 1
+            # 버튼 영역
+            row += 1
+            btn_frame = tk.Frame(self, bg="#2D3250")
+            btn_frame.grid(row=row, column=0, columnspan=3, sticky="e", padx=10, pady=15)
 
-        # Options
-        self.inc_hidden_var = tk.BooleanVar(value=False)
-        self.inc_system_var = tk.BooleanVar(value=False)
-        tk.Checkbutton(frm, text="Include Hidden", variable=self.inc_hidden_var, bg="#2D3250", fg="white", selectcolor="#2D3250").grid(row=row, column=1, sticky='w', pady=4)
-        row += 1
-        tk.Checkbutton(frm, text="Include System", variable=self.inc_system_var, bg="#2D3250", fg="white", selectcolor="#2D3250").grid(row=row, column=1, sticky='w', pady=2)
-        row += 1
+            tk.Button(btn_frame, text="Create", command=self.on_create,
+                      bg="#1E88E5", fg="white", relief="flat", width=12).pack(side="right", padx=5)
+            tk.Button(btn_frame, text="Delete", command=self.on_delete,
+                      bg="#FF5733", fg="white", relief="flat", width=12).pack(side="right", padx=5)
+            tk.Button(btn_frame, text="Close", command=self.on_close,
+                      bg="#607D8B", fg="white", relief="flat", width=12).pack(side="right", padx=5)
+                      
+        except Exception as widget_error:
+            print(f"DEBUG: Widget creation failed: {widget_error}")
+            raise widget_error    
+    
+    def _browse_destination(self):
+        """폴더 선택 다이얼로그"""
+        try:
+            folder = filedialog.askdirectory(parent=self, title="Select Backup Destination")
+            if folder:
+                self.dest_var.set(folder)
+                print(f"DEBUG: Destination set to: {folder}")
+        except Exception as browse_error:
+            print(f"DEBUG: Browse failed: {browse_error}")
 
-        # Actions
-        btns = tk.Frame(self, bg="#2D3250")
-        btns.pack(fill='x', padx=12, pady=(6,12))
-        tk.Button(btns, text="Create", command=self._create, bg="#336BFF", fg="white", relief="flat", width=12).pack(side='right')
-        tk.Button(btns, text="Delete", command=self._delete, bg="#FF5733", fg="white", relief="flat", width=12).pack(side='right', padx=(0,8))
-        tk.Button(btns, text="Close", command=self._close, bg="#7D98A1", fg="white", relief="flat", width=10).pack(side='right', padx=(0,8))
-
-        self._toggle_weekly()
-
-    def _browse_dest(self):
-        path = filedialog.askdirectory(title="Select Destination Folder")
-        if path:
-            self.dest_var.set(path)
-
-    def _toggle_weekly(self, event=None):
-        if self.schedule_var.get().lower() == 'weekly':
-            self.days_frame.grid()
-        else:
-            self.days_frame.grid_remove()
-
-    def _create(self):
-        user = self.master.user_var.get().strip()
-        # user = "All Users"
-        dest = self.dest_var.get().strip()
-        name = self.task_name_var.get().strip()
-        time_str = self.time_var.get().strip()
-        sched = self.schedule_var.get().strip()
-        days = [k for k,v in self.days_vars.items() if v.get()] if sched.lower() == 'weekly' else []
-        if not (user and dest and name and time_str and sched):
+    def on_create(self):
+        """생성 버튼 핸들러"""
+        print("DEBUG: on_create called")
+        try:
+            # 입력값 검증
+            task_name = self.task_var.get().strip()
+            dest = self.dest_var.get().strip()
+            
+            if not task_name:
+                messagebox.showerror("Error", "Task name is required.", parent=self)
+                return
+                
+            if not dest:
+                messagebox.showerror("Error", "Destination folder is required.", parent=self)
+                return
+                
+            if not os.path.isdir(dest):
+                if not messagebox.askyesno("Warning", 
+                    f"Destination folder does not exist:\n{dest}\n\nContinue anyway?", 
+                    parent=self):
+                    return
+            
+            # 시간 형식 검증
+            time_str = self.time_var.get().strip()
             try:
-                messagebox.showwarning("Warning", "Please complete all fields.")
+                from datetime import datetime
+                datetime.strptime(time_str, "%H:%M")
+            except ValueError:
+                messagebox.showerror("Error", "Invalid time format. Use HH:MM (e.g., 14:30).", parent=self)
+                return
+
+            # 사용자 이름 가져오기
+            user_name = "Unknown"
+            try:
+                if hasattr(self.parent, 'user_var') and self.parent.user_var.get():
+                    user_name = self.parent.user_var.get()
             except Exception:
                 pass
-            return
-        self.result = {
-            'task_name': name,
-            'schedule': sched,
-            'time_str': time_str,
-            'days': days,
-            'user': user,
-            'dest': dest,
-            'include_hidden': self.inc_hidden_var.get(),
-            'include_system': self.inc_system_var.get(),
-        }
-        self.action = 'create'
-        try:
-            self.grab_release()
-        except Exception:
-            pass
-        self.destroy()
 
-    def _delete(self):
-        self.task_name = self.task_name_var.get().strip()
-        if not self.task_name:
+            self.action = "create"
+            self.result = {
+                "task_name": task_name,
+                "dest": dest,
+                "schedule": self.schedule_var.get(),
+                "time_str": time_str,
+                "include_hidden": self.hidden_var.get(),
+                "include_system": self.system_var.get(),
+                "retention_count": int(self.retention_count_var.get()),
+                "log_retention_days": int(self.log_retention_days_var.get()),
+                "user": user_name
+            }
+            print(f"DEBUG: Result set: {self.result}")
+            self._safe_destroy()
+            
+        except Exception as create_error:
+            print(f"DEBUG: on_create failed: {create_error}")
             try:
-                messagebox.showwarning("Warning", "Task Name is required to delete.")
+                messagebox.showerror("Error", f"Failed to create schedule: {create_error}", parent=self)
             except Exception:
-                pass
-            return
-        self.action = 'delete'
+                print(f"ERROR: {create_error}")
+
+    def on_delete(self):
+        """삭제 버튼 핸들러"""
+        print("DEBUG: on_delete called")
+        try:
+            task_name = self.task_var.get().strip()
+            if not task_name:
+                messagebox.showerror("Error", "Task name is required for deletion.", parent=self)
+                return
+                
+            self.action = "delete"
+            self.task_name = task_name
+            print(f"DEBUG: Delete task_name set: {task_name}")
+            self._safe_destroy()
+        except Exception as delete_error:
+            print(f"DEBUG: on_delete failed: {delete_error}")
+            try:
+                messagebox.showerror("Error", f"Failed to delete schedule: {delete_error}", parent=self)
+            except Exception:
+                print(f"ERROR: {delete_error}")
+
+    def on_close(self):
+        """닫기 버튼 핸들러"""
+        print("DEBUG: on_close called")
+        self.action = "close"
+        self._safe_destroy()
+        
+    def _safe_destroy(self):
+        """안전한 윈도우 파괴"""
+        print("DEBUG: _safe_destroy called")
         try:
             self.grab_release()
-        except Exception:
-            pass
-        self.destroy()
-
-    def _close(self):
+            print("DEBUG: grab_release successful")
+        except Exception as grab_error:
+            print(f"DEBUG: grab_release failed: {grab_error}")
+            
         try:
-            self.grab_release()
-        except Exception:
-            pass
-        self.destroy()
-
+            self.destroy()
+            print("DEBUG: destroy successful")
+        except Exception as destroy_error:
+            print(f"DEBUG: destroy failed: {destroy_error}")
 
 class FilterManagerDialog(tk.Toplevel):
     def __init__(self, master, current_filters=None):
@@ -3054,7 +3402,7 @@ class FilterManagerDialog(tk.Toplevel):
         self.exc = [dict(type=i.get('type'), pattern=i.get('pattern')) for i in (cf.get('exclude') or [])]
 
         # Layout
-        top = tk.Frame(self, bg="#2D3250")
+        top = tk.Frame(self, bg="#3D3250")
         top.pack(fill='both', expand=True, padx=12, pady=12)
 
         # Include panel
@@ -3451,9 +3799,9 @@ class SelectSourcesDialog(tk.Toplevel):
             pass
         self.destroy()
 
-def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=False, log_folder=None):
+def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=False, log_folder=None, retention_count=2, log_retention_days=30):
     """
-    GUI와 스케줄러 공통 백업 로직 (상세 로그 기록 추가)
+    GUI와 스케줄러 공통 백업 로직 (상세 로그 기록 + cleanup 추가)
     """
     import os, shutil
     from datetime import datetime
@@ -3474,6 +3822,7 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
 
     with open(log_path, "w", encoding="utf-8") as log:
         log.write(f"[{timestamp}] Backup start for '{user_name}' → {backup_path}\n")
+        log.write(f"[POLICY] Hidden={'include' if include_hidden else 'exclude'} System={'include' if include_system else 'exclude'}\n")
 
         for root, dirs, files in os.walk(user_home):
             # 숨김/시스템 제외 처리
@@ -3483,13 +3832,13 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
                 dirs[:] = [d for d in dirs if d.lower() not in ("system32", "appdata")]
 
             rel_dir = os.path.relpath(root, user_home)
-            dest_dir = os.path.join(backup_path, rel_dir) if rel_dir != '.' else backup_path
-            os.makedirs(dest_dir, exist_ok=True)
-            log.write(f"[{timestamp}] Created folder: {dest_dir}\n")
+            dest_dir_path = os.path.join(backup_path, rel_dir) if rel_dir != '.' else backup_path
+            os.makedirs(dest_dir_path, exist_ok=True)
+            log.write(f"[{timestamp}] Created folder: {dest_dir_path}\n")
 
             for f in files:
                 src = os.path.join(root, f)
-                dst = os.path.join(dest_dir, f)
+                dst = os.path.join(dest_dir_path, f)
                 try:
                     shutil.copy2(src, dst)
                     files_copied += 1
@@ -3501,17 +3850,111 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
 
         log.write(f"[{timestamp}] Backup completed. Files={files_copied}, Size={total_bytes} bytes\n")
 
-    # 오래된 백업/로그 정리
-    if log_folder:
+        # 브라우저 북마크 백업
         try:
-            _cleanup_old_backups(dest_dir, user_name)
-            _cleanup_old_logs(log_folder, retention_days=7)
+            log.write(f"[{timestamp}] Backing up Chrome and Edge browser bookmarks...\n")
+            chrome_bookmark_path = os.path.join(os.path.expandvars('%LOCALAPPDATA%'), 'Google', 'Chrome', 'User Data', 'Default', 'Bookmarks')
+            edge_bookmark_path = os.path.join(os.path.expandvars('%LOCALAPPDATA%'), 'Microsoft', 'Edge', 'User Data', 'Default', 'Bookmarks')
+
+            
+            if os.path.exists(chrome_bookmark_path):
+                shutil.copy(chrome_bookmark_path, os.path.join(dest_dir, 'Chrome_Bookmarks'))  # dest_dir 사용
+                log.write(f"[{timestamp}] - Chrome bookmarks backed up.\n")
+            else:
+                log.write(f"[{timestamp}] - Chrome bookmark file not found.\n")
+
+            if os.path.exists(edge_bookmark_path):
+                shutil.copy(edge_bookmark_path, os.path.join(dest_dir, 'Edge_Bookmarks'))  # dest_dir 사용
+                log.write(f"[{timestamp}] - Edge bookmarks backed up.\n")
+            else:
+                log.write(f"[{timestamp}] - Edge bookmark file not found.\n")
         except Exception as e:
-            print(f"[WARN] cleanup skipped: {e}")
+            log.write(f"[{timestamp}] Browser bookmark backup error: {e}\n")
+
+        # 오래된 백업 정리
+        try:
+            log.write(f"\n[{timestamp}] [Old backup cleanup]\n")
+            if retention_count <= 0:
+                log.write(f"[{timestamp}] Backup cleanup is disabled (retention count is 0 or less).\n")
+            else:
+                backup_prefix = f"{user_name}_backup_"
+                all_backups = [d for d in os.listdir(dest_dir) if os.path.isdir(os.path.join(dest_dir, d)) and d.startswith(backup_prefix)]
+                
+                if len(all_backups) > retention_count:
+                    log.write(f"[{timestamp}] Found {len(all_backups)} backups. Keeping the {retention_count} most recent.\n")
+                    all_backups.sort()
+                    backups_to_delete = all_backups[:-retention_count]
+                    for backup_dir_name in backups_to_delete:
+                        dir_to_delete = os.path.join(dest_dir, backup_dir_name)
+                        log.write(f"[{timestamp}]   Deleting old backup: {dir_to_delete}\n")
+                        try:
+                            shutil.rmtree(dir_to_delete, onerror=lambda func, path, exc_info: _handle_rmtree_error_headless(func, path, exc_info, log, timestamp))
+                        except Exception as e:
+                            log.write(f"[{timestamp}]   ERROR: Could not delete {dir_to_delete}: {e}\n")
+                    log.write(f"[{timestamp}] Cleanup finished.\n")
+                else:
+                    log.write(f"[{timestamp}] Found {len(all_backups)} backups. No old backups to clean up (retention policy: keep {retention_count}).\n")
+        except Exception as e:
+            log.write(f"[{timestamp}] ERROR: An error occurred during backup cleanup: {e}\n")
+
+        # 오래된 로그 정리
+        try:
+            log.write(f"\n[{timestamp}] [Old log cleanup]\n")
+            if log_retention_days <= 0:
+                log.write(f"[{timestamp}] Log cleanup disabled (retention days <= 0)\n")
+            else:
+                if not os.path.isdir(dest_dir):
+                    log.write(f"[{timestamp}] Log folder does not exist: {dest_dir}\n")
+                else:
+                    import time
+                    now = time.time()
+                    cutoff = now - (log_retention_days * 86400)
+                    cutoff_date = datetime.fromtimestamp(cutoff).strftime('%Y-%m-%d %H:%M:%S')
+                    
+                    log.write(f"[{timestamp}] Scanning '{dest_dir}' for logs older than {log_retention_days} days...\n")
+                    log.write(f"[{timestamp}] Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                    log.write(f"[{timestamp}] Cutoff time: {cutoff_date}\n")
+                    
+                    deleted_count = 0
+                    try:
+                        all_files = os.listdir(dest_dir)
+                        log_files = [f for f in all_files if f.endswith('.log')]
+                        log.write(f"[{timestamp}] Log files found: {len(log_files)}\n")
+                        
+                        for filename in log_files:
+                            filepath = os.path.join(dest_dir, filename)
+                            try:
+                                if os.path.isfile(filepath):
+                                    file_mtime = os.path.getmtime(filepath)
+                                    file_date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d %H:%M:%S')
+                                    age_days = (now - file_mtime) / 86400
+                                    
+                                    log.write(f"[{timestamp}]   File: {filename}\n")
+                                    log.write(f"[{timestamp}]     Modified: {file_date}\n")
+                                    log.write(f"[{timestamp}]     Age: {age_days:.1f} days\n")
+                                    log.write(f"[{timestamp}]     Should delete: {file_mtime < cutoff}\n")
+                                    
+                                    if file_mtime < cutoff:
+                                        try:
+                                            os.remove(filepath)
+                                            log.write(f"[{timestamp}]     ✓ Deleted: {filename}\n")
+                                            deleted_count += 1
+                                        except Exception as e:
+                                            log.write(f"[{timestamp}]     ✗ Delete failed: {e}\n")
+                            except Exception as e:
+                                log.write(f"[{timestamp}]   Error checking {filename}: {e}\n")
+                        
+                        if deleted_count > 0:
+                            log.write(f"[{timestamp}] Log cleanup completed. Deleted {deleted_count} files.\n")
+                        else:
+                            log.write(f"[{timestamp}] No old log files found to delete.\n")
+                            
+                    except Exception as e:
+                        log.write(f"[{timestamp}] Error listing files: {e}\n")
+        except Exception as e:
+            log.write(f"[{timestamp}] Error during log cleanup: {e}\n")
 
     return backup_path, log_path
-
-
 
 if __name__ == "__main__":
     def is_admin():
@@ -3544,26 +3987,54 @@ if __name__ == "__main__":
         parser.add_argument("--dest", help="Destination folder for backup")
         parser.add_argument("--include-hidden", action="store_true")
         parser.add_argument("--include-system", action="store_true")
+        parser.add_argument("--retention", type=int, default=2, help="Number of backups to keep")
+        parser.add_argument("--log-retention", type=int, default=30, help="Number of days to keep logs")
         parser.add_argument("--log-folder", default="logs")
-        args, _ = parser.parse_known_args()
+        
+        # 다른 인수들을 무시하도록 parse_known_args 사용
+        args, unknown = parser.parse_known_args()
 
         if args.user and args.dest:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             print(f"[{timestamp}] Headless backup start for user '{args.user}'")
-
+            print(f"[{timestamp}] Settings: retention={args.retention}, log_retention={args.log_retention}")
+            
             try:
                 backup_path, log_path = core_run_backup(
                     args.user,
                     args.dest,
                     include_hidden=args.include_hidden,
                     include_system=args.include_system,
-                    log_folder=args.log_folder
+                    log_folder=args.log_folder,
+                    retention_count=args.retention,
+                    log_retention_days=args.log_retention
                 )
                 print(f"[{timestamp}] Backup finished → {backup_path}")
                 print(f"[{timestamp}] Log saved at {log_path}")
+                
+                # Windows 알림 표시 (선택사항)
+                try:
+                    show_notification(
+                        "ezBAK Backup Complete", 
+                        f"User '{args.user}' backup completed successfully."
+                    )
+                except Exception:
+                    pass
+                    
             except Exception as e:
                 print(f"[{timestamp}] ERROR during headless backup: {e}")
+                
+                # 오류 알림 표시 (선택사항)
+                try:
+                    show_notification(
+                        "ezBAK Backup Failed", 
+                        f"User '{args.user}' backup failed: {str(e)}"
+                    )
+                except Exception:
+                    pass
+                    
             sys.exit(0)
+
 
 
     # Run headless mode if requested before any UI/elevation logic
