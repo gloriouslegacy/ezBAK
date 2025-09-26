@@ -18,8 +18,9 @@ import re
 import time
 import json
 
-        # finally:
+
         #     # 항상 실행되는 정리 작업
+        # finally:
         #     try:
         #         self.close_log_file()
         #     except Exception:
@@ -84,7 +85,6 @@ except Exception:
         # If ctypes fallback fails for any reason, provide a dummy that raises
         def _get_file_attributes(path):
             raise OSError("GetFileAttributesW unavailable")
-import time
 
 def format_bytes(size):
     """Converts bytes to a human-readable format (KB, MB, GB, etc.)."""
@@ -99,8 +99,6 @@ def format_bytes(size):
     return f"{size:.2f} PB"
 
 def log_message(message, log_folder, prefix=None):
-    from datetime import datetime
-    import os
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     os.makedirs(log_folder, exist_ok=True)
 
@@ -117,6 +115,73 @@ def log_message(message, log_folder, prefix=None):
                 f.write(log_line + "\n")
         except Exception:
             pass
+
+def get_system_info():
+    """
+    WMI를 통해 베이스보드 모델명 또는 제품명 가져오기
+    우선순위: Baseboard Product → Computer System Model  Computer System Manufacturer → Fallback "Unknown"
+    """
+    def clean_name(name):
+        """파일명에 사용할 수 없는 문자를 제거하고 정리"""
+        if not name or name.lower() in ('to be filled by o.e.m.', 'system product name', 'system version'):
+            return None
+        # 특수문자 제거 및 공백을 언더스코어로 변경
+        cleaned = re.sub(r'[<>:"/\\|?*]', '', name)
+        cleaned = re.sub(r'\s+', '_', cleaned.strip())
+        return cleaned if cleaned else None
+
+    system_name = "Unknown"
+    
+    try:
+        # 1. 베이스보드 제품명 
+        cmd = ['wmic', 'baseboard', 'get', 'product', '/value']
+        result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+        if result.returncode == 0:
+            for line in result.stdout.splitlines():
+                if line.startswith('Product='):
+                    product = line.split('=', 1)[1].strip()
+                    clean_product = clean_name(product)
+                    if clean_product:
+                        system_name = clean_product
+                        print(f"DEBUG: Using baseboard product: {system_name}")
+                        return system_name
+    except Exception as e:
+        print(f"DEBUG: Baseboard product query failed: {e}")
+
+    try:
+        # 2. 컴퓨터 시스템 모델명 
+        cmd = ['wmic', 'computersystem', 'get', 'model', '/value']
+        result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+        if result.returncode == 0:
+            for line in result.stdout.splitlines():
+                if line.startswith('Model='):
+                    model = line.split('=', 1)[1].strip()
+                    clean_model = clean_name(model)
+                    if clean_model:
+                        system_name = clean_model
+                        print(f"DEBUG: Using computer system model: {system_name}")
+                        return system_name
+    except Exception as e:
+        print(f"DEBUG: Computer system model query failed: {e}")
+
+    try:
+        # 3. 제조사명 (최후의 수단)
+        cmd = ['wmic', 'computersystem', 'get', 'manufacturer', '/value']
+        result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+        if result.returncode == 0:
+            for line in result.stdout.splitlines():
+                if line.startswith('Manufacturer='):
+                    manufacturer = line.split('=', 1)[1].strip()
+                    clean_manufacturer = clean_name(manufacturer)
+                    if clean_manufacturer:
+                        system_name = clean_manufacturer
+                        print(f"DEBUG: Using manufacturer: {system_name}")
+                        return system_name
+    except Exception as e:
+        print(f"DEBUG: Manufacturer query failed: {e}")
+
+    print(f"DEBUG: Using fallback name: {system_name}")
+    return system_name
 
 def _handle_rmtree_error(func, path, exc_info):
     """
@@ -135,8 +200,6 @@ def _handle_rmtree_error_headless(func, path, exc_info, log, timestamp):
     """
     오류 처리기 for shutil.rmtree (headless 모드용 - 로그에 기록)
     """
-    import stat
-    import os
     
     if isinstance(exc_info[1], PermissionError):
         try:
@@ -260,6 +323,265 @@ class HeadlessBackupRunner:
             else:
                 self.message_queue.put(('update_status', "Operation finished"))
 
+class KeyboardShortcuts:
+    """ezBAK용 키보드 단축키 관리 클래스"""
+    
+    def __init__(self, app):
+        self.app = app
+        self.setup_shortcuts()
+        self.setup_help_dialog()
+    
+    def setup_shortcuts(self):
+        """키보드 단축키 등록"""
+        
+        # 메인 기능 단축키
+        self.app.bind('<Control-b>', lambda e: self.safe_execute(self.app.start_backup_thread))
+        self.app.bind('<Control-r>', lambda e: self.safe_execute(self.app.start_restore_thread))
+        self.app.bind('<Control-d>', lambda e: self.safe_execute(self.app.start_driver_backup_thread))
+        self.app.bind('<Control-Shift-D>', lambda e: self.safe_execute(self.app.start_driver_restore_thread))
+        
+        # 파일 관리
+        self.app.bind('<Control-c>', lambda e: self.safe_execute(self.app.copy_files))
+        self.app.bind('<Control-o>', lambda e: self.safe_execute(self.app.open_file_explorer))
+        self.app.bind('<Control-s>', lambda e: self.safe_execute(self.app.save_log))
+        
+        # 도구 및 유틸리티
+        self.app.bind('<Control-m>', lambda e: self.safe_execute(self.app.open_device_manager))
+        self.app.bind('<Control-k>', lambda e: self.safe_execute(self.app.check_space))
+        self.app.bind('<Control-f>', lambda e: self.safe_execute(self.app.open_filter_manager))
+        self.app.bind('<Control-t>', lambda e: self.safe_execute(self.app.schedule_backup))
+        
+        # 브라우저 및 앱 관련
+        self.app.bind('<Control-p>', lambda e: self.safe_execute(self.app.start_browser_profiles_backup_thread))
+        self.app.bind('<Control-w>', lambda e: self.safe_execute(self.app.start_winget_export_thread))
+        
+        # NAS 연결
+        self.app.bind('<Control-n>', lambda e: self.safe_execute(self.app.open_nas_connect_dialog))
+        self.app.bind('<Control-Shift-N>', lambda e: self.safe_execute(self.app.open_nas_disconnect_dialog))
+        
+        # 일반 단축키
+        self.app.bind('<F1>', lambda e: self.show_help())
+        self.app.bind('<F5>', lambda e: self.refresh_user_list())
+        self.app.bind('<Escape>', lambda e: self.cancel_operation())
+        self.app.bind('<Control-q>', lambda e: self.safe_exit())
+        
+        # 사용자 선택 단축키 (숫자키)
+        for i in range(1, 10):
+            self.app.bind(f'<Control-{i}>', lambda e, idx=i-1: self.select_user_by_index(idx))
+        
+        # Focus 단축키
+        self.app.focus_set()  # 윈도우가 키보드 이벤트를 받을 수 있도록
+    
+    def safe_execute(self, function):
+        """함수 실행 (에러 핸들링 포함)"""
+        try:
+            if callable(function):
+                function()
+            else:
+                self.app.message_queue.put(('log', f"Function {function} is not callable"))
+        except Exception as e:
+            self.app.message_queue.put(('log', f"Shortcut execution error: {e}"))
+            print(f"DEBUG: Shortcut error: {e}")
+    
+    def show_help(self):
+        """단축키 도움말 표시 (F1)"""
+        help_text = """
+ezBAK Keyboard Shortcuts
+
+┌─────────────────────────────────────────┐
+│           Main Features                 │
+├─────────────────────────────────────────┤
+│ Ctrl + B        Backup User Data        │
+│ Ctrl + R        Restore User Data       │
+│ Ctrl + D        Backup Drivers          │
+│ Ctrl + Shift + D Restore Drivers        │
+├─────────────────────────────────────────┤
+│           File management               │
+├─────────────────────────────────────────┤
+│ Ctrl + C        Copy Data               │
+│ Ctrl + O        File Explorer           │
+│ Ctrl + S        Save Log                │
+├─────────────────────────────────────────┤
+│           Tools and Utilities           │
+├─────────────────────────────────────────┤
+│ Ctrl + M        Device Manager          │
+│ Ctrl + K        Check Space             │
+│ Ctrl + F        Filters                 │
+│ Ctrl + T        Schedule Backup         │
+├─────────────────────────────────────────┤
+│           Browser and App               │
+├─────────────────────────────────────────┤
+│ Ctrl + P        Backup Browser Profiles │
+│ Ctrl + W        Export Apps             │
+├─────────────────────────────────────────┤
+│           Network                       │
+├─────────────────────────────────────────┤
+│ Ctrl + N        Connect NAS             │
+│ Ctrl + Shift + N Disconnect NAS         │
+├─────────────────────────────────────────┤
+│           General                       │
+├─────────────────────────────────────────┤
+│ F1              help                    │
+│ F5              Refresh User List       │
+│ Ctrl + 1~9      (Not Working) Quick Select User │
+│ Escape          Cancel Current Operation│
+│ Ctrl + Q        Exit Program            │
+└─────────────────────────────────────────┘
+
+Tips :  Shortcuts are not case-sensitive.
+"""
+        
+        # 사용자 정의 도움말 다이얼로그
+        help_dialog = tk.Toplevel(self.app)
+        help_dialog.title("Help - Keyboard Shortcuts")
+        help_dialog.configure(bg="#2D3250")
+        help_dialog.geometry("388x748")
+        help_dialog.transient(self.app)
+        help_dialog.grab_set()
+        
+        try:
+            help_dialog.iconbitmap(resource_path('./icon/ezbak.ico'))
+        except:
+            pass
+        
+        # 텍스트 영역
+        text_frame = tk.Frame(help_dialog, bg="#2D3250")
+        text_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        
+        # 스크롤바를 먼저 생성
+        scrollbar = tk.Scrollbar(text_frame, 
+                                width=20,  
+                                bg="#424769",
+                                troughcolor="#2D3250",
+                                activebackground="#6EC571",
+                                relief="flat")
+        scrollbar.pack(side="right", fill="y")
+        
+        text_widget = tk.Text(text_frame, 
+                             font=("Consolas", 10),  
+                             bg="#424769", 
+                             fg="white",
+                             relief="flat",
+                             wrap="word",
+                             yscrollcommand=scrollbar.set)
+        text_widget.pack(side="left", fill="both", expand=True)
+        
+        # 스크롤바와 텍스트 위젯 연결
+        scrollbar.configure(command=text_widget.yview)
+        
+        text_widget.insert("1.0", help_text)
+        text_widget.configure(state="disabled")
+        
+        # 닫기 버튼
+        close_btn = tk.Button(help_dialog, 
+                             text="Exit (Esc)", 
+                             command=help_dialog.destroy,
+                             bg="#4CAF50", 
+                             fg="white", 
+                             relief="flat")
+        close_btn.pack(pady=10)
+        
+        # ESC로 닫기
+        help_dialog.bind('<Escape>', lambda e: help_dialog.destroy())
+        help_dialog.focus_set()
+    
+    def refresh_user_list(self):
+        """사용자 목록 새로고침 (F5)"""
+        try:
+            self.app.load_users()
+            self.app.message_queue.put(('log', "Refreshed user list."))
+        except Exception as e:
+            self.app.message_queue.put(('log', f"Error refreshing user list: {e}"))
+
+    def select_user_by_index(self, index):
+        """숫자키로 사용자 빠른 선택 (Ctrl + 1~9)"""
+        try:
+            users = self.app.user_combo['values']
+            if 0 <= index < len(users):
+                self.app.user_combo.current(index)
+                self.app.message_queue.put(('log', f"Selected user: {users[index]}"))
+            else:
+                self.app.message_queue.put(('log', f"User index {index+1} is out of range."))
+        except Exception as e:
+            self.app.message_queue.put(('log', f"Error selecting user: {e}"))
+
+    def cancel_operation(self):
+        """현재 작업 취소 (ESC)"""
+        try:
+            # 진행 중인 작업이 있으면 취소 시도
+            if hasattr(self.app, 'progress_bar') and self.app.progress_bar['mode'] == 'indeterminate':
+                self.app.message_queue.put(('log', "Cancellation requested"))
+                # 실제 취소 로직은 각 작업 스레드에서 구현 필요
+        except Exception as e:
+            print(f"DEBUG: Cancel operation error: {e}")
+    
+    def safe_exit(self):
+        """프로그램 종료 (Ctrl + Q)"""
+        try:
+            if messagebox.askyesno("Confirm Exit", "Are you sure you want to exit ezBAK?"):
+                try:
+                    self.app.save_settings()
+                    self.app.close_log_file()
+                except:
+                    pass
+                self.app.quit()
+                self.app.destroy()
+        except Exception as e:
+            print(f"DEBUG: Safe exit error: {e}")
+    
+    def setup_help_dialog(self):
+        """단축키 도움말을 상태바나 메뉴에 표시"""
+        # 상태바에 단축키 힌트 추가 (선택사항)
+        try:
+            if hasattr(self.app, 'status_label'):
+                original_text = self.app.status_label.cget("text")
+                hint_text = f"{original_text} | F1: help"
+                self.app.status_label.configure(text=hint_text)
+        except:
+            pass
+
+# App 클래스에 추가할 메서드들
+def setup_keyboard_shortcuts(self):
+    self.shortcuts = KeyboardShortcuts(self)
+    
+    # 툴팁 표시 (선택사항)
+    self.create_tooltip(self.backup_btn, "Backup User Data (Ctrl+B)")
+    self.create_tooltip(self.restore_btn, "Restore User Data (Ctrl+R)")
+    self.create_tooltip(self.driver_backup_btn, "Backup Drivers (Ctrl+D)")
+    # ... 다른 버튼들도 동일하게
+
+def create_tooltip(self, widget, text):
+    """버튼에 툴팁 추가 (단축키 정보 포함)"""
+    def on_enter(event):
+        try:
+            tooltip = tk.Toplevel()
+            tooltip.wm_overrideredirect(True)
+            tooltip.configure(bg="#2D3250", relief="solid", borderwidth=1)
+            
+            label = tk.Label(tooltip, text=text, 
+                           bg="#2D3250", fg="white", 
+                           font=("Arial", 9))
+            label.pack()
+            
+            x = event.x_root + 10
+            y = event.y_root - 30
+            tooltip.geometry(f"+{x}+{y}")
+            
+            widget.tooltip = tooltip
+        except:
+            pass
+    
+    def on_leave(event):
+        try:
+            if hasattr(widget, 'tooltip'):
+                widget.tooltip.destroy()
+                delattr(widget, 'tooltip')
+        except:
+            pass
+    
+    widget.bind('<Enter>', on_enter)
+    widget.bind('<Leave>', on_leave)
+
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -274,7 +596,7 @@ class App(tk.Tk):
                 self.iconbitmap(resource_path('./icon/ezbak.ico'))
             except tk.TclError:
                 pass 
-        self.geometry("1024x420")
+        self.geometry("1024x429")
         self.configure(bg="#2D3250")
 
         # UI elements setup
@@ -324,6 +646,11 @@ class App(tk.Tk):
         self.log_text.see(tk.END)
         self.log_text.config(state="disabled")
         self.update_idletasks()
+        self.setup_keyboard_shortcuts()
+
+    def setup_keyboard_shortcuts(self):
+        """키보드 단축키 설정"""
+        self.shortcuts = KeyboardShortcuts(self)
 
     def create_widgets(self):
         # Header
@@ -446,35 +773,35 @@ class App(tk.Tk):
         button_pady = 3
 
         # Row 1: Main Data Operations
-        self.backup_btn = tk.Button(button_grid_frame, text="Backup User Data", bg="#FF5733", fg="white", 
+        self.backup_btn = tk.Button(button_grid_frame, text="Backup User Data(B)", bg="#FF5733", fg="white", 
                                   font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                   relief="flat", width=button_width, command=self.start_backup_thread)
         self.backup_btn.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
         self.backup_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FF7D5A"))
         self.backup_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FF5733"))
 
-        self.restore_btn = tk.Button(button_grid_frame, text="Restore User Data", bg="#336BFF", fg="white", 
+        self.restore_btn = tk.Button(button_grid_frame, text="Restore User Data(R)", bg="#336BFF", fg="white", 
                                    font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                    relief="flat", width=button_width, command=self.start_restore_thread)
         self.restore_btn.grid(row=0, column=1, padx=2, pady=2, sticky="ew")
         self.restore_btn.bind("<Enter>", lambda e: e.widget.config(bg="#5A8DFF"))
         self.restore_btn.bind("<Leave>", lambda e: e.widget.config(bg="#336BFF"))
 
-        self.copy_btn = tk.Button(button_grid_frame, text="Copy Data", bg="#FFA500", fg="white", 
+        self.copy_btn = tk.Button(button_grid_frame, text="Copy Data(C)", bg="#FFA500", fg="white", 
                                 font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                 relief="flat", width=button_width, command=self.copy_files)
         self.copy_btn.grid(row=2, column=2, padx=2, pady=2, sticky="ew")
         self.copy_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FFB733"))
         self.copy_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FFA500"))
 
-        self.driver_backup_btn = tk.Button(button_grid_frame, text="Backup Drivers", bg="#FF5733", fg="white", 
+        self.driver_backup_btn = tk.Button(button_grid_frame, text="Backup Drivers(D)", bg="#FF5733", fg="white", 
                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                          relief="flat", width=button_width, command=self.start_driver_backup_thread)
         self.driver_backup_btn.grid(row=0, column=3, padx=2, pady=2, sticky="ew")
         self.driver_backup_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FF7D5A"))
         self.driver_backup_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FF5733"))
 
-        self.driver_restore_btn = tk.Button(button_grid_frame, text="Restore Drivers", bg="#336BFF", fg="white", 
+        self.driver_restore_btn = tk.Button(button_grid_frame, text="Restore Drivers(sD)", bg="#336BFF", fg="white", 
                                           font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                           relief="flat", width=button_width, command=self.start_driver_restore_thread)
         self.driver_restore_btn.grid(row=0, column=4, padx=2, pady=2, sticky="ew")
@@ -482,21 +809,21 @@ class App(tk.Tk):
         self.driver_restore_btn.bind("<Leave>", lambda e: e.widget.config(bg="#336BFF"))
 
         # Row 2: Utility Operations
-        self.devmgr_btn = tk.Button(button_grid_frame, text="Device Manager", bg="#9A9B0B", fg="white", 
+        self.devmgr_btn = tk.Button(button_grid_frame, text="Device Manager(M)", bg="#9A9B0B", fg="white", 
                                   font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                   relief="flat", width=button_width, command=self.open_device_manager)
         self.devmgr_btn.grid(row=1, column=3, padx=2, pady=2, sticky="ew")
         self.devmgr_btn.bind("<Enter>", lambda e: e.widget.config(bg="#B4B50C"))
         self.devmgr_btn.bind("<Leave>", lambda e: e.widget.config(bg="#9A9B0B"))
 
-        self.file_explorer_btn = tk.Button(button_grid_frame, text="File Explorer", bg="#7D98A1", fg="white", 
+        self.file_explorer_btn = tk.Button(button_grid_frame, text="File Explorer(O)", bg="#7D98A1", fg="white", 
                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                          relief="flat", width=button_width, command=self.open_file_explorer)
         self.file_explorer_btn.grid(row=1, column=4, padx=2, pady=2, sticky="ew")
         self.file_explorer_btn.bind("<Enter>", lambda e: e.widget.config(bg="#92B0BB"))
         self.file_explorer_btn.bind("<Leave>", lambda e: e.widget.config(bg="#7D98A1"))
 
-        self.save_log_btn = tk.Button(button_grid_frame, text="Save Log", bg="#4CAF50", fg="white", 
+        self.save_log_btn = tk.Button(button_grid_frame, text="Save Log(S)", bg="#4CAF50", fg="white", 
                                     font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                     relief="flat", width=button_width, command=self.save_log)
         self.save_log_btn.grid(row=1, column=2, padx=2, pady=2, sticky="ew")
@@ -504,7 +831,7 @@ class App(tk.Tk):
         self.save_log_btn.bind("<Leave>", lambda e: e.widget.config(bg="#4CAF50"))
 
         # Check Space button
-        self.check_space_btn = tk.Button(button_grid_frame, text="Check Space", bg="#8E44AD", fg="white", 
+        self.check_space_btn = tk.Button(button_grid_frame, text="Check Space(K)", bg="#8E44AD", fg="white", 
                                         font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                         relief="flat", width=button_width, command=self.check_space)
         self.check_space_btn.grid(row=1, column=1, padx=2, pady=2, sticky="ew")
@@ -512,7 +839,7 @@ class App(tk.Tk):
         self.check_space_btn.bind("<Leave>", lambda e: e.widget.config(bg="#8E44AD"))
 
         # Exit button removed per request; replaced with Browser Profiles backup button
-        self.browser_profiles_btn = tk.Button(button_grid_frame, text="Backup Browser Profiles", bg="#1E88E5", fg="white",
+        self.browser_profiles_btn = tk.Button(button_grid_frame, text="Backup Browser Profiles(P)", bg="#1E88E5", fg="white",
                                              font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                              relief="flat", width=button_width, command=self.start_browser_profiles_backup_thread)
         self.browser_profiles_btn.grid(row=1, column=0, padx=2, pady=2, sticky="ew")
@@ -520,7 +847,7 @@ class App(tk.Tk):
         self.browser_profiles_btn.bind("<Leave>", lambda e: e.widget.config(bg="#1E88E5"))
 
         # Row 3: Scheduling
-        self.schedule_btn = tk.Button(button_grid_frame, text="Schedule Backup", bg="#2E7D32", fg="white",
+        self.schedule_btn = tk.Button(button_grid_frame, text="Schedule Backup(T)", bg="#2E7D32", fg="white",
                                       font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                       relief="flat", width=button_width, command=self.schedule_backup)
         self.schedule_btn.grid(row=2, column=0, padx=2, pady=2, sticky="ew")
@@ -528,7 +855,7 @@ class App(tk.Tk):
         self.schedule_btn.bind("<Leave>", lambda e: e.widget.config(bg="#2E7D32"))
 
         # Winget export (installed apps)
-        self.winget_export_btn = tk.Button(button_grid_frame, text="Export Apps", bg="#00695C", fg="white",
+        self.winget_export_btn = tk.Button(button_grid_frame, text="Export Apps(W)", bg="#00695C", fg="white",
                                           font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                           relief="flat", width=button_width, command=self.start_winget_export_thread)
         self.winget_export_btn.grid(row=2, column=1, padx=2, pady=2, sticky="ew")
@@ -536,7 +863,7 @@ class App(tk.Tk):
         self.winget_export_btn.bind("<Leave>", lambda e: e.widget.config(bg="#00695C"))
 
         # Filters button
-        self.filters_btn = tk.Button(button_grid_frame, text="Filters", bg="#455A64", fg="white",
+        self.filters_btn = tk.Button(button_grid_frame, text="Filters(F)", bg="#455A64", fg="white",
                                      font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                      relief="flat", width=button_width, command=self.open_filter_manager)
         self.filters_btn.grid(row=0, column=2, padx=2, pady=2, sticky="ew")
@@ -544,14 +871,14 @@ class App(tk.Tk):
         self.filters_btn.bind("<Leave>", lambda e: e.widget.config(bg="#455A64"))
 
         # NAS connect/disconnect
-        self.nas_connect_btn = tk.Button(button_grid_frame, text="Connect NAS", bg="#00796B", fg="white",
+        self.nas_connect_btn = tk.Button(button_grid_frame, text="Connect NAS(N)", bg="#00796B", fg="white",
                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                          relief="flat", width=button_width, command=self.open_nas_connect_dialog)
         self.nas_connect_btn.grid(row=2, column=3, padx=2, pady=2, sticky="ew")
         self.nas_connect_btn.bind("<Enter>", lambda e: e.widget.config(bg="#009688"))
         self.nas_connect_btn.bind("<Leave>", lambda e: e.widget.config(bg="#00796B"))
 
-        self.nas_disconnect_btn = tk.Button(button_grid_frame, text="Disconnect NAS", bg="#B71C1C", fg="white",
+        self.nas_disconnect_btn = tk.Button(button_grid_frame, text="Disconnect NAS(sN)", bg="#B71C1C", fg="white",
                                             font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                             relief="flat", width=button_width, command=self.open_nas_disconnect_dialog)
         self.nas_disconnect_btn.grid(row=2, column=4, padx=2, pady=2, sticky="ew")
@@ -3395,49 +3722,78 @@ class App(tk.Tk):
         backup_thread.start()
 
     def run_driver_backup(self, folder_selected):
-        """Executes the actual driver backup logic."""
+        """드라이버 백업 실행 (커스텀 폴더명 적용)"""
         try:
-            cmd = f'pnputil.exe /export-driver * "{folder_selected}"'
-            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, encoding='cp949')
+            # 시스템 정보 가져오기
+            system_name = get_system_info()
+            timestamp = datetime.now().strftime("%Y-%m-%d")
+            
+            # 커스텀 백업 폴더명 생성
+            backup_folder_name = f"{system_name}_drivers_{timestamp}"
+            backup_full_path = os.path.join(folder_selected, backup_folder_name)
+            
+            # 백업 폴더 생성
+            os.makedirs(backup_full_path, exist_ok=True)
+            
+            self.write_detailed_log(f"Driver backup folder created: {backup_full_path}")
+            self.message_queue.put(('log', f"Backup folder: {backup_folder_name}"))
+            
+            # pnputil 명령어 실행 (백업 폴더로 직접 출력)
+            cmd = f'pnputil.exe /export-driver * "{backup_full_path}"'
+            self.write_detailed_log(f"Executing command: {cmd}")
+            
+            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, 
+                                     stderr=subprocess.PIPE, universal_newlines=True, encoding='cp949')
 
+            # 실시간 출력 로깅
             while process.poll() is None:
                 line = process.stdout.readline()
                 if line:
                     self.write_detailed_log(line.strip())
-            self.write_detailed_log("Driver backup successfully completed.")
-            self.message_queue.put(('log', "Driver backup completed."))
-            self.message_queue.put(('open_folder', folder_selected))
+            
+            # 남은 출력 처리
+            remaining_output, error_output = process.communicate()
+            if remaining_output:
+                for line in remaining_output.splitlines():
+                    if line.strip():
+                        self.write_detailed_log(line.strip())
+            
+            if error_output:
+                self.write_detailed_log(f"STDERR: {error_output}")
+                
+            if process.returncode == 0:
+                self.write_detailed_log("Driver backup successfully completed.")
+                self.message_queue.put(('log', f"Driver backup completed: {backup_folder_name}"))
+                self.message_queue.put(('open_folder', backup_full_path))
+            else:
+                self.write_detailed_log(f"Driver backup completed with return code: {process.returncode}")
+                self.message_queue.put(('log', f"Driver backup finished (check log for details)"))
+                
         except Exception as e:
             self.write_detailed_log(f"Driver backup error: {e}")
             self.message_queue.put(('show_error', f"An error occurred during driver backup: {e}"))
-        # finally:
-        #     self.close_log_file()
-        #     self.message_queue.put(('stop_progress', None))
-        #     self.message_queue.put(('update_status', "Driver backup complete!"))
-        #     self.message_queue.put(('enable_buttons', None))
         finally:
-            # 항상 실행되는 정리 작업
+            # 정리 작업
             try:
                 self.close_log_file()
             except Exception:
                 pass
             
             try:
-                # 진행률을 100%로 설정
                 max_val = self.progress_bar['maximum'] if self.progress_bar['maximum'] > 0 else 1
                 self.message_queue.put(('update_progress', max_val))
             except Exception:
                 pass
             
-            # 버튼 활성화
             self.message_queue.put(('enable_buttons', None))
-            
-            # 최종 상태 메시지
-            if hasattr(self, '_backup_completed') and self._backup_completed:
-                self.message_queue.put(('update_status', "Driver Backup complete!"))
-            else:
-                self.message_queue.put(('update_status', "Operation finished"))
+            self.message_queue.put(('update_status', "Driver backup complete!"))
 
+    # 결과 폴더명 예시:
+    # - "ASUS_TUF_Gaming_B450M-PRO_S_drivers_2025-01-15"
+    # - "OptiPlex_7090_drivers_2025-01-15"
+    # - "HP_Pavilion_Desktop_drivers_2025-01-15"
+    # - "Unknown_Desktop_drivers_2025-01-15"
+    
     def start_driver_restore_thread(self):
         """Starts the driver restore process in a separate thread."""
         folder_selected = filedialog.askdirectory(title="Select Driver Restore Folder")
