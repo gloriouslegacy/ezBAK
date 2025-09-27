@@ -422,9 +422,9 @@ ezBAK Keyboard Shortcuts
 │           General                       │
 ├─────────────────────────────────────────┤
 │ F1              help                    │
-│ F5              Refresh User List       │
+│ F5              (Not Working) Refresh User List       │
 │ Ctrl + 1~9      (Not Working) Quick Select User │
-│ Escape          Cancel Current Operation│
+│ Escape          (Not Working) Cancel Current Operation│
 │ Ctrl + Q        Exit Program            │
 └─────────────────────────────────────────┘
 
@@ -435,7 +435,7 @@ Tips :  Shortcuts are not case-sensitive.
         help_dialog = tk.Toplevel(self.app)
         help_dialog.title("Help - Keyboard Shortcuts")
         help_dialog.configure(bg="#2D3250")
-        help_dialog.geometry("388x748")
+        help_dialog.geometry("449x748")
         help_dialog.transient(self.app)
         help_dialog.grab_set()
         
@@ -773,14 +773,14 @@ class App(tk.Tk):
         button_pady = 3
 
         # Row 1: Main Data Operations
-        self.backup_btn = tk.Button(button_grid_frame, text="Backup User Data(B)", bg="#FF5733", fg="white", 
+        self.backup_btn = tk.Button(button_grid_frame, text="Backup User Data", bg="#FF5733", fg="white", 
                                   font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                   relief="flat", width=button_width, command=self.start_backup_thread)
         self.backup_btn.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
         self.backup_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FF7D5A"))
         self.backup_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FF5733"))
 
-        self.restore_btn = tk.Button(button_grid_frame, text="Restore User Data(R)", bg="#336BFF", fg="white", 
+        self.restore_btn = tk.Button(button_grid_frame, text="Restore User Data", bg="#336BFF", fg="white", 
                                    font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                    relief="flat", width=button_width, command=self.start_restore_thread)
         self.restore_btn.grid(row=0, column=1, padx=2, pady=2, sticky="ew")
@@ -794,14 +794,14 @@ class App(tk.Tk):
         self.copy_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FFB733"))
         self.copy_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FFA500"))
 
-        self.driver_backup_btn = tk.Button(button_grid_frame, text="Backup Drivers(D)", bg="#FF5733", fg="white", 
+        self.driver_backup_btn = tk.Button(button_grid_frame, text="Backup Drivers", bg="#FF5733", fg="white", 
                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                          relief="flat", width=button_width, command=self.start_driver_backup_thread)
         self.driver_backup_btn.grid(row=0, column=3, padx=2, pady=2, sticky="ew")
         self.driver_backup_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FF7D5A"))
         self.driver_backup_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FF5733"))
 
-        self.driver_restore_btn = tk.Button(button_grid_frame, text="Restore Drivers(sD)", bg="#336BFF", fg="white", 
+        self.driver_restore_btn = tk.Button(button_grid_frame, text="Restore Drivers)", bg="#336BFF", fg="white", 
                                           font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                           relief="flat", width=button_width, command=self.start_driver_restore_thread)
         self.driver_restore_btn.grid(row=0, column=4, padx=2, pady=2, sticky="ew")
@@ -809,21 +809,21 @@ class App(tk.Tk):
         self.driver_restore_btn.bind("<Leave>", lambda e: e.widget.config(bg="#336BFF"))
 
         # Row 2: Utility Operations
-        self.devmgr_btn = tk.Button(button_grid_frame, text="Device Manager(M)", bg="#9A9B0B", fg="white", 
+        self.devmgr_btn = tk.Button(button_grid_frame, text="Device Manager", bg="#9A9B0B", fg="white", 
                                   font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                   relief="flat", width=button_width, command=self.open_device_manager)
         self.devmgr_btn.grid(row=1, column=3, padx=2, pady=2, sticky="ew")
         self.devmgr_btn.bind("<Enter>", lambda e: e.widget.config(bg="#B4B50C"))
         self.devmgr_btn.bind("<Leave>", lambda e: e.widget.config(bg="#9A9B0B"))
 
-        self.file_explorer_btn = tk.Button(button_grid_frame, text="File Explorer(O)", bg="#7D98A1", fg="white", 
+        self.file_explorer_btn = tk.Button(button_grid_frame, text="File Explorer", bg="#7D98A1", fg="white", 
                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                          relief="flat", width=button_width, command=self.open_file_explorer)
         self.file_explorer_btn.grid(row=1, column=4, padx=2, pady=2, sticky="ew")
         self.file_explorer_btn.bind("<Enter>", lambda e: e.widget.config(bg="#92B0BB"))
         self.file_explorer_btn.bind("<Leave>", lambda e: e.widget.config(bg="#7D98A1"))
 
-        self.save_log_btn = tk.Button(button_grid_frame, text="Save Log(S)", bg="#4CAF50", fg="white", 
+        self.save_log_btn = tk.Button(button_grid_frame, text="Save Log", bg="#4CAF50", fg="white", 
                                     font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                     relief="flat", width=button_width, command=self.save_log)
         self.save_log_btn.grid(row=1, column=2, padx=2, pady=2, sticky="ew")
@@ -831,7 +831,7 @@ class App(tk.Tk):
         self.save_log_btn.bind("<Leave>", lambda e: e.widget.config(bg="#4CAF50"))
 
         # Check Space button
-        self.check_space_btn = tk.Button(button_grid_frame, text="Check Space(K)", bg="#8E44AD", fg="white", 
+        self.check_space_btn = tk.Button(button_grid_frame, text="Check Space", bg="#8E44AD", fg="white", 
                                         font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                         relief="flat", width=button_width, command=self.check_space)
         self.check_space_btn.grid(row=1, column=1, padx=2, pady=2, sticky="ew")
@@ -839,7 +839,7 @@ class App(tk.Tk):
         self.check_space_btn.bind("<Leave>", lambda e: e.widget.config(bg="#8E44AD"))
 
         # Exit button removed per request; replaced with Browser Profiles backup button
-        self.browser_profiles_btn = tk.Button(button_grid_frame, text="Backup Browser Profiles(P)", bg="#1E88E5", fg="white",
+        self.browser_profiles_btn = tk.Button(button_grid_frame, text="Backup Browser Profiles", bg="#1E88E5", fg="white",
                                              font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                              relief="flat", width=button_width, command=self.start_browser_profiles_backup_thread)
         self.browser_profiles_btn.grid(row=1, column=0, padx=2, pady=2, sticky="ew")
@@ -847,7 +847,7 @@ class App(tk.Tk):
         self.browser_profiles_btn.bind("<Leave>", lambda e: e.widget.config(bg="#1E88E5"))
 
         # Row 3: Scheduling
-        self.schedule_btn = tk.Button(button_grid_frame, text="Schedule Backup(T)", bg="#2E7D32", fg="white",
+        self.schedule_btn = tk.Button(button_grid_frame, text="Schedule Backup", bg="#2E7D32", fg="white",
                                       font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                       relief="flat", width=button_width, command=self.schedule_backup)
         self.schedule_btn.grid(row=2, column=0, padx=2, pady=2, sticky="ew")
@@ -855,7 +855,7 @@ class App(tk.Tk):
         self.schedule_btn.bind("<Leave>", lambda e: e.widget.config(bg="#2E7D32"))
 
         # Winget export (installed apps)
-        self.winget_export_btn = tk.Button(button_grid_frame, text="Export Apps(W)", bg="#00695C", fg="white",
+        self.winget_export_btn = tk.Button(button_grid_frame, text="Export Apps", bg="#00695C", fg="white",
                                           font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                           relief="flat", width=button_width, command=self.start_winget_export_thread)
         self.winget_export_btn.grid(row=2, column=1, padx=2, pady=2, sticky="ew")
@@ -863,7 +863,7 @@ class App(tk.Tk):
         self.winget_export_btn.bind("<Leave>", lambda e: e.widget.config(bg="#00695C"))
 
         # Filters button
-        self.filters_btn = tk.Button(button_grid_frame, text="Filters(F)", bg="#455A64", fg="white",
+        self.filters_btn = tk.Button(button_grid_frame, text="Filters", bg="#455A64", fg="white",
                                      font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                      relief="flat", width=button_width, command=self.open_filter_manager)
         self.filters_btn.grid(row=0, column=2, padx=2, pady=2, sticky="ew")
@@ -871,14 +871,14 @@ class App(tk.Tk):
         self.filters_btn.bind("<Leave>", lambda e: e.widget.config(bg="#455A64"))
 
         # NAS connect/disconnect
-        self.nas_connect_btn = tk.Button(button_grid_frame, text="Connect NAS(N)", bg="#00796B", fg="white",
+        self.nas_connect_btn = tk.Button(button_grid_frame, text="Connect NAS", bg="#00796B", fg="white",
                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                          relief="flat", width=button_width, command=self.open_nas_connect_dialog)
         self.nas_connect_btn.grid(row=2, column=3, padx=2, pady=2, sticky="ew")
         self.nas_connect_btn.bind("<Enter>", lambda e: e.widget.config(bg="#009688"))
         self.nas_connect_btn.bind("<Leave>", lambda e: e.widget.config(bg="#00796B"))
 
-        self.nas_disconnect_btn = tk.Button(button_grid_frame, text="Disconnect NAS(sN)", bg="#B71C1C", fg="white",
+        self.nas_disconnect_btn = tk.Button(button_grid_frame, text="Disconnect NAS", bg="#B71C1C", fg="white",
                                             font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                             relief="flat", width=button_width, command=self.open_nas_disconnect_dialog)
         self.nas_disconnect_btn.grid(row=2, column=4, padx=2, pady=2, sticky="ew")
