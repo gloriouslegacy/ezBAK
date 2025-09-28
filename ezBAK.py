@@ -6,7 +6,7 @@ import shutil
 import threading
 import queue
 from datetime import datetime, timedelta
-
+import argparse
 import sys
 import ctypes
 import subprocess
@@ -281,10 +281,9 @@ class HeadlessBackupRunner:
 
     def run_backup(self):
         """헤드리스 모드 백업 실행"""
-        from datetime import datetime
         try:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
+            # timestamp = datetime.now().strftime("%Y-%m-%d")
             backup_path, log_path = core_run_backup(
                 self.user,
                 self.dest,
@@ -322,6 +321,23 @@ class HeadlessBackupRunner:
                 self.message_queue.put(('update_status', "Backup complete!"))
             else:
                 self.message_queue.put(('update_status', "Operation finished"))
+
+class DialogShortcuts:
+    """다이얼로그용 공통 단축키 기능"""
+    
+    def setup_dialog_shortcuts(self):
+        """다이얼로그에 기본 단축키 설정"""
+        # 기본 다이얼로그 단축키들
+        self.bind('<Escape>', lambda e: self.on_cancel() if hasattr(self, 'on_cancel') else self.destroy())
+        self.bind('<Return>', lambda e: self.on_ok() if hasattr(self, 'on_ok') else None)
+        self.bind('<Alt-F4>', lambda e: self.destroy())
+        
+        # 포커스 설정 (키보드 이벤트를 받기 위해)
+        self.focus_set()
+        
+    def add_shortcut_text(self, text, shortcut):
+        """텍스트에 단축키 표기 추가"""
+        return f"{text} ({shortcut})"
 
 class KeyboardShortcuts:
     """ezBAK용 키보드 단축키 관리 클래스"""
@@ -787,7 +803,7 @@ class App(tk.Tk):
         self.restore_btn.bind("<Enter>", lambda e: e.widget.config(bg="#5A8DFF"))
         self.restore_btn.bind("<Leave>", lambda e: e.widget.config(bg="#336BFF"))
 
-        self.copy_btn = tk.Button(button_grid_frame, text="Copy Data(C)", bg="#FFA500", fg="white", 
+        self.copy_btn = tk.Button(button_grid_frame, text="Copy Data", bg="#FFA500", fg="white", 
                                 font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                 relief="flat", width=button_width, command=self.copy_files)
         self.copy_btn.grid(row=2, column=2, padx=2, pady=2, sticky="ew")
@@ -801,7 +817,7 @@ class App(tk.Tk):
         self.driver_backup_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FF7D5A"))
         self.driver_backup_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FF5733"))
 
-        self.driver_restore_btn = tk.Button(button_grid_frame, text="Restore Drivers)", bg="#336BFF", fg="white", 
+        self.driver_restore_btn = tk.Button(button_grid_frame, text="Restore Drivers", bg="#336BFF", fg="white", 
                                           font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                           relief="flat", width=button_width, command=self.start_driver_restore_thread)
         self.driver_restore_btn.grid(row=0, column=4, padx=2, pady=2, sticky="ew")
@@ -2117,47 +2133,69 @@ class App(tk.Tk):
         except Exception as e:
             self.write_detailed_log(f"- Edge bookmark restore error: {e}")
 
-    # --- Copy Files & Folders Functions (New) ---
     def copy_files(self):
         """Prompts for source and destination using a checkbox tree, then starts the copy process."""
-        self.message_queue.put(('log', "Copy process initiated."))
-
-        # 1) Open a checkbox tree dialog to select files/folders
         try:
-            dlg = SelectSourcesDialog(self, is_hidden_fn=self.is_hidden)
-            self.wait_window(dlg)
-            source_paths_list = dlg.selected_paths if getattr(dlg, 'selected_paths', None) else []
+            print("DEBUG: copy_files called")
+            self.message_queue.put(('log', "Copy process initiated."))
+
+            # 1) Open a checkbox tree dialog to select files/folders
+            try:
+                print("DEBUG: Creating SelectSourcesDialog...")
+                dlg = SelectSourcesDialog(self, is_hidden_fn=self.is_hidden)
+                print("DEBUG: SelectSourcesDialog created, waiting for window...")
+                self.wait_window(dlg)
+                print("DEBUG: Dialog closed")
+                
+                source_paths_list = dlg.selected_paths if getattr(dlg, 'selected_paths', None) else []
+                print(f"DEBUG: Got {len(source_paths_list)} selected paths")
+                
+            except Exception as e:
+                print(f"DEBUG: Source selection failed: {e}")
+                import traceback
+                print(f"DEBUG: Traceback: {traceback.format_exc()}")
+                self.message_queue.put(('log', f"Source selection failed: {e}"))
+                return
+
+            if not source_paths_list:
+                print("DEBUG: No sources selected")
+                self.message_queue.put(('log', "Source selection cancelled."))
+                return
+
+            print(f"DEBUG: Selected sources: {source_paths_list}")
+
+            # 2) Ask for destination folder
+            print("DEBUG: Asking for destination folder...")
+            destination_dir = filedialog.askdirectory(title="Select Destination Folder")
+            print(f"DEBUG: Destination selected: {destination_dir}")
+            
+            if not destination_dir:
+                print("DEBUG: No destination selected")
+                self.message_queue.put(('log', "Destination selection cancelled."))
+                return
+
+            # Copy Data용 로그명: 'copy_년월일_시분초'
+            timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+            # log_prefix = f"copy_data{timestamp_str}"
+            log_prefix = f"copy_data"
+            # open log file in destination folder
+            self.open_log_file(destination_dir, log_prefix)
+
+            self.message_queue.put(('log', "Copy process started."))
+            self.set_buttons_state("disabled")
+            self.progress_bar['value'] = 0
+            self.progress_bar['mode'] = "determinate"
+            self.message_queue.put(('update_status', "Starting copy process..."))
+
+            # Start the copy thread
+            copy_thread = threading.Thread(target=self.run_copy_thread, args=(source_paths_list, destination_dir), daemon=True)
+            copy_thread.start()
+            
         except Exception as e:
-            self.message_queue.put(('log', f"Source selection failed: {e}"))
-            return
-
-        if not source_paths_list:
-            self.message_queue.put(('log', "Source selection cancelled."))
-            return
-
-        # 2) Ask for destination folder
-        destination_dir = filedialog.askdirectory(title="Select Destination Folder")
-        if not destination_dir:
-            self.message_queue.put(('log', "Destination selection cancelled."))
-            return
-
-        # Copy Data용 로그명: 'copy_년월일_시분초'
-        from datetime import datetime
-        timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-        log_prefix = f"copy_{timestamp_str}"
-        
-        # open log file in destination folder
-        self.open_log_file(destination_dir, log_prefix)
-
-        self.message_queue.put(('log', "Copy process started."))
-        self.set_buttons_state("disabled")
-        self.progress_bar['value'] = 0
-        self.progress_bar['mode'] = "determinate"
-        self.message_queue.put(('update_status', "Starting copy process..."))
-
-        # Start the copy thread
-        copy_thread = threading.Thread(target=self.run_copy_thread, args=(source_paths_list, destination_dir), daemon=True)
-        copy_thread.start()
+            print(f"DEBUG: copy_files failed: {e}")
+            import traceback
+            print(f"DEBUG: Traceback: {traceback.format_exc()}")
+            self.message_queue.put(('show_error', f"Copy process failed: {e}"))
 
     def format_bytes(self, size):
         try:
@@ -2309,10 +2347,6 @@ class App(tk.Tk):
         """
         스케줄된 작업 생성 (관리자 권한으로 실행되도록 설정)
         """
-        import sys
-        import subprocess
-        import os
-
         try:
             # 시간 형식 검증 및 정규화
             from datetime import datetime
@@ -2516,90 +2550,6 @@ class App(tk.Tk):
             return True, time_obj.strftime("%H:%M")
         except ValueError:
             return False, "Invalid time format. Please use HH:MM (e.g., 14:30 for 2:30 PM)"
-    
-    # def create_scheduled_task(self, task_name, schedule, time_str, user, dest, include_hidden=False, include_system=False, retention_count=2, log_retention_days=30):
-    #     """
-    #     스케줄된 작업 생성 (retention 설정값 포함)
-    #     """
-    #     import sys
-    #     import subprocess
-
-    #     # 스케줄 타입 매핑
-    #     if schedule.lower() == "daily":
-    #         sc_type = "DAILY"
-    #     elif schedule.lower() == "weekly":
-    #         sc_type = "WEEKLY"
-    #     elif schedule.lower() == "monthly":
-    #         sc_type = "MONTHLY"
-    #     else:
-    #         raise ValueError(f"Unsupported schedule type: {schedule}")
-
-    #     # 실행할 명령어 구성 (retention 옵션 추가)
-    #     base_cmd = (
-    #         f'"{sys.executable}" "{__file__}" '
-    #         f'--user "{user}" '
-    #         f'--dest "{dest}" '
-    #         f'--retention {retention_count} '
-    #         f'--log-retention {log_retention_days}'
-    #     )
-
-    #     if include_hidden:
-    #         base_cmd += " --include-hidden"
-    #     if include_system:
-    #         base_cmd += " --include-system"
-            
-    #     cmd = [
-    #         "schtasks", "/create",
-    #         "/tn", task_name,
-    #         "/sc", sc_type,
-    #         "/tr", base_cmd,
-    #         "/st", time_str,
-    #         "/f"
-    #     ]        
-
-    #     # 실행
-    #     try:
-    #         print(f"DEBUG: Running command: {' '.join(cmd)}")
-    #         result = subprocess.run(cmd, check=True, shell=False, capture_output=True, text=True)
-    #         print(f"DEBUG: Command successful. Return code: {result.returncode}")
-    #         print(f"DEBUG: stdout: {result.stdout}")
-    #         if result.stderr:
-    #             print(f"DEBUG: stderr: {result.stderr}")
-                
-    #         print(f"[Scheduler] Created task '{task_name}' with schedule={schedule}, "
-    #               f"time={time_str}, retention={retention_count}, log_retention_days={log_retention_days}")
-            
-    #         try:
-    #             messagebox.showinfo(
-    #                 "Schedule Created",
-    #                 f"Task '{task_name}' created successfully.\n"
-    #                 f"Schedule: {schedule} at {time_str}\n"
-    #                 f"Retention: {retention_count} backups, {log_retention_days} days logs"
-    #             )
-    #         except Exception as mb_error:
-    #             print(f"DEBUG: messagebox.showinfo failed: {mb_error}")
-                
-    #     except subprocess.CalledProcessError as e:
-    #         error_msg = f"Failed to create scheduled task '{task_name}'"
-    #         print(f"DEBUG: subprocess.CalledProcessError: {e}")
-    #         print(f"DEBUG: Return code: {e.returncode}")
-    #         print(f"DEBUG: stdout: {e.stdout}")
-    #         print(f"DEBUG: stderr: {e.stderr}")
-            
-    #         if e.stderr:
-    #             error_msg += f"\nError: {e.stderr}"
-    #         elif e.stdout:
-    #             error_msg += f"\nOutput: {e.stdout}"
-                
-    #         print(f"[Scheduler] Failed to create task '{task_name}': {e}")
-    #         raise RuntimeError(error_msg) from e
-            
-    #     except Exception as e:
-    #         error_msg = f"Unexpected error creating scheduled task: {e}"
-    #         print(f"DEBUG: Unexpected exception: {type(e).__name__}: {e}")
-    #         print(f"[Scheduler] Unexpected error creating task '{task_name}': {e}")
-    #         raise RuntimeError(error_msg) from e
-
 
     def delete_scheduled_task(self, task_name):
         if not task_name:
@@ -3353,79 +3303,6 @@ class App(tk.Tk):
             self.message_queue.put(('stop_progress', None))
             self.message_queue.put(('update_status', "Winget export complete!"))
             self.message_queue.put(('enable_buttons', None))
-
-    # def run_winget_export(self, output_path):
-    #     """Runs winget export to create a JSON of installed apps. On failure, falls back to 'winget list' text."""
-    #     folder = os.path.dirname(output_path)
-    #     try:
-    #         # Log winget version for diagnostics
-    #         try:
-    #             ver = subprocess.run(['winget', '--version'], shell=False, capture_output=True, text=True, encoding='utf-8', errors='ignore')
-    #             self.write_detailed_log(f"winget --version -> rc={ver.returncode}, out={ver.stdout.strip() or ver.stderr.strip()}")
-    #         except Exception:
-    #             pass
-
-    #         cmd = ['winget', 'export', '--output', output_path, '--include-versions',
-    #                '--accept-source-agreements', '--accept-package-agreements', '--disable-interactivity']
-    #         process = subprocess.Popen(cmd, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-    #                                    universal_newlines=True, encoding='utf-8', errors='ignore')
-
-    #         # Stream output to detailed log
-    #         while True:
-    #             line = process.stdout.readline()
-    #             if not line:
-    #                 if process.poll() is not None:
-    #                     break
-    #                 time.sleep(0.05)
-    #                 continue
-    #             self.write_detailed_log(line.strip())
-
-    #         err = process.stderr.read()
-    #         if err:
-    #             self.write_detailed_log(err.strip())
-
-    #         rc = process.returncode
-    #         if rc != 0:
-    #             # Attempt fallback using 'winget list'
-    #             self.write_detailed_log(f"winget export failed with code {rc}. Attempting fallback: winget list.")
-    #             fb_name = f"winget_list_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-    #             fb_path = os.path.join(folder, fb_name)
-    #             try:
-    #                 p2 = subprocess.run(['winget', 'list', '--accept-source-agreements', '--disable-interactivity'],
-    #                                     shell=False, capture_output=True, text=True, encoding='utf-8', errors='ignore')
-    #                 if p2.returncode == 0:
-    #                     try:
-    #                         with open(fb_path, 'w', encoding='utf-8', errors='ignore') as f:
-    #                             f.write(p2.stdout)
-    #                         self.write_detailed_log(f"Saved fallback list to {fb_path}")
-    #                         self.message_queue.put(('log', f"winget export failed (code {rc}). Saved fallback (winget list) to {fb_path}"))
-    #                         self.message_queue.put(('open_folder', folder))
-    #                         return
-    #                     except Exception as fe:
-    #                         self.write_detailed_log(f"Failed writing fallback file: {fe}")
-    #                 else:
-    #                     self.write_detailed_log(f"winget list fallback failed with code {p2.returncode}. stderr={p2.stderr.strip()}")
-    #             except Exception as e2:
-    #                 self.write_detailed_log(f"winget list fallback error: {e2}")
-    #             # If reached here, both export and fallback failed
-    #             raise RuntimeError(f"winget export failed with code {rc}")
-
-    #         self.write_detailed_log(f"Winget export completed: {output_path}")
-    #         self.message_queue.put(('log', f"Winget export completed: {output_path}"))
-    #         self.message_queue.put(('open_folder', os.path.dirname(output_path)))
-    #     except FileNotFoundError:
-    #         self.write_detailed_log("winget not found on system.")
-    #         self.message_queue.put(('show_error', "winget is not available. Install 'App Installer' from Microsoft Store."))
-    #     except Exception as e:
-    #         self.write_detailed_log(f"Winget export error: {e}")
-    #         # Add friendly guidance for common causes
-    #         self.message_queue.put(('log', "Winget export failed. Possible causes: old winget version, disabled export feature (older versions), or corrupted sources. Try:\n- Update 'App Installer' from Microsoft Store\n- winget source reset --force\n- winget settings and enable export (older versions)\n- Re-run Export Apps"))
-    #         self.message_queue.put(('show_error', f"An error occurred during winget export: {e}"))
-    #     finally:
-    #         self.close_log_file()
-    #         self.message_queue.put(('stop_progress', None))
-    #         self.message_queue.put(('update_status', "Winget export complete!"))
-    #         self.message_queue.put(('enable_buttons', None))
             
     def run_copy_thread(self, source_paths, destination_dir):
         """Performs the actual file and folder copying in a separate thread (byte progress)."""
@@ -3434,9 +3311,9 @@ class App(tk.Tk):
             # 타임스탬프 생성
             from datetime import datetime
             timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-            
-            # Copy Data용 폴더명: 'copy_년월일_시분초'
-            copy_folder_name = f"copy_{timestamp_str}"
+
+            # Copy Data용 폴더명: 'copy_data_년월일_시분초'
+            copy_folder_name = f"copy_data_{timestamp_str}"
             final_destination = os.path.join(destination_dir, copy_folder_name)
             
             # 폴더 생성 (기존 폴더 삭제하지 않음)
@@ -3951,7 +3828,7 @@ class App(tk.Tk):
         except Exception:
             pass
 
-class ScheduleBackupDialog(tk.Toplevel):
+class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
     def __init__(self, parent):
         print("DEBUG: ScheduleBackupDialog.__init__ started")
         
@@ -3962,7 +3839,7 @@ class ScheduleBackupDialog(tk.Toplevel):
         self.parent = parent
         
         try:
-            super().__init__(parent)
+            tk.Toplevel.__init__(self, parent)  # 명시적으로 Toplevel 초기화
             print("DEBUG: Toplevel initialized")
             
             self.title("Schedule Backup")
@@ -3980,14 +3857,14 @@ class ScheduleBackupDialog(tk.Toplevel):
                 pass
                 
             # 창 크기 및 위치 설정
-            w, h = 500, 290
+            w, h = 546, 290
             self.geometry(f"{w}x{h}")
             
             try:
                 self.update_idletasks()
                 parent_x = parent.winfo_rootx()
                 parent_y = parent.winfo_rooty()
-                x = parent_x + 50  # 500은 너무 멀리 이동
+                x = parent_x + 50
                 y = parent_y + 50
                 self.geometry(f"{w}x{h}+{x}+{y}")
                 print(f"DEBUG: Window positioned at {x},{y}")
@@ -4009,17 +3886,37 @@ class ScheduleBackupDialog(tk.Toplevel):
             self._create_widgets()
             print("DEBUG: UI widgets created successfully")
             
+            # 단축키 설정 (UI 생성 후)
+            self._setup_schedule_shortcuts()
+            print("DEBUG: Shortcuts setup completed")
+            
         except Exception as init_error:
             print(f"DEBUG: ScheduleBackupDialog init failed: {init_error}")
             self.action = 'error'
-            # 초기화 실패시 안전하게 정리
             try:
                 self.destroy()
             except Exception:
                 pass
             raise init_error
+
+    def _setup_schedule_shortcuts(self):
+        """스케줄 다이얼로그 전용 단축키 설정"""
+        # 기본 다이얼로그 단축키 적용
+        self.setup_dialog_shortcuts()
+        
+        # 스케줄 다이얼로그 전용 단축키들
+        self.bind('<Control-c>', lambda e: self.on_create())
+        self.bind('<Control-d>', lambda e: self.on_delete())
+        self.bind('<Control-b>', lambda e: self._browse_destination())
+        self.bind('<F1>', lambda e: self._show_schedule_help())
+        
+        # 숫자키로 스케줄 타입 선택
+        self.bind('<Alt-1>', lambda e: self._set_schedule("Daily"))
+        self.bind('<Alt-2>', lambda e: self._set_schedule("Weekly"))
+        self.bind('<Alt-3>', lambda e: self._set_schedule("Monthly"))
+
     def _create_widgets(self):
-        """UI 위젯들을 생성"""
+        """UI 위젯들을 생성 (단축키 표기 포함)"""
         try:
             # 사용자 이름 안전하게 가져오기
             user_name = "Unknown"
@@ -4039,7 +3936,7 @@ class ScheduleBackupDialog(tk.Toplevel):
                 row=row, column=1, columnspan=2, sticky="w", padx=10, pady=5
             )
 
-            # Destination Folder
+            # Destination Folder (단축키 표기 추가)
             row += 1
             tk.Label(self, text="Destination Folder", bg="#2D3250", fg="white").grid(
                 row=row, column=0, sticky="w", padx=10, pady=5
@@ -4049,20 +3946,22 @@ class ScheduleBackupDialog(tk.Toplevel):
                 row=row, column=1, sticky="w", padx=10, pady=5
             )
             tk.Button(
-                self, text="Browse...", 
+                self, text=self.add_shortcut_text("Browse...", "Ctrl+B"), 
                 command=self._browse_destination
             ).grid(row=row, column=2, padx=5, pady=5, sticky="w")
 
-            # Schedule
+            # Schedule (단축키 표기 추가)
             row += 1
-            tk.Label(self, text="Schedule", bg="#2D3250", fg="white").grid(
+            tk.Label(self, text=self.add_shortcut_text("Schedule", "Alt+1/2/3"), 
+                    bg="#2D3250", fg="white").grid(
                 row=row, column=0, sticky="w", padx=10, pady=5
             )
             self.schedule_var = tk.StringVar(value="Daily")
-            ttk.Combobox(
+            schedule_combo = ttk.Combobox(
                 self, textvariable=self.schedule_var,
                 values=["Daily", "Weekly", "Monthly"], state="readonly", width=15
-            ).grid(row=row, column=1, sticky="w", padx=10, pady=5)
+            )
+            schedule_combo.grid(row=row, column=1, sticky="w", padx=10, pady=5)
 
             # Time
             row += 1
@@ -4080,11 +3979,9 @@ class ScheduleBackupDialog(tk.Toplevel):
                 row=row, column=0, sticky="w", padx=10, pady=5
             )
             
-            # 체크박스들을 담을 프레임 생성
             attr_frame = tk.Frame(self, bg="#2D3250")
             attr_frame.grid(row=row, column=1, columnspan=2, sticky="w", padx=10, pady=5)
             
-            # Include Hidden과 Include System을 한 줄에 배치
             self.hidden_var = tk.BooleanVar(value=False)
             self.system_var = tk.BooleanVar(value=False)
             
@@ -4114,22 +4011,87 @@ class ScheduleBackupDialog(tk.Toplevel):
                 row=row, column=1, sticky="w", padx=10, pady=5
             )
 
-            # 버튼 영역
+            # 버튼 영역 (단축키 표기 추가)
             row += 1
             btn_frame = tk.Frame(self, bg="#2D3250")
             btn_frame.grid(row=row, column=0, columnspan=3, sticky="e", padx=10, pady=15)
 
-            tk.Button(btn_frame, text="Create", command=self.on_create,
-                      bg="#1E88E5", fg="white", relief="flat", width=12).pack(side="right", padx=5)
-            tk.Button(btn_frame, text="Delete", command=self.on_delete,
-                      bg="#FF5733", fg="white", relief="flat", width=12).pack(side="right", padx=5)
-            tk.Button(btn_frame, text="Close", command=self.on_close,
-                      bg="#607D8B", fg="white", relief="flat", width=12).pack(side="right", padx=5)
+            tk.Button(btn_frame, text=self.add_shortcut_text("Create", "Ctrl+C"), 
+                      command=self.on_create,
+                      bg="#1E88E5", fg="white", relief="flat", width=15).pack(side="right", padx=5)
+            tk.Button(btn_frame, text=self.add_shortcut_text("Delete", "Ctrl+D"), 
+                      command=self.on_delete,
+                      bg="#FF5733", fg="white", relief="flat", width=15).pack(side="right", padx=5)
+            tk.Button(btn_frame, text=self.add_shortcut_text("Close", "Esc"), 
+                      command=self.on_close,
+                      bg="#607D8B", fg="white", relief="flat", width=15).pack(side="right", padx=5)
                       
         except Exception as widget_error:
             print(f"DEBUG: Widget creation failed: {widget_error}")
-            raise widget_error    
-    
+            raise widget_error
+
+    def _set_schedule(self, schedule_type):
+        """단축키로 스케줄 타입 설정"""
+        try:
+            self.schedule_var.set(schedule_type)
+            print(f"DEBUG: Schedule set to {schedule_type}")
+        except Exception as e:
+            print(f"DEBUG: Failed to set schedule: {e}")
+
+    def _show_schedule_help(self):
+        """F1키로 스케줄 도움말 표시"""
+        help_text = """
+Schedule Backup Shortcuts:
+
+Ctrl + C     Create Task
+Ctrl + D     Delete Task  
+Ctrl + B     Browse Destination
+Esc          Close Dialog
+Enter        Create Task
+F1           Show This Help
+
+Alt + 1      Set to Daily
+Alt + 2      Set to Weekly  
+Alt + 3      Set to Monthly
+
+Navigation:
+Tab          Move to Next Field
+Shift + Tab  Move to Previous Field
+        """
+        
+        help_dlg = tk.Toplevel(self)
+        help_dlg.title("Schedule Shortcuts Help")
+        help_dlg.configure(bg="#2D3250")
+        help_dlg.geometry("350x300")
+        help_dlg.transient(self)
+        try:
+            help_dlg.grab_set()
+        except Exception:
+            pass
+        
+        text_widget = tk.Text(help_dlg, 
+                             font=("Consolas", 10),  
+                             bg="#424769", 
+                             fg="white",
+                             relief="flat",
+                             wrap="word")
+        text_widget.pack(fill="both", expand=True, padx=10, pady=10)
+        
+        text_widget.insert("1.0", help_text)
+        text_widget.configure(state="disabled")
+        
+        close_btn = tk.Button(help_dlg, 
+                             text="Close (Esc)", 
+                             command=help_dlg.destroy,
+                             bg="#4CAF50", 
+                             fg="white", 
+                             relief="flat")
+        close_btn.pack(pady=10)
+        
+        help_dlg.bind('<Escape>', lambda e: help_dlg.destroy())
+        help_dlg.focus_set()
+
+    # 기존 메서드들 유지
     def _browse_destination(self):
         """폴더 선택 다이얼로그"""
         try:
@@ -4139,6 +4101,7 @@ class ScheduleBackupDialog(tk.Toplevel):
                 print(f"DEBUG: Destination set to: {folder}")
         except Exception as browse_error:
             print(f"DEBUG: Browse failed: {browse_error}")
+
     def on_create(self):
         """생성 버튼 핸들러"""
         print("DEBUG: on_create called")
@@ -4161,12 +4124,12 @@ class ScheduleBackupDialog(tk.Toplevel):
                     parent=self):
                     return
             
-            # 시간 형식 검증 (간단한 버전)
+            # 시간 형식 검증
             time_str = self.time_var.get().strip()
             try:
                 from datetime import datetime
                 time_obj = datetime.strptime(time_str, "%H:%M")
-                time_str = time_obj.strftime("%H:%M")  # 정규화된 시간
+                time_str = time_obj.strftime("%H:%M")
             except ValueError:
                 messagebox.showerror("Error", "Invalid time format. Use HH:MM (e.g., 14:30)", parent=self)
                 return
@@ -4227,6 +4190,14 @@ class ScheduleBackupDialog(tk.Toplevel):
         self.action = "close"
         self._safe_destroy()
         
+    def on_cancel(self):
+        """ESC키용 취소 핸들러"""
+        self.on_close()
+        
+    def on_ok(self):
+        """Enter키용 확인 핸들러"""
+        self.on_create()
+        
     def _safe_destroy(self):
         """안전한 윈도우 파괴"""
         print("DEBUG: _safe_destroy called")
@@ -4242,16 +4213,16 @@ class ScheduleBackupDialog(tk.Toplevel):
         except Exception as destroy_error:
             print(f"DEBUG: destroy failed: {destroy_error}")
 
-class FilterManagerDialog(tk.Toplevel):
+class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
     def __init__(self, master, current_filters=None):
-        super().__init__(master)
+        tk.Toplevel.__init__(self, master)
         self.title("Filter Manager")
         try:
             self.iconbitmap(resource_path('./icon/ezbak.ico'))
         except Exception:
             pass
         self.configure(bg="#2D3250")
-        self.geometry("620x440")
+        self.geometry("720x480")
         self.transient(master)
         try:
             self.grab_set()
@@ -4264,126 +4235,395 @@ class FilterManagerDialog(tk.Toplevel):
         self.inc = [dict(type=i.get('type'), pattern=i.get('pattern')) for i in (cf.get('include') or [])]
         self.exc = [dict(type=i.get('type'), pattern=i.get('pattern')) for i in (cf.get('exclude') or [])]
 
-        # Layout
-        top = tk.Frame(self, bg="#3D3250")
-        top.pack(fill='both', expand=True, padx=12, pady=12)
-
-        # Include panel
-        inc_frame = tk.LabelFrame(top, text="Include (files must match at least one)", bg="#2D3250", fg="white")
-        inc_frame.pack(side='left', fill='both', expand=True, padx=(0,6))
-        self.inc_list = tk.Listbox(inc_frame, height=14)
-        self.inc_list.pack(fill='both', expand=True, padx=6, pady=6)
-        btn_row_inc = tk.Frame(inc_frame, bg="#2D3250")
-        btn_row_inc.pack(fill='x', padx=6, pady=(0,6))
-        tk.Button(btn_row_inc, text="Add", width=8, command=lambda: self._add_rule('include'), bg="#336BFF", fg="white", relief="flat").pack(side='left')
-        tk.Button(btn_row_inc, text="Remove", width=8, command=lambda: self._remove_selected('include'), bg="#FF5733", fg="white", relief="flat").pack(side='left', padx=(6,0))
-        tk.Button(btn_row_inc, text="Clear", width=8, command=lambda: self._clear('include'), bg="#7D98A1", fg="white", relief="flat").pack(side='left', padx=(6,0))
-
-        # Exclude panel
-        exc_frame = tk.LabelFrame(top, text="Exclude (always skipped)", bg="#2D3250", fg="white")
-        exc_frame.pack(side='left', fill='both', expand=True, padx=(6,0))
-        self.exc_list = tk.Listbox(exc_frame, height=14)
-        self.exc_list.pack(fill='both', expand=True, padx=6, pady=6)
-        btn_row_exc = tk.Frame(exc_frame, bg="#2D3250")
-        btn_row_exc.pack(fill='x', padx=6, pady=(0,6))
-        tk.Button(btn_row_exc, text="Add", width=8, command=lambda: self._add_rule('exclude'), bg="#336BFF", fg="white", relief="flat").pack(side='left')
-        tk.Button(btn_row_exc, text="Remove", width=8, command=lambda: self._remove_selected('exclude'), bg="#FF5733", fg="white", relief="flat").pack(side='left', padx=(6,0))
-        tk.Button(btn_row_exc, text="Clear", width=8, command=lambda: self._clear('exclude'), bg="#7D98A1", fg="white", relief="flat").pack(side='left', padx=(6,0))
-
-        # Bottom actions
-        actions = tk.Frame(self, bg="#2D3250")
-        actions.pack(fill='x', padx=12, pady=(0,12))
-        tk.Button(actions, text="Save", width=10, command=self._save, bg="#2E7D32", fg="white", relief="flat").pack(side='right')
-        tk.Button(actions, text="Cancel", width=10, command=self._cancel, bg="#7D98A1", fg="white", relief="flat").pack(side='right', padx=(0,8))
-
+        self._create_filter_widgets()
+        self._setup_filter_shortcuts()
         self._refresh()
 
-    def _rule_to_text(self, r):
+    def _setup_filter_shortcuts(self):
+        """필터 다이얼로그 전용 단축키 설정"""
+        # 기본 다이얼로그 단축키 적용
+        self.setup_dialog_shortcuts()
+        
+        # 필터 관련 단축키들
+        self.bind('<Control-n>', lambda e: self._add_rule('include'))  # New include rule
+        self.bind('<Control-e>', lambda e: self._add_rule('exclude'))  # New exclude rule
+        self.bind('<Delete>', lambda e: self._remove_selected_active())
+        self.bind('<Control-s>', lambda e: self._save())
+        self.bind('<Control-r>', lambda e: self._clear_active())  # Remove all from active list
+        self.bind('<F1>', lambda e: self._show_filter_help())
+        
+        # 리스트 포커스 관리
+        self.bind('<Tab>', lambda e: self._cycle_focus())
+        
+    def _cycle_focus(self):
+        """Tab키로 리스트 간 포커스 이동"""
         try:
-            return f"[{r.get('type')}] {r.get('pattern')}"
+            focused = self.focus_get()
+            if focused == self.inc_list:
+                self.exc_list.focus_set()
+            else:
+                self.inc_list.focus_set()
+        except Exception:
+            self.inc_list.focus_set()
+
+    def _create_filter_widgets(self):
+        """필터 위젯들 생성 (단축키 표기 포함)"""
+        # 상단 설명
+        info_frame = tk.Frame(self, bg="#2D3250")
+        info_frame.pack(fill='x', padx=12, pady=(12,6))
+        
+        info_text = "Include: Files must match at least one rule to be included\nExclude: Files matching any rule will be skipped (takes priority)"
+        tk.Label(info_frame, text=info_text, bg="#2D3250", fg="#CCCCCC", 
+                font=("Arial", 9), justify='left').pack(anchor='w')
+
+        # Layout
+        top = tk.Frame(self, bg="#2D3250")
+        top.pack(fill='both', expand=True, padx=12, pady=6)
+
+        # Include panel (단축키 표기 추가)
+        inc_frame = tk.LabelFrame(top, text=self.add_shortcut_text("Include Rules", "Ctrl+N"), 
+                                 bg="#2D3250", fg="white", font=("Arial", 10, "bold"))
+        inc_frame.pack(side='left', fill='both', expand=True, padx=(0,6))
+        
+        self.inc_list = tk.Listbox(inc_frame, height=14, font=("Consolas", 9),
+                                  bg="#424769", fg="white", selectbackground="#6EC571")
+        self.inc_list.pack(fill='both', expand=True, padx=6, pady=6)
+        
+        btn_row_inc = tk.Frame(inc_frame, bg="#2D3250")
+        btn_row_inc.pack(fill='x', padx=6, pady=(0,6))
+        
+        tk.Button(btn_row_inc, text="Add", width=8, command=lambda: self._add_rule('include'), 
+                 bg="#336BFF", fg="white", relief="flat").pack(side='left')
+        tk.Button(btn_row_inc, text=self.add_shortcut_text("Remove", "Del"), width=12, 
+                 command=lambda: self._remove_selected('include'), 
+                 bg="#FF5733", fg="white", relief="flat").pack(side='left', padx=(6,0))
+        tk.Button(btn_row_inc, text="Clear All", width=10, command=lambda: self._clear('include'), 
+                 bg="#7D98A1", fg="white", relief="flat").pack(side='left', padx=(6,0))
+
+        # Exclude panel (단축키 표기 추가)
+        exc_frame = tk.LabelFrame(top, text=self.add_shortcut_text("Exclude Rules", "Ctrl+E"), 
+                                 bg="#2D3250", fg="white", font=("Arial", 10, "bold"))
+        exc_frame.pack(side='left', fill='both', expand=True, padx=(6,0))
+        
+        self.exc_list = tk.Listbox(exc_frame, height=14, font=("Consolas", 9),
+                                  bg="#424769", fg="white", selectbackground="#FF7D5A")
+        self.exc_list.pack(fill='both', expand=True, padx=6, pady=6)
+        
+        btn_row_exc = tk.Frame(exc_frame, bg="#2D3250")
+        btn_row_exc.pack(fill='x', padx=6, pady=(0,6))
+        
+        tk.Button(btn_row_exc, text="Add", width=8, command=lambda: self._add_rule('exclude'), 
+                 bg="#336BFF", fg="white", relief="flat").pack(side='left')
+        tk.Button(btn_row_exc, text=self.add_shortcut_text("Remove", "Del"), width=12, 
+                 command=lambda: self._remove_selected('exclude'), 
+                 bg="#FF5733", fg="white", relief="flat").pack(side='left', padx=(6,0))
+        tk.Button(btn_row_exc, text="Clear All", width=10, command=lambda: self._clear('exclude'), 
+                 bg="#7D98A1", fg="white", relief="flat").pack(side='left', padx=(6,0))
+
+        # 하단 단축키 안내
+        shortcut_frame = tk.Frame(self, bg="#2D3250")
+        shortcut_frame.pack(fill='x', padx=12, pady=(6,0))
+        
+        shortcut_text = "F1: Help  •  Tab: Switch Lists  •  Del: Remove Selected  •  Ctrl+R: Clear Active List"
+        tk.Label(shortcut_frame, text=shortcut_text, bg="#2D3250", fg="#888888", 
+                font=("Arial", 8)).pack(anchor='w')
+
+        # Bottom actions (단축키 표기 추가)
+        actions = tk.Frame(self, bg="#2D3250")
+        actions.pack(fill='x', padx=12, pady=12)
+        
+        tk.Button(actions, text=self.add_shortcut_text("Help", "F1"), width=10, 
+                 command=self._show_filter_help, bg="#8E44AD", fg="white", relief="flat").pack(side='left')
+        
+        tk.Button(actions, text=self.add_shortcut_text("Save", "Ctrl+S"), width=12, 
+                 command=self._save, bg="#2E7D32", fg="white", relief="flat").pack(side='right')
+        tk.Button(actions, text=self.add_shortcut_text("Cancel", "Esc"), width=12, 
+                 command=self._cancel, bg="#7D98A1", fg="white", relief="flat").pack(side='right', padx=(0,8))
+
+    def _rule_to_text(self, r):
+        """규칙을 표시용 텍스트로 변환"""
+        try:
+            rule_type = r.get('type', 'unknown')
+            pattern = r.get('pattern', '')
+            
+            # 타입별 아이콘 추가
+            type_icons = {
+                'ext': '📄',
+                'name': '📁', 
+                'path': '🗂️'
+            }
+            icon = type_icons.get(rule_type, '❓')
+            
+            return f"{icon} [{rule_type.upper()}] {pattern}"
         except Exception:
             return str(r)
 
     def _refresh(self):
+        """리스트 새로고침"""
+        # Include 리스트
         self.inc_list.delete(0, tk.END)
         for r in self.inc:
             self.inc_list.insert(tk.END, self._rule_to_text(r))
+        
+        # Exclude 리스트
         self.exc_list.delete(0, tk.END)
         for r in self.exc:
             self.exc_list.insert(tk.END, self._rule_to_text(r))
 
     def _remove_selected(self, kind):
+        """선택된 항목 제거"""
         if kind == 'include':
             idxs = list(self.inc_list.curselection())
             for i in reversed(idxs):
-                del self.inc[i]
+                if 0 <= i < len(self.inc):
+                    del self.inc[i]
         else:
             idxs = list(self.exc_list.curselection())
             for i in reversed(idxs):
-                del self.exc[i]
+                if 0 <= i < len(self.exc):
+                    del self.exc[i]
         self._refresh()
 
+    def _remove_selected_active(self):
+        """현재 활성화된 리스트에서 선택된 항목 제거"""
+        try:
+            # 포커스된 위젯 확인
+            focused = self.focus_get()
+            if focused == self.inc_list:
+                self._remove_selected('include')
+            elif focused == self.exc_list:
+                self._remove_selected('exclude')
+        except Exception:
+            pass
+
     def _clear(self, kind):
+        """전체 지우기"""
         if kind == 'include':
             self.inc = []
         else:
             self.exc = []
         self._refresh()
 
+    def _clear_active(self):
+        """현재 활성화된 리스트 전체 지우기"""
+        try:
+            focused = self.focus_get()
+            if focused == self.inc_list:
+                self._clear('include')
+            elif focused == self.exc_list:
+                self._clear('exclude')
+        except Exception:
+            pass
+
     def _add_rule(self, kind):
+        """규칙 추가 다이얼로그"""
         dlg = tk.Toplevel(self)
-        dlg.title("Add Rule")
+        dlg.title(f"Add {'Include' if kind == 'include' else 'Exclude'} Rule")
         try:
             dlg.iconbitmap(resource_path('./icon/ezbak.ico'))
         except Exception:
             pass
         dlg.configure(bg="#2D3250")
-        dlg.geometry("360x240")
+        dlg.geometry("480x320")
         dlg.transient(self)
         try:
             dlg.grab_set()
         except Exception:
             pass
 
-        tk.Label(dlg, text="Type:", bg="#2D3250", fg="white").pack(anchor='w', padx=10, pady=(10,2))
+        # 규칙 타입 선택
+        tk.Label(dlg, text="Rule Type:", bg="#2D3250", fg="white", 
+                font=("Arial", 10, "bold")).pack(anchor='w', padx=15, pady=(15,5))
+        
         vtype = tk.StringVar(value='ext')
         tframe = tk.Frame(dlg, bg="#2D3250")
-        tframe.pack(anchor='w', padx=10)
-        for t, txt in (('ext','Extension (e.g. tmp)'), ('name','Name (glob, e.g. Thumbs.db)'), ('path','Path (glob, e.g. */Cache/*)')):
-            tk.Radiobutton(tframe, text=txt, variable=vtype, value=t, bg="#2D3250", fg="white", selectcolor="#2D3250").pack(anchor='w')
+        tframe.pack(anchor='w', padx=15, fill='x')
+        
+        type_options = [
+            ('ext', '📄 Extension', 'File extensions (e.g., tmp, log, bak)'),
+            ('name', '📁 Name', 'File/folder names with wildcards (e.g., Thumbs.db, *cache*)'),
+            ('path', '🗂️ Path', 'Full paths with wildcards (e.g., */temp/*, *\\AppData\\*)')
+        ]
+        
+        for value, label, desc in type_options:
+            rb_frame = tk.Frame(tframe, bg="#2D3250")
+            rb_frame.pack(anchor='w', pady=2)
+            
+            tk.Radiobutton(rb_frame, text=label, variable=vtype, value=value, 
+                          bg="#2D3250", fg="white", selectcolor="#2D3250",
+                          font=("Arial", 9, "bold")).pack(side='left')
+            tk.Label(rb_frame, text=f"  {desc}", bg="#2D3250", fg="#CCCCCC", 
+                    font=("Arial", 8)).pack(side='left')
 
-        tk.Label(dlg, text="Pattern:", bg="#2D3250", fg="white").pack(anchor='w', padx=10, pady=(6,2))
+        # 패턴 입력
+        tk.Label(dlg, text="Pattern:", bg="#2D3250", fg="white", 
+                font=("Arial", 10, "bold")).pack(anchor='w', padx=15, pady=(15,5))
+        
         vpat = tk.StringVar()
-        ent = tk.Entry(dlg, textvariable=vpat, width=40)
-        ent.pack(anchor='w', padx=10)
+        pat_frame = tk.Frame(dlg, bg="#2D3250")
+        pat_frame.pack(fill='x', padx=15)
+        
+        ent = tk.Entry(pat_frame, textvariable=vpat, width=50, font=("Arial", 10))
+        ent.pack(fill='x')
+        
+        # 예시 텍스트
+        example_frame = tk.Frame(dlg, bg="#2D3250")
+        example_frame.pack(fill='x', padx=15, pady=(5,0))
+        
+        def update_example(*args):
+            try:
+                rule_type = vtype.get()
+                examples = {
+                    'ext': 'Examples: tmp, log, bak, cache (without dots)',
+                    'name': 'Examples: Thumbs.db, *.tmp, desktop.ini, *cache*',
+                    'path': 'Examples: */Temp/*, *\\AppData\\Local\\*, */cache/*'
+                }
+                example_label.config(text=examples.get(rule_type, ''))
+            except Exception:
+                pass
+        
+        example_label = tk.Label(example_frame, text="", bg="#2D3250", fg="#888888", 
+                               font=("Arial", 8))
+        example_label.pack(anchor='w')
+        
+        vtype.trace('w', update_example)
+        update_example()  # 초기 표시
 
+        # 버튼
         btns = tk.Frame(dlg, bg="#2D3250")
-        btns.pack(fill='x', padx=10, pady=10)
+        btns.pack(fill='x', padx=15, pady=15)
+        
         def _ok():
             p = vpat.get().strip()
             if not p:
-                dlg.destroy()
+                messagebox.showwarning("Warning", "Please enter a pattern.", parent=dlg)
                 return
-            rule = {'type': vtype.get().strip().lower(), 'pattern': p}
+            
+            rule_type = vtype.get().strip().lower()
+            rule = {'type': rule_type, 'pattern': p}
+            
             if kind == 'include':
                 self.inc.append(rule)
             else:
                 self.exc.append(rule)
+            
             self._refresh()
+            
             try:
                 dlg.grab_release()
             except Exception:
                 pass
             dlg.destroy()
-        tk.Button(btns, text="Add", width=8, command=_ok, bg="#336BFF", fg="white", relief="flat").pack(side='right')
-        tk.Button(btns, text="Cancel", width=8, command=lambda: (dlg.destroy()), bg="#7D98A1", fg="white", relief="flat").pack(side='right', padx=(0,6))
+        
+        def _cancel():
+            try:
+                dlg.grab_release()
+            except Exception:
+                pass
+            dlg.destroy()
+        
+        tk.Button(btns, text="Add Rule", width=12, command=_ok, 
+                 bg="#336BFF", fg="white", relief="flat").pack(side='right')
+        tk.Button(btns, text="Cancel", width=10, command=_cancel, 
+                 bg="#7D98A1", fg="white", relief="flat").pack(side='right', padx=(0,8))
 
+        # 단축키 설정
+        dlg.bind('<Return>', lambda e: _ok())
+        dlg.bind('<Escape>', lambda e: _cancel())
+        
         try:
             ent.focus_set()
         except Exception:
             pass
 
+    def _show_filter_help(self):
+        """필터 도움말 표시"""
+        help_text = """
+Filter Manager Help
+
+KEYBOARD SHORTCUTS:
+┌─────────────────────────────────────────────────────────────┐
+│ Ctrl + N         Add Include Rule                           │
+│ Ctrl + E         Add Exclude Rule                           │
+│ Ctrl + S         Save Filters                               │
+│ Ctrl + R         Clear Active List                          │
+│ Delete           Remove Selected Item                       │
+│ Tab              Switch Between Lists                       │
+│ Esc              Cancel                                     │
+│ Enter            Save                                       │
+│ F1               Show This Help                             │
+└─────────────────────────────────────────────────────────────┘
+
+FILTER TYPES:
+┌─────────────────────────────────────────────────────────────┐
+│ 📄 Extension     File extensions (e.g., tmp, log, bak)      │
+│ 📁 Name          File/folder names with wildcards           │
+│                  Examples: Thumbs.db, *.tmp, *cache*        │
+│ 🗂️ Path          Full paths with wildcards                  │
+│                  Examples: */temp/*, *\\AppData\\*          │
+└─────────────────────────────────────────────────────────────┘
+
+HOW FILTERS WORK:
+• Include Rules: Files must match at least one rule to be included
+• Exclude Rules: Files matching any rule will be skipped
+• Exclude rules take priority over include rules
+• Use wildcards (*) for pattern matching
+• Paths use forward slashes (/) or backslashes (\\)
+
+EXAMPLES:
+• Exclude temp files: [EXT] tmp
+• Exclude cache folders: [NAME] *cache*
+• Include only documents: [EXT] pdf, [EXT] docx
+• Exclude system paths: [PATH] */Windows/System32/*
+        """
+        
+        help_dlg = tk.Toplevel(self)
+        help_dlg.title("Filter Manager Help")
+        help_dlg.configure(bg="#2D3250")
+        help_dlg.geometry("600x610")
+        help_dlg.transient(self)
+        try:
+            help_dlg.grab_set()
+        except Exception:
+            pass
+        
+        # 스크롤 가능한 텍스트 영역
+        text_frame = tk.Frame(help_dlg, bg="#2D3250")
+        text_frame.pack(fill="both", expand=True, padx=15, pady=15)
+        
+        scrollbar = tk.Scrollbar(text_frame, width=20, bg="#424769", 
+                               troughcolor="#2D3250", activebackground="#6EC571")
+        scrollbar.pack(side="right", fill="y")
+        
+        text_widget = tk.Text(text_frame, 
+                             font=("Consolas", 9),  
+                             bg="#424769", 
+                             fg="white",
+                             relief="flat",
+                             wrap="word",
+                             yscrollcommand=scrollbar.set)
+        text_widget.pack(side="left", fill="both", expand=True)
+        
+        scrollbar.configure(command=text_widget.yview)
+        
+        text_widget.insert("1.0", help_text)
+        text_widget.configure(state="disabled")
+        
+        # 닫기 버튼
+        close_btn = tk.Button(help_dlg, 
+                             text="Close (Esc)", 
+                             command=help_dlg.destroy,
+                             bg="#4CAF50", 
+                             fg="white", 
+                             relief="flat",
+                             width=15)
+        close_btn.pack(pady=(0,15))
+        
+        help_dlg.bind('<Escape>', lambda e: help_dlg.destroy())
+        help_dlg.focus_set()
+
     def _save(self):
+        """필터 저장"""
         self.result = {'include': self.inc, 'exclude': self.exc}
         try:
             self.grab_release()
@@ -4392,150 +4632,376 @@ class FilterManagerDialog(tk.Toplevel):
         self.destroy()
 
     def _cancel(self):
+        """취소"""
+        self.result = None
         try:
             self.grab_release()
         except Exception:
             pass
         self.destroy()
 
+    def on_cancel(self):
+        """ESC키용 취소 핸들러"""
+        self._cancel()
+        
+    def on_ok(self):
+        """Enter키용 확인 핸들러"""
+        self._save()
 
 class SelectSourcesDialog(tk.Toplevel):
     def __init__(self, master, is_hidden_fn=None, title="Select Sources"):
-        super().__init__(master)
-        self.title(title)
         try:
-            # Try to reuse app icon if available
-            self.iconbitmap(resource_path('./icon/ezbak.ico'))
-        except Exception:
-            pass
-        self.configure(bg="#2D3250")
-        self.geometry("640x480")
-        self.transient(master)
+            super().__init__(master)
+            print(f"DEBUG: SelectSourcesDialog initialized with title: {title}")
+            
+            self.title(title)
+            try:
+                self.iconbitmap(resource_path('./icon/ezbak.ico'))
+            except Exception:
+                pass
+            self.configure(bg="#2D3250")
+            self.geometry("720x540")
+            self.transient(master)
+            try:
+                self.grab_set()
+            except Exception:
+                pass
+
+            self.is_hidden_fn = is_hidden_fn or (lambda p: False)
+            self.selected_paths = []
+
+            self._checked = set()       # item ids that are checked
+            self._item_path = {}        # item id -> full filesystem path
+
+            print("DEBUG: Creating widgets...")
+            self._create_source_widgets()
+            
+            print("DEBUG: Setting up shortcuts...")
+            self._setup_source_shortcuts()
+            
+            print("DEBUG: Adding drive roots...")
+            self._add_drive_roots()
+            
+            print("DEBUG: SelectSourcesDialog initialization complete")
+            
+        except Exception as e:
+            print(f"DEBUG: SelectSourcesDialog init failed: {e}")
+            import traceback
+            print(f"DEBUG: Traceback: {traceback.format_exc()}")
+            raise
+
+    def _setup_source_shortcuts(self):
+        """소스 선택 다이얼로그 전용 단축키 설정"""
         try:
-            self.grab_set()
-        except Exception:
-            pass
+            # 기본 다이얼로그 단축키 적용
+            self.setup_dialog_shortcuts()
+            
+            # 소스 선택 관련 단축키들
+            self.bind('<Control-a>', lambda e: self._select_all())
+            self.bind('<Control-n>', lambda e: self._clear_all())  # None (clear all)
+            self.bind('<Control-r>', lambda e: self._choose_root())  # Root folder
+            self.bind('<Space>', lambda e: self._toggle_selected())
+            self.bind('<Control-e>', lambda e: self._expand_selected())
+            self.bind('<Control-c>', lambda e: self._collapse_selected())
+            self.bind('<F5>', lambda e: self._refresh_tree())
+            self.bind('<F1>', lambda e: self._show_source_help())
+            
+            print("DEBUG: Shortcuts setup complete")
+        except Exception as e:
+            print(f"DEBUG: _setup_source_shortcuts failed: {e}")
 
-        self.is_hidden_fn = is_hidden_fn or (lambda p: False)
-        self.selected_paths = []
+    def setup_dialog_shortcuts(self):
+        """다이얼로그에 기본 단축키 설정 (DialogShortcuts 대신 직접 구현)"""
+        try:
+            # 기본 다이얼로그 단축키들
+            self.bind('<Escape>', lambda e: self.on_cancel() if hasattr(self, 'on_cancel') else self.destroy())
+            self.bind('<Return>', lambda e: self.on_ok() if hasattr(self, 'on_ok') else None)
+            self.bind('<Alt-F4>', lambda e: self.destroy())
+            
+            # 포커스 설정 (키보드 이벤트를 받기 위해)
+            self.focus_set()
+        except Exception as e:
+            print(f"DEBUG: setup_dialog_shortcuts failed: {e}")
+        
+    def add_shortcut_text(self, text, shortcut):
+        """텍스트에 단축키 표기 추가"""
+        return f"{text} ({shortcut})"
 
-        # Instruction
-        tk.Label(self, text="Select folders and files to copy",
-                 bg="#2D3250", fg="white", font=("Arial", 11, "bold")).pack(anchor='w', padx=10, pady=(10, 5))
+    def _create_source_widgets(self):
+        """소스 선택 위젯들 생성"""
+        try:
+            print("DEBUG: Creating info frame...")
+            # 상단 설명
+            info_frame = tk.Frame(self, bg="#2D3250")
+            info_frame.pack(fill="x", padx=15, pady=(15, 10))
+            
+            tk.Label(info_frame, text="Select folders and files to copy",
+                     bg="#2D3250", fg="white", font=("Arial", 12, "bold")).pack(anchor='w')
+            
+            tk.Label(info_frame, text="Use checkboxes or Space key to select items. Selected folders include all contents.",
+                     bg="#2D3250", fg="#CCCCCC", font=("Arial", 9)).pack(anchor='w', pady=(2,0))
 
-        # Top controls
-        top_controls = tk.Frame(self, bg="#2D3250")
-        top_controls.pack(fill="x", padx=10, pady=(0, 5))
+            print("DEBUG: Creating top controls...")
+            # Top controls
+            top_controls = tk.Frame(self, bg="#2D3250")
+            top_controls.pack(fill="x", padx=15, pady=(0, 10))
 
-        self.add_root_btn = tk.Button(top_controls, text="Add Root Folder...", command=self._choose_root,
-                                      bg="#7D98A1", fg="white", relief="flat")
-        self.add_root_btn.pack(side="left")
+            self.add_root_btn = tk.Button(top_controls, text=self.add_shortcut_text("Add Root Folder...", "Ctrl+R"), 
+                                          command=self._choose_root,
+                                          bg="#7D98A1", fg="white", relief="flat", width=20)
+            self.add_root_btn.pack(side="left")
 
-        self.sel_all_btn = tk.Button(top_controls, text="Select All", command=self._select_all,
-                                     bg="#4CAF50", fg="white", relief="flat")
-        self.sel_all_btn.pack(side="left", padx=(8, 0))
+            self.sel_all_btn = tk.Button(top_controls, text=self.add_shortcut_text("Select All", "Ctrl+A"), 
+                                         command=self._select_all,
+                                         bg="#4CAF50", fg="white", relief="flat", width=15)
+            self.sel_all_btn.pack(side="left", padx=(8, 0))
 
-        self.clear_all_btn = tk.Button(top_controls, text="Clear All", command=self._clear_all,
-                                       bg="#FF5733", fg="white", relief="flat")
-        self.clear_all_btn.pack(side="left", padx=(8, 0))
+            self.clear_all_btn = tk.Button(top_controls, text=self.add_shortcut_text("Clear All", "Ctrl+N"), 
+                                           command=self._clear_all,
+                                           bg="#FF5733", fg="white", relief="flat", width=15)
+            self.clear_all_btn.pack(side="left", padx=(8, 0))
 
-        # Tree area
-        tree_frame = tk.Frame(self, bg="#2D3250")
-        tree_frame.pack(fill="both", expand=True, padx=10, pady=5)
+            print("DEBUG: Creating tree area...")
+            # Tree area
+            tree_frame = tk.Frame(self, bg="#2D3250")
+            tree_frame.pack(fill="both", expand=True, padx=15, pady=5)
 
-        self.tree = ttk.Treeview(tree_frame, columns=("fullpath",), displaycolumns=())
-        vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview)
-        self.tree.configure(yscrollcommand=vsb.set)
-        vsb.pack(side="right", fill="y")
-        self.tree.pack(side="left", fill="both", expand=True)
+            self.tree = ttk.Treeview(tree_frame, columns=("fullpath",), displaycolumns=())
+            vsb = ttk.Scrollbar(tree_frame, orient="vertical", command=self.tree.yview)
+            self.tree.configure(yscrollcommand=vsb.set)
+            vsb.pack(side="right", fill="y")
+            self.tree.pack(side="left", fill="both", expand=True)
 
-        self.tree.bind("<<TreeviewOpen>>", self._on_open)
-        self.tree.bind("<Button-1>", self._on_click)
+            self.tree.bind("<<TreeviewOpen>>", self._on_open)
+            self.tree.bind("<Button-1>", self._on_click)
 
-        self._checked = set()       # item ids that are checked
-        self._item_path = {}        # item id -> full filesystem path
+            print("DEBUG: Creating status frame...")
+            # 하단 상태 및 단축키 안내
+            status_frame = tk.Frame(self, bg="#2D3250")
+            status_frame.pack(fill='x', padx=15, pady=(5,0))
+            
+            self.status_label = tk.Label(status_frame, text="Ready - Use mouse or keyboard to select items", 
+                                        bg="#2D3250", fg="#CCCCCC", font=("Arial", 9))
+            self.status_label.pack(side='left')
 
-        # Populate available drives as roots by default
-        self._add_drive_roots()
+            print("DEBUG: Creating action buttons...")
+            # Action buttons
+            action_frame = tk.Frame(self, bg="#2D3250")
+            action_frame.pack(fill="x", padx=15, pady=15)
 
-        # Action buttons
-        action_frame = tk.Frame(self, bg="#2D3250")
-        action_frame.pack(fill="x", padx=10, pady=(5, 10))
-
-        ok_btn = tk.Button(action_frame, text="OK", width=10, command=self._on_ok,
-                           bg="#336BFF", fg="white", relief="flat")
-        ok_btn.pack(side="right")
-        cancel_btn = tk.Button(action_frame, text="Cancel", width=10, command=self._on_cancel,
-                               bg="#FF3333", fg="white", relief="flat")
-        cancel_btn.pack(side="right", padx=(0, 8))
+            ok_btn = tk.Button(action_frame, text=self.add_shortcut_text("OK", "Enter"), 
+                              width=12, command=self._on_ok,
+                              bg="#336BFF", fg="white", relief="flat")
+            ok_btn.pack(side="right")
+            
+            cancel_btn = tk.Button(action_frame, text=self.add_shortcut_text("Cancel", "Esc"), 
+                                  width=12, command=self._on_cancel,
+                                  bg="#FF3333", fg="white", relief="flat")
+            cancel_btn.pack(side="right", padx=(0, 8))
+            
+            print("DEBUG: Widget creation complete")
+            
+        except Exception as e:
+            print(f"DEBUG: _create_source_widgets failed: {e}")
+            import traceback
+            print(f"DEBUG: Traceback: {traceback.format_exc()}")
+            raise
 
     def _format(self, name, checked):
-        return f"[{'x' if checked else ' '}] {name}"
+        """체크박스 형태로 포맷"""
+        checkbox = "[✓]" if checked else "[ ]"
+        return f"{checkbox} {name}"
+
+    def _toggle_selected(self):
+        """현재 선택된 항목 토글 (Space키용)"""
+        try:
+            item = self.tree.focus()
+            if item:
+                self._toggle_item(item)
+                self._update_status()
+        except Exception as e:
+            print(f"DEBUG: _toggle_selected failed: {e}")
+
+    def _expand_selected(self):
+        """선택된 항목 확장"""
+        try:
+            item = self.tree.focus()
+            if item:
+                self.tree.item(item, open=True)
+        except Exception as e:
+            print(f"DEBUG: _expand_selected failed: {e}")
+
+    def _collapse_selected(self):
+        """선택된 항목 축소"""
+        try:
+            item = self.tree.focus()
+            if item:
+                self.tree.item(item, open=False)
+        except Exception as e:
+            print(f"DEBUG: _collapse_selected failed: {e}")
+
+    def _refresh_tree(self):
+        """트리 새로고침 (F5)"""
+        try:
+            print("DEBUG: Refreshing tree...")
+            # 현재 체크된 항목들 저장
+            checked_paths = []
+            for item in self._checked:
+                path = self._item_path.get(item)
+                if path:
+                    checked_paths.append(path)
+            
+            # 트리 초기화
+            for item in self.tree.get_children(""):
+                self.tree.delete(item)
+            self._checked.clear()
+            self._item_path.clear()
+            
+            # 드라이브 다시 추가
+            self._add_drive_roots()
+            
+            self._update_status("Tree refreshed")
+            print("DEBUG: Tree refresh complete")
+        except Exception as e:
+            print(f"DEBUG: _refresh_tree failed: {e}")
+            self._update_status(f"Refresh failed: {e}")
+
+    def _update_status(self, message=None):
+        """상태바 업데이트"""
+        try:
+            if message:
+                self.status_label.config(text=message)
+            else:
+                count = len(self._checked)
+                if count == 0:
+                    self.status_label.config(text="No items selected")
+                elif count == 1:
+                    self.status_label.config(text="1 item selected")
+                else:
+                    self.status_label.config(text=f"{count} items selected")
+        except Exception as e:
+            print(f"DEBUG: _update_status failed: {e}")
+
+    def _show_source_help(self):
+        """소스 선택 도움말 표시"""
+        help_text = """Copy Data - Source Selection Help
+
+KEYBOARD SHORTCUTS:
+Ctrl + A         Select All Items
+Ctrl + N         Clear All Selections  
+Ctrl + R         Add Root Folder
+Space            Toggle Selected Item
+F5               Refresh Tree
+F1               Show This Help
+Enter            OK (Confirm Selection)
+Esc              Cancel
+
+SELECTION BEHAVIOR:
+• [✓] Checked items will be included in the copy operation
+• [ ] Unchecked items will be skipped
+• Selecting a folder includes all its contents
+• Only items without checked parents are included (avoids duplicates)
+
+TIPS:
+• Use "Add Root Folder" to browse for specific directories
+• Check parent folders to include entire directory trees
+• Use F5 to refresh if folder contents have changed
+        """
+        
+        try:
+            help_dlg = tk.Toplevel(self)
+            help_dlg.title("Source Selection Help")
+            help_dlg.configure(bg="#2D3250")
+            help_dlg.geometry("500x400")
+            help_dlg.transient(self)
+            help_dlg.grab_set()
+            
+            text_widget = tk.Text(help_dlg, 
+                                 font=("Consolas", 10),  
+                                 bg="#424769", 
+                                 fg="white",
+                                 relief="flat",
+                                 wrap="word")
+            text_widget.pack(fill="both", expand=True, padx=15, pady=15)
+            
+            text_widget.insert("1.0", help_text)
+            text_widget.configure(state="disabled")
+            
+            close_btn = tk.Button(help_dlg, 
+                                 text="Close (Esc)", 
+                                 command=help_dlg.destroy,
+                                 bg="#4CAF50", 
+                                 fg="white", 
+                                 relief="flat")
+            close_btn.pack(pady=(0,15))
+            
+            help_dlg.bind('<Escape>', lambda e: help_dlg.destroy())
+            help_dlg.focus_set()
+            
+        except Exception as e:
+            print(f"DEBUG: _show_source_help failed: {e}")
 
     def _add_drive_roots(self):
-        """
-        Uses the 'mountvol' command to find all mounted drives with drive letters.
-        This is more reliable than iterating through 'C:' to 'Z:'.
-        """
-        drives = []
+        """드라이브 루트들을 트리에 추가"""
         try:
-            # For compatibility with different Windows language versions,
-            # we run with a standard locale and decode as UTF-8 with error handling.
-            env = os.environ.copy()
-            env['LC_ALL'] = 'C'
-            # Use check_output to get the command's output
-            output = subprocess.check_output("mountvol", text=True, encoding='utf-8', errors='ignore', shell=True, env=env)
+            print("DEBUG: Adding drive roots...")
+            drives = []
             
-            # Regex to find lines that end with a drive letter (e.g., "    C:\")
-            drive_pattern = re.compile(r"([A-Z]:\\)$")
-            
-            for line in output.splitlines():
-                match = drive_pattern.search(line.strip())
-                if match:
-                    drives.append(match.group(1))
-                    
-        except (subprocess.CalledProcessError, FileNotFoundError):
-            # Fallback to the old method if mountvol fails
+            # 간단한 방법으로 드라이브 감지
             for code in range(ord('C'), ord('Z') + 1):
                 drive = f"{chr(code)}:\\"
                 if os.path.exists(drive):
                     drives.append(drive)
-        
-        # Add unique, sorted drives to the tree
-        for drive in sorted(list(set(drives))):
-            try:
-                item = self.tree.insert("", "end", text=self._format(drive, False), open=False)
-                self._item_path[item] = drive
-                # dummy child for lazy load
-                self.tree.insert(item, "end", text="...")
-            except Exception:
-                pass
+            
+            # Add drives to the tree
+            for drive in sorted(drives):
+                try:
+                    item = self.tree.insert("", "end", text=self._format(drive, False), open=False)
+                    self._item_path[item] = drive
+                    # dummy child for lazy load
+                    self.tree.insert(item, "end", text="...")
+                    print(f"DEBUG: Added drive: {drive}")
+                except Exception as e:
+                    print(f"DEBUG: Failed to add drive {drive}: {e}")
+                    
+            print(f"DEBUG: Added {len(drives)} drives")
+        except Exception as e:
+            print(f"DEBUG: _add_drive_roots failed: {e}")
 
     def _choose_root(self):
-        path = filedialog.askdirectory(title="Select Root Folder")
-        if path:
-            try:
+        """루트 폴더 선택"""
+        try:
+            print("DEBUG: Choosing root folder...")
+            path = filedialog.askdirectory(title="Select Root Folder", parent=self)
+            if path:
+                print(f"DEBUG: Selected path: {path}")
                 item = self.tree.insert("", "end", text=self._format(path, False), open=False)
                 self._item_path[item] = path
                 self.tree.insert(item, "end", text="...")
-            except Exception:
-                pass
+                self._update_status(f"Added root: {os.path.basename(path)}")
+                print("DEBUG: Root folder added successfully")
+            else:
+                print("DEBUG: No path selected")
+        except Exception as e:
+            print(f"DEBUG: _choose_root failed: {e}")
+            self._update_status(f"Failed to add root: {e}")
 
     def _on_open(self, event):
-        item = self.tree.focus()
-        if not item:
-            return
-        children = self.tree.get_children(item)
-        if len(children) == 1 and self.tree.item(children[0], "text") == "...":
-            # populate children lazily
-            self.tree.delete(children[0])
-            path = self._item_path.get(item)
-            # Check if the parent item is checked to propagate the state to new children.
-            parent_is_checked = self.tree.item(item, "text").startswith("[x]")
-
-            if not path:
+        """트리 항목 열기 이벤트"""
+        try:
+            item = self.tree.focus()
+            if not item:
                 return
-            try:
+            children = self.tree.get_children(item)
+            if len(children) == 1 and self.tree.item(children[0], "text") == "...":
+                # populate children lazily
+                self.tree.delete(children[0])
+                path = self._item_path.get(item)
+                parent_is_checked = item in self._checked
+
+                if not path:
+                    return
+                
                 entries = []
                 with os.scandir(path) as it:
                     for entry in it:
@@ -4551,238 +5017,428 @@ class SelectSourcesDialog(tk.Toplevel):
                         except Exception:
                             is_dir = False
                         entries.append((entry.name, is_dir, full))
+                
                 # sort: directories first, then files
                 for name, is_dir, full in sorted(entries, key=lambda t: (not t[1], t[0].lower())):
-                    # Inherit the checked state from the parent when creating the child item.
                     child = self.tree.insert(item, "end", text=self._format(name, parent_is_checked), open=False)
                     self._item_path[child] = full
-                    # If the parent is checked, the new child must also be added to the checked set.
                     if parent_is_checked:
                         self._checked.add(child)
                     if is_dir:
                         self.tree.insert(child, "end", text="...")
-            except Exception:
-                pass
-
-    def _toggle_item(self, item):
-        text = self.tree.item(item, "text")
-        if not text:
-            return
-        checked = text.startswith("[x]")
-        new_checked = not checked
-        name = text[4:] if len(text) >= 4 else text
-        self.tree.item(item, text=self._format(name, new_checked))
-        if new_checked:
-            self._checked.add(item)
-        else:
-            self._checked.discard(item)
-        # propagate to descendants
-        for child in self.tree.get_children(item):
-            if self.tree.item(child, "text") == "...":
-                continue
-            self._apply_to_descendants(child, new_checked)
-
-    def _apply_to_descendants(self, item, checked):
-        text = self.tree.item(item, "text")
-        name = text[4:] if len(text) >= 4 else text
-        self.tree.item(item, text=self._format(name, checked))
-        if checked:
-            self._checked.add(item)
-        else:
-            self._checked.discard(item)
-        for child in self.tree.get_children(item):
-            if self.tree.item(child, "text") == "...":
-                continue
-            self._apply_to_descendants(child, checked)
+        except Exception as e:
+            print(f"DEBUG: _on_open failed: {e}")
 
     def _on_click(self, event):
-        item = self.tree.identify_row(event.y)
-        if not item:
-            return
+        """트리 클릭 이벤트"""
         try:
-            elem = self.tree.identify("element", event.x, event.y)
-        except Exception:
-            elem = ""
-        elem_str = str(elem).lower()
-        # Only toggle when clicking on the text area; ignore indicator/expander/icon clicks
-        if "text" not in elem_str:
-            return
-        self._toggle_item(item)
+            item = self.tree.identify_row(event.y)
+            if not item:
+                return
+            try:
+                elem = self.tree.identify("element", event.x, event.y)
+            except Exception:
+                elem = ""
+            elem_str = str(elem).lower()
+            # Only toggle when clicking on the text area
+            if "text" not in elem_str:
+                return
+            self._toggle_item(item)
+            self._update_status()
+        except Exception as e:
+            print(f"DEBUG: _on_click failed: {e}")
+
+    def _toggle_item(self, item):
+        """항목 체크 상태 토글"""
+        try:
+            text = self.tree.item(item, "text")
+            if not text:
+                return
+            checked = item in self._checked
+            new_checked = not checked
+            
+            # 텍스트에서 이름 부분만 추출 (체크박스 부분 제거)
+            if text.startswith("[✓]") or text.startswith("[ ]"):
+                name = text[4:]  # "[✓] " 또는 "[ ] " 제거
+            else:
+                name = text
+            
+            self.tree.item(item, text=self._format(name, new_checked))
+            
+            if new_checked:
+                self._checked.add(item)
+            else:
+                self._checked.discard(item)
+                
+            # propagate to descendants
+            for child in self.tree.get_children(item):
+                if self.tree.item(child, "text") == "...":
+                    continue
+                self._apply_to_descendants(child, new_checked)
+        except Exception as e:
+            print(f"DEBUG: _toggle_item failed: {e}")
+
+    def _apply_to_descendants(self, item, checked):
+        """하위 항목들에 체크 상태 적용"""
+        try:
+            text = self.tree.item(item, "text")
+            if text.startswith("[✓]") or text.startswith("[ ]"):
+                name = text[4:]
+            else:
+                name = text
+            
+            self.tree.item(item, text=self._format(name, checked))
+            
+            if checked:
+                self._checked.add(item)
+            else:
+                self._checked.discard(item)
+                
+            for child in self.tree.get_children(item):
+                if self.tree.item(child, "text") == "...":
+                    continue
+                self._apply_to_descendants(child, checked)
+        except Exception as e:
+            print(f"DEBUG: _apply_to_descendants failed: {e}")
 
     def _select_all(self):
-        for item in self.tree.get_children(""):
-            self._set_checked_recursive(item, True)
+        """모든 항목 선택"""
+        try:
+            for item in self.tree.get_children(""):
+                self._set_checked_recursive(item, True)
+            self._update_status()
+        except Exception as e:
+            print(f"DEBUG: _select_all failed: {e}")
 
     def _clear_all(self):
-        for item in self.tree.get_children(""):
-            self._set_checked_recursive(item, False)
+        """모든 선택 해제"""
+        try:
+            for item in self.tree.get_children(""):
+                self._set_checked_recursive(item, False)
+            self._update_status()
+        except Exception as e:
+            print(f"DEBUG: _clear_all failed: {e}")
 
     def _set_checked_recursive(self, item, checked):
-        text = self.tree.item(item, "text")
-        name = text[4:] if len(text) >= 4 else text
-        self.tree.item(item, text=self._format(name, checked))
-        if checked:
-            self._checked.add(item)
-        else:
-            self._checked.discard(item)
-        for child in self.tree.get_children(item):
-            if self.tree.item(child, "text") == "...":
-                continue
-            self._set_checked_recursive(child, checked)
+        """재귀적으로 체크 상태 설정"""
+        try:
+            text = self.tree.item(item, "text")
+            if text.startswith("[✓]") or text.startswith("[ ]"):
+                name = text[4:]
+            else:
+                name = text
+            
+            self.tree.item(item, text=self._format(name, checked))
+            
+            if checked:
+                self._checked.add(item)
+            else:
+                self._checked.discard(item)
+                
+            for child in self.tree.get_children(item):
+                if self.tree.item(child, "text") == "...":
+                    continue
+                self._set_checked_recursive(child, checked)
+        except Exception as e:
+            print(f"DEBUG: _set_checked_recursive failed: {e}")
 
     def _on_ok(self):
-        paths = []
-        # Only include items that don't have a checked ancestor (avoid duplicates)
-        for item in list(self._checked):
-            p = self._item_path.get(item)
-            if not p:
-                continue
-            # skip if any ancestor checked
-            parent = self.tree.parent(item)
-            skip = False
-            while parent:
-                if parent in self._checked:
-                    skip = True
-                    break
-                parent = self.tree.parent(parent)
-            if not skip:
-                paths.append(p)
-        self.selected_paths = paths
+        """확인 버튼"""
         try:
-            self.grab_release()
-        except Exception:
-            pass
-        self.destroy()
+            print("DEBUG: _on_ok called")
+            paths = []
+            # Only include items that don't have a checked ancestor (avoid duplicates)
+            for item in list(self._checked):
+                p = self._item_path.get(item)
+                if not p:
+                    continue
+                # skip if any ancestor checked
+                parent = self.tree.parent(item)
+                skip = False
+                while parent:
+                    if parent in self._checked:
+                        skip = True
+                        break
+                    parent = self.tree.parent(parent)
+                if not skip:
+                    paths.append(p)
+            
+            self.selected_paths = paths
+            print(f"DEBUG: Selected {len(paths)} paths")
+            for path in paths:
+                print(f"DEBUG: Selected path: {path}")
+            
+            try:
+                self.grab_release()
+            except Exception:
+                pass
+            self.destroy()
+        except Exception as e:
+            print(f"DEBUG: _on_ok failed: {e}")
+            import traceback
+            print(f"DEBUG: Traceback: {traceback.format_exc()}")
 
     def _on_cancel(self):
-        self.selected_paths = []
+        """취소 버튼"""
         try:
-            self.grab_release()
-        except Exception:
-            pass
-        self.destroy()
+            print("DEBUG: _on_cancel called")
+            self.selected_paths = []
+            try:
+                self.grab_release()
+            except Exception:
+                pass
+            self.destroy()
+        except Exception as e:
+            print(f"DEBUG: _on_cancel failed: {e}")
+
+    def on_cancel(self):
+        """ESC키용 취소 핸들러"""
+        self._on_cancel()
+        
+    def on_ok(self):
+        """Enter키용 확인 핸들러"""
+        self._on_ok()
 
 def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=False, log_folder=None, retention_count=2, log_retention_days=30):
     """
     GUI와 스케줄러 공통 백업 로직 (상세 로그 기록 + cleanup 추가)
+    run_backup()과 동일한 로직이지만 UI 업데이트 없이 실행
     """
     import os, shutil
     from datetime import datetime
+    import time
+    import stat
 
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    timestamp = datetime.now().strftime("%Y-%m-%d")
     backup_name = f"{user_name}_backup_{timestamp}"
     backup_path = os.path.join(dest_dir, backup_name)
-    log_path = os.path.join(dest_dir, f"{user_name}_backup_{timestamp}.log")
+    log_timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    log_path = os.path.join(dest_dir, f"{user_name}_backup_{log_timestamp}.log")
+
+    # 기존 백업 폴더가 있으면 삭제
+    if os.path.exists(backup_path):
+        try:
+            shutil.rmtree(backup_path, onerror=_handle_rmtree_error_headless)
+        except Exception as e:
+            pass
 
     os.makedirs(backup_path, exist_ok=True)
 
     total_bytes = 0
     files_copied = 0
+    folders_processed = 0
     user_home = os.path.join("C:\\Users", user_name)
 
     if not os.path.exists(user_home):
         raise FileNotFoundError(f"User folder '{user_home}' not found.")
 
+    # 숨김/시스템 파일 체크 함수 (run_backup과 동일한 로직)
+    def is_hidden_headless(filepath):
+        """헤드리스 모드용 is_hidden 함수"""
+        if not os.path.exists(filepath):
+            return False
+        
+        # 기본 체크들
+        base = os.path.basename(filepath).lower()
+        if base.startswith('.') or base in ('thumbs.db', 'desktop.ini', '$recycle.bin'):
+            return True
+            
+        if base in ('appdata', 'application data', 'local settings'):
+            if not (include_hidden and include_system):
+                return True
+
+        try:
+            # Windows 속성 체크
+            if _have_pywin32 and win32api and win32con:
+                attrs = win32api.GetFileAttributes(filepath)
+                is_hidden_attr = bool(attrs & win32con.FILE_ATTRIBUTE_HIDDEN)
+                is_system_attr = bool(attrs & win32con.FILE_ATTRIBUTE_SYSTEM)
+                is_reparse = bool(attrs & win32con.FILE_ATTRIBUTE_REPARSE_POINT)
+            else:
+                try:
+                    attrs = _get_file_attributes(filepath)
+                except Exception:
+                    return False
+                is_hidden_attr = bool(attrs & FILE_ATTRIBUTE_HIDDEN)
+                is_system_attr = bool(attrs & FILE_ATTRIBUTE_SYSTEM)
+                is_reparse = bool(attrs & FILE_ATTRIBUTE_REPARSE_POINT)
+
+            if is_reparse:
+                return True
+            if is_hidden_attr and not include_hidden:
+                return True
+            if is_system_attr and not include_system:
+                return True
+        except Exception:
+            pass
+
+        return False
+
+    # 안전한 파일 복사 함수 (run_backup과 동일)
+    def copy_file_safe_headless(src, dst, timeout_seconds=30):
+        """타임아웃이 있는 안전한 파일 복사 (헤드리스용)"""
+        try:
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            copied = 0
+            start_time = time.time()
+            buffer_size = 64*1024
+            
+            with open(src, "rb") as fsrc, open(dst, "wb") as fdst:
+                while True:
+                    if time.time() - start_time > timeout_seconds:
+                        raise TimeoutError(f"File copy timeout: {src}")
+                    
+                    buf = fsrc.read(buffer_size)
+                    if not buf:
+                        break
+                    fdst.write(buf)
+                    copied += len(buf)
+            
+            try:
+                shutil.copystat(src, dst)
+            except Exception:
+                pass
+                
+            return copied
+        except Exception as e:
+            print(f"ERROR copying file {src} -> {dst}: {e}")
+            return 0
+
     with open(log_path, "w", encoding="utf-8") as log:
-        log.write(f"[{timestamp}] Backup start for '{user_name}' → {backup_path}\n")
+        log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Backup start for '{user_name}' → {backup_path}\n")
         log.write(f"[POLICY] Hidden={'include' if include_hidden else 'exclude'} System={'include' if include_system else 'exclude'}\n")
 
-        for root, dirs, files in os.walk(user_home):
-            # 숨김/시스템 제외 처리
-            if not include_hidden:
-                dirs[:] = [d for d in dirs if not d.startswith('.')]
-            if not include_system:
-                dirs[:] = [d for d in dirs if d.lower() not in ("system32", "appdata")]
-
-            rel_dir = os.path.relpath(root, user_home)
-            dest_dir_path = os.path.join(backup_path, rel_dir) if rel_dir != '.' else backup_path
-            os.makedirs(dest_dir_path, exist_ok=True)
-            log.write(f"[{timestamp}] Created folder: {dest_dir_path}\n")
-
-            for f in files:
-                src = os.path.join(root, f)
-                dst = os.path.join(dest_dir_path, f)
-                try:
-                    shutil.copy2(src, dst)
-                    files_copied += 1
-                    size = os.path.getsize(src)
-                    total_bytes += size
-                    log.write(f"[{timestamp}] Copied: {src} -> {dst} ({size} bytes)\n")
-                except Exception as e:
-                    log.write(f"[{timestamp}] [WARN] Skipped: {src} ({e})\n")
-
-        log.write(f"[{timestamp}] Backup completed. Files={files_copied}, Size={total_bytes} bytes\n")
-
-        # 브라우저 북마크 백업
         try:
-            log.write(f"[{timestamp}] Backing up Chrome and Edge browser bookmarks...\n")
+            # run_backup()과 동일한 백업 로직
+            for dirpath, dirnames, filenames in os.walk(user_home, topdown=True, onerror=None):
+                try:
+                    # 안전한 디렉토리 필터링
+                    original_dirnames = dirnames.copy()
+                    dirnames.clear()
+                    
+                    for d in original_dirnames:
+                        full_dir_path = os.path.join(dirpath, d)
+                        try:
+                            if not is_hidden_headless(full_dir_path):
+                                dirnames.append(d)
+                            else:
+                                log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Skipping hidden directory: {full_dir_path}\n")
+                        except Exception as e:
+                            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Error checking directory {full_dir_path}: {e}\n")
+                            dirnames.append(d)  # 에러 시 디렉토리 포함
+                    
+                    # 목적지 폴더 생성
+                    rel_dir = os.path.relpath(dirpath, user_home)
+                    dest_dir_path = os.path.join(backup_path, rel_dir) if rel_dir != "." else backup_path
+                    
+                    try:
+                        os.makedirs(dest_dir_path, exist_ok=True)
+                        log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Created folder: {dest_dir_path}\n")
+                        folders_processed += 1
+                    except Exception as e:
+                        log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Failed to create folder {dest_dir_path}: {e}\n")
+                        continue
+
+                    # 파일 복사
+                    for f in filenames:
+                        try:
+                            src_file = os.path.join(dirpath, f)
+                            dest_file = os.path.join(dest_dir_path, f)
+                            
+                            # 숨김 파일 체크 
+                            if is_hidden_headless(src_file):
+                                log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Skipping hidden file: {src_file}\n")
+                                continue
+                            
+                            # 파일 복사
+                            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Copying file: {src_file} -> {dest_file}\n")
+                            copied_bytes = copy_file_safe_headless(src_file, dest_file)
+                            if copied_bytes > 0:
+                                files_copied += 1
+                                total_bytes += copied_bytes
+                                
+                        except Exception as e:
+                            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Failed to copy file {src_file}: {e}\n")
+                            continue
+                            
+                except Exception as e:
+                    log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: Failed to process directory {dirpath}: {e}\n")
+                    continue
+
+            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Backup completed. Files backed up: {files_copied}, Folders: {folders_processed}, Total size: {format_bytes(total_bytes)}\n")
+
+        except Exception as e:
+            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] CRITICAL ERROR in backup loop: {e}\n")
+            raise
+
+        # 브라우저 북마크 백업 (run_backup과 동일)
+        try:
+            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Backing up Chrome and Edge browser bookmarks...\n")
             chrome_bookmark_path = os.path.join(os.path.expandvars('%LOCALAPPDATA%'), 'Google', 'Chrome', 'User Data', 'Default', 'Bookmarks')
             edge_bookmark_path = os.path.join(os.path.expandvars('%LOCALAPPDATA%'), 'Microsoft', 'Edge', 'User Data', 'Default', 'Bookmarks')
 
-            
             if os.path.exists(chrome_bookmark_path):
-                shutil.copy(chrome_bookmark_path, os.path.join(dest_dir, 'Chrome_Bookmarks'))  # dest_dir 사용
-                log.write(f"[{timestamp}] - Chrome bookmarks backed up.\n")
+                shutil.copy(chrome_bookmark_path, os.path.join(dest_dir, 'Chrome_Bookmarks'))
+                log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] - Chrome bookmarks backed up.\n")
             else:
-                log.write(f"[{timestamp}] - Chrome bookmark file not found.\n")
+                log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] - Chrome bookmark file not found.\n")
 
             if os.path.exists(edge_bookmark_path):
-                shutil.copy(edge_bookmark_path, os.path.join(dest_dir, 'Edge_Bookmarks'))  # dest_dir 사용
-                log.write(f"[{timestamp}] - Edge bookmarks backed up.\n")
+                shutil.copy(edge_bookmark_path, os.path.join(dest_dir, 'Edge_Bookmarks'))
+                log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] - Edge bookmarks backed up.")
             else:
-                log.write(f"[{timestamp}] - Edge bookmark file not found.\n")
+                log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] - Edge bookmark file not found.")
         except Exception as e:
-            log.write(f"[{timestamp}] Browser bookmark backup error: {e}\n")
+            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Browser bookmark backup error: {e}")
 
-        # 오래된 백업 정리
+        # 오래된 백업 정리 (run_backup과 동일)
         try:
-            log.write(f"\n[{timestamp}] [Old backup cleanup]\n")
+            log.write(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [Old backup cleanup]\n")
             if retention_count <= 0:
-                log.write(f"[{timestamp}] Backup cleanup is disabled (retention count is 0 or less).\n")
+                log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Backup cleanup is disabled (retention count is 0 or less).\n")
             else:
                 backup_prefix = f"{user_name}_backup_"
                 all_backups = [d for d in os.listdir(dest_dir) if os.path.isdir(os.path.join(dest_dir, d)) and d.startswith(backup_prefix)]
                 
                 if len(all_backups) > retention_count:
-                    log.write(f"[{timestamp}] Found {len(all_backups)} backups. Keeping the {retention_count} most recent.\n")
+                    log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Found {len(all_backups)} backups. Keeping the {retention_count} most recent.\n")
                     all_backups.sort()
                     backups_to_delete = all_backups[:-retention_count]
                     for backup_dir_name in backups_to_delete:
                         dir_to_delete = os.path.join(dest_dir, backup_dir_name)
-                        log.write(f"[{timestamp}]   Deleting old backup: {dir_to_delete}\n")
+                        log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]   Deleting old backup: {dir_to_delete}\n")
                         try:
-                            shutil.rmtree(dir_to_delete, onerror=lambda func, path, exc_info: _handle_rmtree_error_headless(func, path, exc_info, log, timestamp))
+                            shutil.rmtree(dir_to_delete, onerror=lambda func, path, exc_info: _handle_rmtree_error_headless(func, path, exc_info, log, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                         except Exception as e:
-                            log.write(f"[{timestamp}]   ERROR: Could not delete {dir_to_delete}: {e}\n")
-                    log.write(f"[{timestamp}] Cleanup finished.\n")
+                            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]   ERROR: Could not delete {dir_to_delete}: {e}\n")
+                    log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Cleanup finished.\n")
                 else:
-                    log.write(f"[{timestamp}] Found {len(all_backups)} backups. No old backups to clean up (retention policy: keep {retention_count}).\n")
+                    log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Found {len(all_backups)} backups. No old backups to clean up (retention policy: keep {retention_count}).")
         except Exception as e:
-            log.write(f"[{timestamp}] ERROR: An error occurred during backup cleanup: {e}\n")
+            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERROR: An error occurred during backup cleanup: {e}")
 
-        # 오래된 로그 정리
+        # 오래된 로그 정리 (run_backup과 동일)
         try:
-            log.write(f"\n[{timestamp}] [Old log cleanup]\n")
+            log.write(f"\n[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] [Old log cleanup]\n")
             if log_retention_days <= 0:
-                log.write(f"[{timestamp}] Log cleanup disabled (retention days <= 0)\n")
+                log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Log cleanup disabled (retention days <= 0)\n")
             else:
                 if not os.path.isdir(dest_dir):
-                    log.write(f"[{timestamp}] Log folder does not exist: {dest_dir}\n")
+                    log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Log folder does not exist: {dest_dir}\n")
                 else:
-                    import time
                     now = time.time()
                     cutoff = now - (log_retention_days * 86400)
                     cutoff_date = datetime.fromtimestamp(cutoff).strftime('%Y-%m-%d %H:%M:%S')
                     
-                    log.write(f"[{timestamp}] Scanning '{dest_dir}' for logs older than {log_retention_days} days...\n")
-                    log.write(f"[{timestamp}] Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-                    log.write(f"[{timestamp}] Cutoff time: {cutoff_date}\n")
+                    log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Scanning '{dest_dir}' for logs older than {log_retention_days} days...\n")
+                    log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Current time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                    log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Cutoff time: {cutoff_date}\n")
                     
                     deleted_count = 0
                     try:
                         all_files = os.listdir(dest_dir)
                         log_files = [f for f in all_files if f.endswith('.log')]
-                        log.write(f"[{timestamp}] Log files found: {len(log_files)}\n")
+                        log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Log files found: {len(log_files)}\n")
                         
                         for filename in log_files:
                             filepath = os.path.join(dest_dir, filename)
@@ -4792,32 +5448,66 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
                                     file_date = datetime.fromtimestamp(file_mtime).strftime('%Y-%m-%d %H:%M:%S')
                                     age_days = (now - file_mtime) / 86400
                                     
-                                    log.write(f"[{timestamp}]   File: {filename}\n")
-                                    log.write(f"[{timestamp}]     Modified: {file_date}\n")
-                                    log.write(f"[{timestamp}]     Age: {age_days:.1f} days\n")
-                                    log.write(f"[{timestamp}]     Should delete: {file_mtime < cutoff}\n")
+                                    log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]   File: {filename}\n")
+                                    log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]     Modified: {file_date}\n")
+                                    log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]     Age: {age_days:.1f} days\n")
+                                    log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]     Should delete: {file_mtime < cutoff}\n")
                                     
                                     if file_mtime < cutoff:
                                         try:
                                             os.remove(filepath)
-                                            log.write(f"[{timestamp}]     ✓ Deleted: {filename}\n")
+                                            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]     ✓ Deleted: {filename}\n")
                                             deleted_count += 1
                                         except Exception as e:
-                                            log.write(f"[{timestamp}]     ✗ Delete failed: {e}\n")
+                                            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]     ✗ Delete failed: {e}\n")
                             except Exception as e:
-                                log.write(f"[{timestamp}]   Error checking {filename}: {e}\n")
+                                log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}]   Error checking {filename}: {e}\n")
                         
                         if deleted_count > 0:
-                            log.write(f"[{timestamp}] Log cleanup completed. Deleted {deleted_count} files.\n")
+                            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Log cleanup completed. Deleted {deleted_count} files.\n")
                         else:
-                            log.write(f"[{timestamp}] No old log files found to delete.\n")
+                            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] No old log files found to delete.\n")
                             
                     except Exception as e:
-                        log.write(f"[{timestamp}] Error listing files: {e}\n")
+                        log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Error listing files: {e}\n")
         except Exception as e:
-            log.write(f"[{timestamp}] Error during log cleanup: {e}\n")
+            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Error during log cleanup: {e}\n")
 
     return backup_path, log_path
+
+
+# 2. 필요한 헬퍼 함수들 추가
+
+def format_bytes(size):
+    """Converts bytes to a human-readable format (KB, MB, GB, etc.)."""
+    try:
+        size = float(size)
+    except (ValueError, TypeError):
+        return "N/A"
+    for unit in ["B", "KB", "MB", "GB", "TB"]:
+        if size < 1024.0:
+            return f"{size:.2f} {unit}"
+        size /= 1024.0
+    return f"{size:.2f} PB"
+
+
+def _handle_rmtree_error_headless(func, path, exc_info, log, timestamp):
+    """
+    에러 처리기 for shutil.rmtree (headless 모드용 - 로그에 기록)
+    """
+    if isinstance(exc_info[1], PermissionError):
+        try:
+            os.chmod(path, stat.S_IWRITE)
+            func(path)
+            log.write(f"[{timestamp}] INFO: Removed read-only and successfully deleted {path}\n")
+        except Exception as e:
+            log.write(f"[{timestamp}] ERROR: Could not delete {path} even after removing read-only flag: {e}\n")
+    else:
+        log.write(f"[{timestamp}] ERROR: Deletion failed for {path}: {exc_info[1]}\n")
+
+
+# 3. 필요한 import들이 core_run_backup 함수 내에서 사용할 수 있도록 전역에서 정의되어 있는지 확인
+# 현재 코드에서 이미 정의되어 있음: _have_pywin32, win32api, win32con, _get_file_attributes 등
 
 if __name__ == "__main__":
     def is_admin():
@@ -4841,9 +5531,6 @@ if __name__ == "__main__":
         def task_done(self, *args, **kwargs): pass
 
     def _run_headless_if_requested():
-        import argparse
-        import sys
-        from datetime import datetime
 
         parser = argparse.ArgumentParser()
         parser.add_argument("--user", help="User name to back up")
