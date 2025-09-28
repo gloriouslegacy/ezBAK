@@ -65,5 +65,5 @@ Windows 사용자 데이터 GUI 환경 손쉽게 백업/복원할 수 있는 도
 
 ## 📄 참고 사항
 - 기본적으로 **숨김/시스템 파일은 제외**되며, 필요시 옵션에 포함 가능  
-- `%AppData%` 폴더는 기본 제외 대상(include Hidden n System : `%AppData` 폴더 포함)
+- `%AppData%` 폴더는 기본 제외 대상 → include Hidden n System : `%AppData` 폴더 포함
 - 모든 사용 책임은 사용자에게 있습니다  
