@@ -282,7 +282,7 @@ class HeadlessBackupRunner:
     def run_backup(self):
         """헤드리스 모드 백업 실행"""
         try:
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
             # timestamp = datetime.now().strftime("%Y-%m-%d")
             backup_path, log_path = core_run_backup(
                 self.user,
@@ -300,7 +300,6 @@ class HeadlessBackupRunner:
             print(f"[{timestamp}] ERROR during headless backup: {e}")
             return False
         finally:
-            # 항상 실행되는 정리 작업
             try:
                 self.close_log_file()
             except Exception:
@@ -1382,29 +1381,40 @@ class App(tk.Tk):
             name = os.path.basename(filepath)
             name_l = name.lower()
             ext_l = os.path.splitext(name_l)[1].lstrip('.')
-            def _norm(p):
-                try:
-                    return os.path.normcase(p).replace('\\', '/').lower()
-                except Exception:
-                    return str(p).lower()
-            path_norm = _norm(filepath)
+            filepath_lower = filepath.lower()
 
             def _matches(rule):
                 try:
                     rtype = (rule.get('type') or '').lower()
-                    patt = (rule.get('pattern') or '')
+                    patt = (rule.get('pattern') or '').strip()
                     if not patt:
                         return False
+                    patt_lower = patt.lower()
+                    
                     if rtype == 'ext':
                         if is_dir:
                             return False
-                        # allow patterns like "tmp" or "*.tmp"
-                        patt_norm = patt.lstrip('.').lower()
-                        return fnmatch.fnmatch(ext_l, patt_norm)
+                        patt_clean = patt_lower.lstrip('*.')
+                        return ext_l == patt_clean
+                        
                     elif rtype == 'name':
-                        return fnmatch.fnmatch(name_l, patt.lower())
+                        if '*' in patt_lower or '?' in patt_lower:
+                            return fnmatch.fnmatch(name_l, patt_lower)
+                        else:
+                            return name_l == patt_lower
+                        
                     elif rtype == 'path':
-                        return fnmatch.fnmatch(path_norm, _norm(patt))
+                        # 단순 포함 검사
+                        if patt_lower in filepath_lower:
+                            return True
+                        # 정규화된 경로 매칭
+                        path_normalized = filepath_lower.replace('\\', '/')
+                        patt_normalized = patt_lower.replace('\\', '/')
+                        if patt_normalized in path_normalized:
+                            return True
+                        # 와일드카드 매칭
+                        if '*' in patt_normalized or '?' in patt_normalized:
+                            return fnmatch.fnmatch(path_normalized, patt_normalized)
                     return False
                 except Exception:
                     return False
@@ -1528,7 +1538,7 @@ class App(tk.Tk):
             self.write_detailed_log(f"Backup start: {user_profile_path} -> {backup_path}")
             self.message_queue.put(('log', f"Backing up user: {user_name}"))
 
-            timestamp = datetime.now().strftime("%Y-%m-%d")
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
             destination_dir = os.path.join(backup_path, f"{user_name}_backup_{timestamp}")
 
             if os.path.exists(destination_dir):
@@ -1777,85 +1787,96 @@ class App(tk.Tk):
 
     def is_hidden_safe(self, filepath, timeout_seconds=2):
         """
-        타임아웃이 있는 안전한 is_hidden 함수
+        타임아웃이 있는 is_hidden 함수 - 필터 포함
         """
         try:
-            # 빠른 기본 검사들
+            # 존재 확인
             if not os.path.exists(filepath):
                 return False
-                
-            # 이름 기반 검사 (빠름)
+            
+            is_dir = os.path.isdir(filepath)
+            
+            # 필터 체크 (OneDrive 등)
+            filters = getattr(self, 'filters', {'include': [], 'exclude': []}) or {'include': [], 'exclude': []}
+            name = os.path.basename(filepath)
+            name_l = name.lower()
+            ext_l = os.path.splitext(name_l)[1].lstrip('.')
+            filepath_lower = filepath.lower()
+            
+            def _matches(rule):
+                try:
+                    rtype = (rule.get('type') or '').lower()
+                    patt = (rule.get('pattern') or '').strip()
+                    if not patt:
+                        return False
+                    patt_lower = patt.lower()
+                    
+                    if rtype == 'ext':
+                        if is_dir:
+                            return False
+                        patt_clean = patt_lower.lstrip('*.')
+                        return ext_l == patt_clean
+                        
+                    elif rtype == 'name':
+                        if '*' in patt_lower or '?' in patt_lower:
+                            return fnmatch.fnmatch(name_l, patt_lower)
+                        else:
+                            return name_l == patt_lower
+                        
+                    elif rtype == 'path':
+                        if patt_lower in filepath_lower:
+                            return True
+                        path_normalized = filepath_lower.replace('\\', '/')
+                        patt_normalized = patt_lower.replace('\\', '/')
+                        if patt_normalized in path_normalized:
+                            return True
+                        if '*' in patt_normalized or '?' in patt_normalized:
+                            return fnmatch.fnmatch(path_normalized, patt_normalized)
+                    return False
+                except Exception:
+                    return False
+            
+            # Exclude 필터 확인
+            for rule in filters.get('exclude', []) or []:
+                if _matches(rule):
+                    return True
+            
+            # Include 필터 확인 (파일만)
+            inc_rules = filters.get('include', []) or []
+            if inc_rules and not is_dir:
+                has_match = False
+                for rule in inc_rules:
+                    if _matches(rule):
+                        has_match = True
+                        break
+                if not has_match:
+                    return True
+            
+            # 기본 숨김 파일 체크
             base = os.path.basename(filepath).lower()
             if base.startswith('.') or base in ('thumbs.db', 'desktop.ini', '$recycle.bin'):
                 return True
-                
-            if base in ('appdata', 'application data', 'local settings'):
-                if not (self.hidden_mode_var.get() == 'include' and self.system_mode_var.get() == 'include'):
-                    return True
-
-            # Windows 속성 검사 (느릴 수 있음) - 타임아웃 적용
-            import signal
             
-            def timeout_handler(signum, frame):
-                raise TimeoutError("is_hidden check timeout")
-            
-            # Windows에서는 signal.alarm이 작동하지 않으므로 threading 사용
-            import threading
-            result = [False]  # 결과를 저장할 리스트
-            exception = [None]  # 예외를 저장할 리스트
-            
-            def check_attributes():
-                try:
-                    if _have_pywin32 and win32api and win32con:
-                        attrs = win32api.GetFileAttributes(filepath)
-                        is_hidden_attr = bool(attrs & win32con.FILE_ATTRIBUTE_HIDDEN)
-                        is_system_attr = bool(attrs & win32con.FILE_ATTRIBUTE_SYSTEM)
-                        is_reparse = bool(attrs & win32con.FILE_ATTRIBUTE_REPARSE_POINT)
-                    else:
-                        try:
-                            attrs = _get_file_attributes(filepath)
-                        except Exception:
-                            result[0] = False
-                            return
-                        is_hidden_attr = bool(attrs & FILE_ATTRIBUTE_HIDDEN)
-                        is_system_attr = bool(attrs & FILE_ATTRIBUTE_SYSTEM)
-                        is_reparse = bool(attrs & FILE_ATTRIBUTE_REPARSE_POINT)
-                    
+            # Windows 속성 체크
+            try:
+                if _have_pywin32 and win32api and win32con:
+                    attrs = win32api.GetFileAttributes(filepath)
+                    is_reparse = bool(attrs & win32con.FILE_ATTRIBUTE_REPARSE_POINT)
                     if is_reparse:
-                        result[0] = True
-                        return
+                        return True
+                    is_hidden_attr = bool(attrs & win32con.FILE_ATTRIBUTE_HIDDEN)
+                    is_system_attr = bool(attrs & win32con.FILE_ATTRIBUTE_SYSTEM)
                     if is_hidden_attr and self.hidden_mode_var.get() == 'exclude':
-                        result[0] = True
-                        return
+                        return True
                     if is_system_attr and self.system_mode_var.get() == 'exclude':
-                        result[0] = True
-                        return
-                        
-                    result[0] = False
-                except Exception as e:
-                    exception[0] = e
-                    result[0] = False
+                        return True
+            except Exception:
+                pass
             
-            # 별도 스레드에서 속성 검사 실행
-            thread = threading.Thread(target=check_attributes, daemon=True)
-            thread.start()
-            thread.join(timeout=timeout_seconds)
-            
-            if thread.is_alive():
-                # 타임아웃 발생
-                self.write_detailed_log(f"TIMEOUT: is_hidden check for {filepath}")
-                return False  # 타임아웃 시 숨김이 아닌 것으로 처리
-                
-            if exception[0]:
-                self.write_detailed_log(f"ERROR in is_hidden check for {filepath}: {exception[0]}")
-                return False
-                
-            return result[0]
-            
-        except Exception as e:
-            self.write_detailed_log(f"WARN: is_hidden_safe check failed for {filepath}: {e}")
             return False
-
+            
+        except Exception:
+            return False
 
     def _cleanup_old_backups(self, backup_path, user_name):
         """Deletes old backups, keeping N most recent ones based on UI setting."""
@@ -3468,7 +3489,7 @@ class App(tk.Tk):
             ff_ini = os.path.join(roaming, 'Mozilla', 'Firefox', 'profiles.ini')
 
             # Destination root with timestamp
-            ts = datetime.now().strftime('%Y-%m-%d')
+            ts = datetime.now().strftime('%Y-%m-%d_%H%M%S')
             dest_base = os.path.join(dest_root, f"BrowserProfiles_backup_{ts}")
             os.makedirs(dest_base, exist_ok=True)
 
@@ -3603,7 +3624,7 @@ class App(tk.Tk):
         try:
             # 시스템 정보 가져오기
             system_name = get_system_info()
-            timestamp = datetime.now().strftime("%Y-%m-%d")
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
             
             # 커스텀 백업 폴더명 생성
             backup_folder_name = f"{system_name}_drivers_{timestamp}"
@@ -5209,7 +5230,7 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
     import time
     import stat
 
-    timestamp = datetime.now().strftime("%Y-%m-%d")
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
     backup_name = f"{user_name}_backup_{timestamp}"
     backup_path = os.path.join(dest_dir, backup_name)
     log_timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
