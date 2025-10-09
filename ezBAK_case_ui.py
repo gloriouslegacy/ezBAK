@@ -18,6 +18,8 @@ import re
 import time
 import json
 
+# wim backup core functions
+# wim once boot functions
 
         #     # 항상 실행되는 정리 작업
         # finally:
@@ -550,7 +552,7 @@ Tips :  Shortcuts are not case-sensitive.
         try:
             if hasattr(self.app, 'status_label'):
                 original_text = self.app.status_label.cget("text")
-                hint_text = f"{original_text} | F1: help"
+                hint_text = f"{original_text}"
                 self.app.status_label.configure(text=hint_text)
         except:
             pass
@@ -611,7 +613,7 @@ class App(tk.Tk):
                 self.iconbitmap(resource_path('./icon/ezbak.ico'))
             except tk.TclError:
                 pass 
-        self.geometry("1024x429")
+        self.geometry("1026x698")
         self.configure(bg="#2D3250")
 
         # UI elements setup
@@ -669,30 +671,43 @@ class App(tk.Tk):
 
     def create_widgets(self):
         # Header
-        # header_frame = tk.Frame(self, bg="#424769")
-        # header_frame.pack(fill="x", pady=10)
-
-        # title_label = tk.Label(header_frame, text="ezBAK", font=("Arial", 11, "bold"), bg="#424769", fg="white")
-        #title_label.pack(side="left", padx=5)
-        # title_label.pack(expand=True)
+        header_frame = tk.Frame(self, bg="#1a1f35", height=60)
+        header_frame.pack(fill="x", pady=0)
+        header_frame.pack_propagate(False)
+        
+        title_container = tk.Frame(header_frame, bg="#1a1f35")
+        title_container.pack(side="left", padx=20, pady=10)
+        
+        title_label = tk.Label(title_container, text="ezBAK", font=("Arial", 18, "bold"), 
+                              bg="#1a1f35", fg="#4CAF50")
+        title_label.pack(side="left")
+        
+        version_label = tk.Label(title_container, text="v0.6.7", font=("Arial", 9), 
+                                bg="#1a1f35", fg="#888888")
+        version_label.pack(side="left", padx=(8, 0), pady=(8, 0))
+        
+        header_right = tk.Frame(header_frame, bg="#1a1f35")
+        header_right.pack(side="right", padx=20, pady=10)
+        
+        self.header_time_label = tk.Label(header_right, text="", font=("Arial", 9), 
+                                         bg="#1a1f35", fg="#AAAAAA")
+        self.header_time_label.pack()
+        self._update_header_time()
 
         # Main frame
         main_frame = tk.Frame(self, bg="#2D3250", padx=20, pady=20)
         main_frame.pack(fill="both", expand=True)
 
-        # Small options row under the title (right-aligned) for Hidden/System
+        # Small options row
         options_row = tk.Frame(main_frame, bg="#2D3250")
         options_row.pack(fill="x", pady=(2,6))
 
-        # right-aligned opt_frame placed in the options_row
         opt_frame = tk.Frame(options_row, bg="#2D3250")
         opt_frame.pack(side="right")
 
-        # Build widgets so visible LTR order is: Hidden: Include Exclude   [gap]   System: Include Exclude
-        # We pack side='right' in reverse to achieve the left-to-right appearance.
         radio_font = ("Arial", 10)
 
-        # System group (right side)
+        # System group
         system_exclude = tk.Radiobutton(opt_frame, text="Exclude", variable=self.system_mode_var, value='exclude', bg="#2D3250", fg="white", selectcolor="#2D3250", font=radio_font, activebackground="#2D3250", activeforeground="white", bd=0)
         system_exclude.pack(side="right", padx=(2,4))
         system_include = tk.Radiobutton(opt_frame, text="Include", variable=self.system_mode_var, value='include', bg="#2D3250", fg="white", selectcolor="#2D3250", font=radio_font, activebackground="#2D3250", activeforeground="white", bd=0)
@@ -700,11 +715,10 @@ class App(tk.Tk):
         system_label = tk.Label(opt_frame, text="System:", bg="#2D3250", fg="white", font=("Arial", 10, "bold"))
         system_label.pack(side="right", padx=(6,4))
 
-        # visual separator between groups
         sep = ttk.Separator(opt_frame, orient='vertical')
         sep.pack(side="right", fill='y', padx=8, pady=2)
 
-        # Hidden group (left side)
+        # Hidden group
         hidden_exclude = tk.Radiobutton(opt_frame, text="Exclude", variable=self.hidden_mode_var, value='exclude', bg="#2D3250", fg="white", selectcolor="#2D3250", font=radio_font, activebackground="#2D3250", activeforeground="white", bd=0)
         hidden_exclude.pack(side="right", padx=(2,4))
         hidden_include = tk.Radiobutton(opt_frame, text="Include", variable=self.hidden_mode_var, value='include', bg="#2D3250", fg="white", selectcolor="#2D3250", font=radio_font, activebackground="#2D3250", activeforeground="white", bd=0)
@@ -712,11 +726,10 @@ class App(tk.Tk):
         hidden_label = tk.Label(opt_frame, text="Hidden:", bg="#2D3250", fg="white", font=("Arial", 10, "bold"))
         hidden_label.pack(side="right", padx=(4,2))
 
-        # visual separator between groups
         sep2 = ttk.Separator(opt_frame, orient='vertical')
         sep2.pack(side="right", fill='y', padx=8, pady=2)
 
-        # Log retention count group
+        # Log retention count
         log_retention_info_label = tk.Label(opt_frame, text="days (0=disable)", bg="#2D3250", fg="gray", font=radio_font)
         log_retention_info_label.pack(side="right", padx=(2, 4))
         log_retention_spinbox = tk.Spinbox(opt_frame, from_=0, to=365, textvariable=self.log_retention_days_var, width=4)
@@ -724,11 +737,10 @@ class App(tk.Tk):
         log_retention_label = tk.Label(opt_frame, text="Logs to Keep:", bg="#2D3250", fg="white", font=("Arial", 10, "bold"))
         log_retention_label.pack(side="right", padx=(6, 4))
 
-        # visual separator
         sep3 = ttk.Separator(opt_frame, orient='vertical')
         sep3.pack(side="right", fill='y', padx=8, pady=2)
 
-        # Retention count group (far left)
+        # Retention count
         retention_info_label = tk.Label(opt_frame, text="(0=keep all)", bg="#2D3250", fg="gray", font=radio_font)
         retention_info_label.pack(side="right", padx=(2, 4))
         retention_spinbox = tk.Spinbox(opt_frame, from_=0, to=99, textvariable=self.retention_count_var, width=4)
@@ -736,33 +748,19 @@ class App(tk.Tk):
         retention_label = tk.Label(opt_frame, text="Backups to Keep:", bg="#2D3250", fg="white", font=("Arial", 10, "bold"))
         retention_label.pack(side="right", padx=(6, 4))
 
-        # persist when changed
+        # Persist settings
         try:
             self.hidden_mode_var.trace_add('write', lambda *args: self.save_settings())
-        except Exception:
-            pass
-        try:
             self.system_mode_var.trace_add('write', lambda *args: self.save_settings())
-        except Exception:
-            pass
-        try:
             self.retention_count_var.trace_add('write', lambda *args: self.save_settings())
-        except Exception:
-            pass        
-        try:
             self.log_retention_days_var.trace_add('write', lambda *args: self.save_settings())
         except Exception:
             pass
 
-        # User selection row
+        # User selection
         user_selection_frame = tk.Frame(main_frame, bg="#2D3250")
         user_selection_frame.pack(fill="x", pady=6)
 
-        # persist when changed
-        self.hidden_mode_var.trace_add('write', lambda *args: self.save_settings())
-        self.system_mode_var.trace_add('write', lambda *args: self.save_settings())
-        self.retention_count_var.trace_add('write', lambda *args: self.save_settings())
-        self.log_retention_days_var.trace_add('write', lambda *args: self.save_settings())
         ttk.Label(user_selection_frame, text="Select User:", font=("Arial", 12), background="#2D3250", foreground="white").pack(side="left", padx=5)
 
         self.user_var = tk.StringVar()
@@ -770,174 +768,228 @@ class App(tk.Tk):
         self.user_combo.pack(side="left", padx=5, fill="x", expand=True)
         self.load_users()
 
-    # Hidden/System radio controls removed per user request.
-    # Defaults remain: hidden/system = 'exclude' (set in __init__).
-
-        # Button Grid Frame - Using grid layout for better alignment
-        button_grid_frame = tk.Frame(main_frame, bg="#2D3250")
-        button_grid_frame.pack(fill="x", pady=(0, 10))
-
-        # Configure grid columns to be uniform
+        # Main Operations Group
+        main_group = tk.LabelFrame(main_frame, text="  🔹  Main Operations  ", 
+                                   bg="#2D3250", fg="white", font=("Arial", 11, "bold"),
+                                   relief="flat", borderwidth=2)
+        main_group.pack(fill="x", pady=(10, 5))
+        
+        main_buttons_frame = tk.Frame(main_group, bg="#2D3250")
+        main_buttons_frame.pack(fill="x", padx=10, pady=10)
+        
         for i in range(5):
-            button_grid_frame.columnconfigure(i, weight=1, uniform="button")
+            main_buttons_frame.columnconfigure(i, weight=1, uniform="button")
 
-        # Button styling
         button_font_size = 8
         button_width = 15
         button_padx = 5
         button_pady = 3
 
-        # Row 1: Main Data Operations
-        self.backup_btn = tk.Button(button_grid_frame, text="Backup User Data", bg="#FF5733", fg="white", 
+        # Row 1: Main operations
+        self.backup_btn = tk.Button(main_buttons_frame, text="📦 Backup Data", bg="#FF5733", fg="white", 
                                   font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                   relief="flat", width=button_width, command=self.start_backup_thread)
         self.backup_btn.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
         self.backup_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FF7D5A"))
         self.backup_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FF5733"))
 
-        self.restore_btn = tk.Button(button_grid_frame, text="Restore User Data", bg="#336BFF", fg="white", 
+        self.restore_btn = tk.Button(main_buttons_frame, text="♻️ Restore Data", bg="#336BFF", fg="white", 
                                    font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
                                    relief="flat", width=button_width, command=self.start_restore_thread)
         self.restore_btn.grid(row=0, column=1, padx=2, pady=2, sticky="ew")
         self.restore_btn.bind("<Enter>", lambda e: e.widget.config(bg="#5A8DFF"))
         self.restore_btn.bind("<Leave>", lambda e: e.widget.config(bg="#336BFF"))
 
-        self.copy_btn = tk.Button(button_grid_frame, text="Copy Data", bg="#FFA500", fg="white", 
-                                font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                relief="flat", width=button_width, command=self.copy_files)
-        self.copy_btn.grid(row=2, column=2, padx=2, pady=2, sticky="ew")
-        self.copy_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FFB733"))
-        self.copy_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FFA500"))
-
-        self.driver_backup_btn = tk.Button(button_grid_frame, text="Backup Drivers", bg="#FF5733", fg="white", 
-                                         font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                         relief="flat", width=button_width, command=self.start_driver_backup_thread)
-        self.driver_backup_btn.grid(row=0, column=3, padx=2, pady=2, sticky="ew")
-        self.driver_backup_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FF7D5A"))
-        self.driver_backup_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FF5733"))
-
-        self.driver_restore_btn = tk.Button(button_grid_frame, text="Restore Drivers", bg="#336BFF", fg="white", 
-                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                          relief="flat", width=button_width, command=self.start_driver_restore_thread)
-        self.driver_restore_btn.grid(row=0, column=4, padx=2, pady=2, sticky="ew")
-        self.driver_restore_btn.bind("<Enter>", lambda e: e.widget.config(bg="#5A8DFF"))
-        self.driver_restore_btn.bind("<Leave>", lambda e: e.widget.config(bg="#336BFF"))
-
-        # Row 2: Utility Operations
-        self.devmgr_btn = tk.Button(button_grid_frame, text="Device Manager", bg="#9A9B0B", fg="white", 
-                                  font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                  relief="flat", width=button_width, command=self.open_device_manager)
-        self.devmgr_btn.grid(row=1, column=3, padx=2, pady=2, sticky="ew")
-        self.devmgr_btn.bind("<Enter>", lambda e: e.widget.config(bg="#B4B50C"))
-        self.devmgr_btn.bind("<Leave>", lambda e: e.widget.config(bg="#9A9B0B"))
-
-        self.file_explorer_btn = tk.Button(button_grid_frame, text="File Explorer", bg="#7D98A1", fg="white", 
-                                         font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                         relief="flat", width=button_width, command=self.open_file_explorer)
-        self.file_explorer_btn.grid(row=1, column=4, padx=2, pady=2, sticky="ew")
-        self.file_explorer_btn.bind("<Enter>", lambda e: e.widget.config(bg="#92B0BB"))
-        self.file_explorer_btn.bind("<Leave>", lambda e: e.widget.config(bg="#7D98A1"))
-
-        self.save_log_btn = tk.Button(button_grid_frame, text="Save Log", bg="#4CAF50", fg="white", 
-                                    font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                    relief="flat", width=button_width, command=self.save_log)
-        self.save_log_btn.grid(row=1, column=2, padx=2, pady=2, sticky="ew")
-        self.save_log_btn.bind("<Enter>", lambda e: e.widget.config(bg="#6EC571"))
-        self.save_log_btn.bind("<Leave>", lambda e: e.widget.config(bg="#4CAF50"))
-
-        # Check Space button
-        self.check_space_btn = tk.Button(button_grid_frame, text="Check Space", bg="#8E44AD", fg="white", 
-                                        font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                        relief="flat", width=button_width, command=self.check_space)
-        self.check_space_btn.grid(row=1, column=1, padx=2, pady=2, sticky="ew")
-        self.check_space_btn.bind("<Enter>", lambda e: e.widget.config(bg="#A569BD"))
-        self.check_space_btn.bind("<Leave>", lambda e: e.widget.config(bg="#8E44AD"))
-
-        # Exit button removed per request; replaced with Browser Profiles backup button
-        self.browser_profiles_btn = tk.Button(button_grid_frame, text="Backup Browser Profiles", bg="#1E88E5", fg="white",
-                                             font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
-                                             relief="flat", width=button_width, command=self.start_browser_profiles_backup_thread)
-        self.browser_profiles_btn.grid(row=1, column=0, padx=2, pady=2, sticky="ew")
-        self.browser_profiles_btn.bind("<Enter>", lambda e: e.widget.config(bg="#42A5F5"))
-        self.browser_profiles_btn.bind("<Leave>", lambda e: e.widget.config(bg="#1E88E5"))
-
-        # Row 3: Scheduling
-        self.schedule_btn = tk.Button(button_grid_frame, text="Schedule Backup", bg="#2E7D32", fg="white",
-                                      font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
-                                      relief="flat", width=button_width, command=self.schedule_backup)
-        self.schedule_btn.grid(row=2, column=0, padx=2, pady=2, sticky="ew")
-        self.schedule_btn.bind("<Enter>", lambda e: e.widget.config(bg="#388E3C"))
-        self.schedule_btn.bind("<Leave>", lambda e: e.widget.config(bg="#2E7D32"))
-
-        # Winget export (installed apps)
-        self.winget_export_btn = tk.Button(button_grid_frame, text="Export Apps", bg="#00695C", fg="white",
-                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
-                                          relief="flat", width=button_width, command=self.start_winget_export_thread)
-        self.winget_export_btn.grid(row=2, column=1, padx=2, pady=2, sticky="ew")
-        self.winget_export_btn.bind("<Enter>", lambda e: e.widget.config(bg="#00897B"))
-        self.winget_export_btn.bind("<Leave>", lambda e: e.widget.config(bg="#00695C"))
-
-        # Filters button
-        self.filters_btn = tk.Button(button_grid_frame, text="Filters", bg="#455A64", fg="white",
+        self.filters_btn = tk.Button(main_buttons_frame, text="🔍 Filters", bg="#455A64", fg="white",
                                      font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                      relief="flat", width=button_width, command=self.open_filter_manager)
         self.filters_btn.grid(row=0, column=2, padx=2, pady=2, sticky="ew")
         self.filters_btn.bind("<Enter>", lambda e: e.widget.config(bg="#607D8B"))
         self.filters_btn.bind("<Leave>", lambda e: e.widget.config(bg="#455A64"))
 
-        # NAS connect/disconnect
-        self.nas_connect_btn = tk.Button(button_grid_frame, text="Connect NAS", bg="#00796B", fg="white",
+        self.driver_backup_btn = tk.Button(main_buttons_frame, text="🔧 Backup Drivers", bg="#FF5733", fg="white", 
+                                         font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
+                                         relief="flat", width=button_width, command=self.start_driver_backup_thread)
+        self.driver_backup_btn.grid(row=0, column=3, padx=2, pady=2, sticky="ew")
+        self.driver_backup_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FF7D5A"))
+        self.driver_backup_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FF5733"))
+
+        self.driver_restore_btn = tk.Button(main_buttons_frame, text="🔧 Restore Drivers", bg="#336BFF", fg="white", 
+                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
+                                          relief="flat", width=button_width, command=self.start_driver_restore_thread)
+        self.driver_restore_btn.grid(row=0, column=4, padx=2, pady=2, sticky="ew")
+        self.driver_restore_btn.bind("<Enter>", lambda e: e.widget.config(bg="#5A8DFF"))
+        self.driver_restore_btn.bind("<Leave>", lambda e: e.widget.config(bg="#336BFF"))
+
+        # Tools Group
+        tools_group = tk.LabelFrame(main_frame, text="  🔹  Tools & Utilities  ", 
+                                    bg="#2D3250", fg="white", font=("Arial", 11, "bold"),
+                                    relief="flat", borderwidth=2)
+        tools_group.pack(fill="x", pady=5)
+        
+        tools_buttons_frame = tk.Frame(tools_group, bg="#2D3250")
+        tools_buttons_frame.pack(fill="x", padx=10, pady=10)
+        
+        for i in range(5):
+            tools_buttons_frame.columnconfigure(i, weight=1, uniform="button")
+
+        self.browser_profiles_btn = tk.Button(tools_buttons_frame, text="🌐 Browser", bg="#1E88E5", fg="white",
+                                             font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
+                                             relief="flat", width=button_width, command=self.start_browser_profiles_backup_thread)
+        self.browser_profiles_btn.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
+        self.browser_profiles_btn.bind("<Enter>", lambda e: e.widget.config(bg="#42A5F5"))
+        self.browser_profiles_btn.bind("<Leave>", lambda e: e.widget.config(bg="#1E88E5"))
+
+        self.check_space_btn = tk.Button(tools_buttons_frame, text="💾 Check Space", bg="#8E44AD", fg="white", 
+                                        font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
+                                        relief="flat", width=button_width, command=self.check_space)
+        self.check_space_btn.grid(row=0, column=1, padx=2, pady=2, sticky="ew")
+        self.check_space_btn.bind("<Enter>", lambda e: e.widget.config(bg="#A569BD"))
+        self.check_space_btn.bind("<Leave>", lambda e: e.widget.config(bg="#8E44AD"))
+
+        self.save_log_btn = tk.Button(tools_buttons_frame, text="💾 Save Log", bg="#4CAF50", fg="white", 
+                                    font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
+                                    relief="flat", width=button_width, command=self.save_log)
+        self.save_log_btn.grid(row=0, column=2, padx=2, pady=2, sticky="ew")
+        self.save_log_btn.bind("<Enter>", lambda e: e.widget.config(bg="#6EC571"))
+        self.save_log_btn.bind("<Leave>", lambda e: e.widget.config(bg="#4CAF50"))
+
+        self.copy_btn = tk.Button(tools_buttons_frame, text="📋 Copy Data", bg="#FFA500", fg="white", 
+                                font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
+                                relief="flat", width=button_width, command=self.copy_files)
+        self.copy_btn.grid(row=0, column=3, padx=2, pady=2, sticky="ew")
+        self.copy_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FFB733"))
+        self.copy_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FFA500"))
+
+        self.devmgr_btn = tk.Button(tools_buttons_frame, text="⚙️ Device Mgr", bg="#9A9B0B", fg="white", 
+                                  font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
+                                  relief="flat", width=button_width, command=self.open_device_manager)
+        self.devmgr_btn.grid(row=0, column=4, padx=2, pady=2, sticky="ew")
+        self.devmgr_btn.bind("<Enter>", lambda e: e.widget.config(bg="#B4B50C"))
+        self.devmgr_btn.bind("<Leave>", lambda e: e.widget.config(bg="#9A9B0B"))
+
+        # Row 2
+        self.schedule_btn = tk.Button(tools_buttons_frame, text="⏰ Schedule", bg="#2E7D32", fg="white",
+                                      font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
+                                      relief="flat", width=button_width, command=self.schedule_backup)
+        self.schedule_btn.grid(row=1, column=0, padx=2, pady=2, sticky="ew")
+        self.schedule_btn.bind("<Enter>", lambda e: e.widget.config(bg="#388E3C"))
+        self.schedule_btn.bind("<Leave>", lambda e: e.widget.config(bg="#2E7D32"))
+
+        self.winget_export_btn = tk.Button(tools_buttons_frame, text="📦 Export Apps", bg="#00695C", fg="white",
+                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
+                                          relief="flat", width=button_width, command=self.start_winget_export_thread)
+        self.winget_export_btn.grid(row=1, column=1, padx=2, pady=2, sticky="ew")
+        self.winget_export_btn.bind("<Enter>", lambda e: e.widget.config(bg="#00897B"))
+        self.winget_export_btn.bind("<Leave>", lambda e: e.widget.config(bg="#00695C"))
+
+        self.file_explorer_btn = tk.Button(tools_buttons_frame, text="📂 Explorer", bg="#7D98A1", fg="white", 
+                                         font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
+                                         relief="flat", width=button_width, command=self.open_file_explorer)
+        self.file_explorer_btn.grid(row=1, column=2, padx=2, pady=2, sticky="ew")
+        self.file_explorer_btn.bind("<Enter>", lambda e: e.widget.config(bg="#92B0BB"))
+        self.file_explorer_btn.bind("<Leave>", lambda e: e.widget.config(bg="#7D98A1"))
+
+        self.nas_connect_btn = tk.Button(tools_buttons_frame, text="🌐 Connect NAS", bg="#00796B", fg="white",
                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                          relief="flat", width=button_width, command=self.open_nas_connect_dialog)
-        self.nas_connect_btn.grid(row=2, column=3, padx=2, pady=2, sticky="ew")
+        self.nas_connect_btn.grid(row=1, column=3, padx=2, pady=2, sticky="ew")
         self.nas_connect_btn.bind("<Enter>", lambda e: e.widget.config(bg="#009688"))
         self.nas_connect_btn.bind("<Leave>", lambda e: e.widget.config(bg="#00796B"))
 
-        self.nas_disconnect_btn = tk.Button(button_grid_frame, text="Disconnect NAS", bg="#B71C1C", fg="white",
+        self.nas_disconnect_btn = tk.Button(tools_buttons_frame, text="🔌 Disconnect", bg="#B71C1C", fg="white",
                                             font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
                                             relief="flat", width=button_width, command=self.open_nas_disconnect_dialog)
-        self.nas_disconnect_btn.grid(row=2, column=4, padx=2, pady=2, sticky="ew")
+        self.nas_disconnect_btn.grid(row=1, column=4, padx=2, pady=2, sticky="ew")
         self.nas_disconnect_btn.bind("<Enter>", lambda e: e.widget.config(bg="#D32F2F"))
         self.nas_disconnect_btn.bind("<Leave>", lambda e: e.widget.config(bg="#B71C1C"))
 
-        # self.test_btn = tk.Button(button_grid_frame, text="Test Log Cleanup", bg="#8E44AD", fg="white", 
-        #                                     font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
-        #                                     relief="flat", width=button_width, command=self.test_log_cleanup)
-        # self.test_btn.grid(row=3, column=0, padx=2, pady=2, sticky="ew")
-
-        # Progress Bar and Status Label
+        # Progress Bar
         self.progress_frame = tk.Frame(main_frame, bg="#2D3250")
         self.progress_frame.pack(fill="x", pady=(10, 0))
 
-        # Use the newly defined green style
         self.progress_bar = ttk.Progressbar(self.progress_frame, orient="horizontal", mode="determinate", style="green.Horizontal.TProgressbar")
         self.progress_bar.pack(fill="x", expand=True)
 
         self.status_label = ttk.Label(self.progress_frame, text="Select User to begin", font=("Arial", 10), background="#2D3250", foreground="white")
         self.status_label.pack(pady=(5, 0))
 
-        # Log text box (UI shows only summarized logs)
-        log_frame = tk.Frame(main_frame, bg="#424769", bd=1, relief="sunken")
-        # keep log box moderately small (7 lines)
-        log_frame.pack(fill="x", expand=False, pady=10)
+        # System Information Panel
+        status_panel_frame = tk.LabelFrame(main_frame, text="  📊 System Information  ",
+                                          bg="#424769", fg="white", font=("Arial", 10, "bold"),
+                                          relief="flat", bd=2)
+        status_panel_frame.pack(fill="x", pady=(10, 0))
 
-        scrollbar = tk.Scrollbar(log_frame)
-        self.log_text = tk.Text(log_frame, height=7, bg="#424769", fg="white", relief="flat", bd=0, font=("Consolas", 10), state="disabled", yscrollcommand=scrollbar.set)
-        # Configure tag for bold text (used for the single bolded disclaimer line)
-        self.log_text.tag_configure('bold', font=("Consolas", 10, "bold"))
+        info_container = tk.Frame(status_panel_frame, bg="#424769")
+        info_container.pack(fill="x", padx=10, pady=8)
 
+        # Last Backup
+        left_frame = tk.Frame(info_container, bg="#424769")
+        left_frame.pack(side="left", fill="both", expand=True)
+        
+        tk.Label(left_frame, text="📅 Last Backup:", bg="#424769", fg="#AAAAAA", 
+                font=("Arial", 9, "bold")).pack(anchor="w")
+        self.last_backup_label = tk.Label(left_frame, text="No backup found", bg="#424769", 
+                                         fg="white", font=("Arial", 9))
+        self.last_backup_label.pack(anchor="w", pady=(2, 0))
+
+        # Backup Location
+        center_frame = tk.Frame(info_container, bg="#424769")
+        center_frame.pack(side="left", fill="both", expand=True, padx=20)
+        
+        tk.Label(center_frame, text="💾 Backup Location:", bg="#424769", fg="#AAAAAA", 
+                font=("Arial", 9, "bold")).pack(anchor="w")
+        self.backup_space_label = tk.Label(center_frame, text="Select backup location", 
+                                          bg="#424769", fg="white", font=("Arial", 9))
+        self.backup_space_label.pack(anchor="w", pady=(2, 0))
+
+        # User Home Size
+        right_frame = tk.Frame(info_container, bg="#424769")
+        right_frame.pack(side="left", fill="both", expand=True)
+        
+        tk.Label(right_frame, text="🏠 User Home Size:", bg="#424769", fg="#AAAAAA", 
+                font=("Arial", 9, "bold")).pack(anchor="w")
+        self.user_size_label = tk.Label(right_frame, text="Select user first", 
+                                       bg="#424769", fg="white", font=("Arial", 9))
+        self.user_size_label.pack(anchor="w", pady=(2, 0))
+
+        # User selection callback
+        self.user_combo.bind("<<ComboboxSelected>>", self._on_user_selected)
+
+        # Activity Log
+        log_group = tk.LabelFrame(main_frame, text="  📝 Activity Log  ",
+                                 bg="#424769", fg="white", font=("Arial", 10, "bold"),
+                                 relief="flat", bd=2)
+        log_group.pack(fill="x", expand=False, pady=(10, 0))
+
+        log_inner_frame = tk.Frame(log_group, bg="#424769")
+        log_inner_frame.pack(fill="x", padx=5, pady=5)
+
+        scrollbar = tk.Scrollbar(log_inner_frame, width=15, bg="#424769", 
+                                troughcolor="#2D3250", activebackground="#6EC571")
         scrollbar.pack(side="right", fill="y")
-        # make it a moderate area (7 lines)
-        self.log_text.pack(fill="x", expand=False, padx=5, pady=5)
+        
+        self.log_text = tk.Text(log_inner_frame, height=7, bg="#424769", fg="white", 
+                               relief="flat", bd=0, font=("Consolas", 10), 
+                               state="disabled", yscrollcommand=scrollbar.set)
+        self.log_text.tag_configure('bold', font=("Consolas", 10, "bold"))
+        self.log_text.pack(fill="x", expand=False, side="left")
 
-        # Scrollbar configuration
         scrollbar.config(command=self.log_text.yview)
 
-        # Github link label
-        self.github_label = tk.Label(main_frame, text="gloriouslegacy", font=("Arial", 10, "underline"), fg="#2196F3", bg="#2D3250", cursor="hand2")
-        self.github_label.pack(pady=(5, 0))
+        # Footer
+        footer_frame = tk.Frame(main_frame, bg="#2D3250")
+        footer_frame.pack(fill="x", pady=(10, 0))
+        
+        self.github_label = tk.Label(footer_frame, text="🔗 gloriouslegacy", 
+                                     font=("Arial", 9, "underline"), fg="#2196F3", 
+                                     bg="#2D3250", cursor="hand2")
+        self.github_label.pack(side="left")
         self.github_label.bind("<Button-1>", self.open_github_link)
-    
+        
+        shortcut_hint = tk.Label(footer_frame, text="Press F1 for keyboard shortcuts", 
+                                font=("Arial", 8), fg="#888888", bg="#2D3250")
+        shortcut_hint.pack(side="right")
 
     # Hidden/System options removed from UI as requested; defaults remain 'exclude'
 
@@ -1173,6 +1225,21 @@ class App(tk.Tk):
                         self.progress_bar['mode'] = "determinate"
                     except Exception:
                         pass
+                elif task == 'update_user_size':
+                    try:
+                        self.user_size_label.config(text=value)
+                    except Exception:
+                        pass
+                elif task == 'update_last_backup':
+                    try:
+                        self.last_backup_label.config(text=value)
+                    except Exception:
+                        pass
+                elif task == 'update_backup_space':
+                    try:
+                        self.backup_space_label.config(text=value)
+                    except Exception:
+                        pass
                 self.message_queue.task_done()
         except queue.Empty:
             pass
@@ -1306,6 +1373,122 @@ class App(tk.Tk):
         self.user_combo['values'] = users
         if users:
             self.user_combo.current(0)
+            self._on_user_selected(None)
+
+    def _update_header_time(self):
+        """Update header time every second"""
+        try:
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            self.header_time_label.config(text=current_time)
+            self.after(1000, self._update_header_time)
+        except Exception:
+            pass
+
+    def _on_user_selected(self, event):
+        """Update status info when user is selected"""
+        try:
+            user_name = self.user_var.get()
+            if not user_name:
+                return
+
+            threading.Thread(target=self._update_user_size, args=(user_name,), daemon=True).start()
+            threading.Thread(target=self._update_last_backup, args=(user_name,), daemon=True).start()
+
+        except Exception as e:
+            print(f"DEBUG: Error updating user info: {e}")
+
+    def _update_user_size(self, user_name):
+        """Calculate user home directory size (background)"""
+        try:
+            user_home = os.path.join("C:\\Users", user_name)
+            if not os.path.exists(user_home):
+                self.message_queue.put(('update_user_size', "User folder not found"))
+                return
+
+            total_size = 0
+            file_count = 0
+            
+            for dirpath, dirnames, filenames in os.walk(user_home, topdown=True, onerror=lambda e: None):
+                dirnames[:] = [d for d in dirnames if not d.startswith('.')][:50]
+                
+                for f in filenames[:100]:
+                    try:
+                        fp = os.path.join(dirpath, f)
+                        if not self.is_hidden(fp):
+                            total_size += os.path.getsize(fp)
+                            file_count += 1
+                            
+                            if total_size % (100 * 1024 * 1024) < 10000:
+                                self.message_queue.put(('update_user_size', 
+                                    f"~{format_bytes(total_size)} ({file_count:,} files)"))
+                    except (OSError, IOError):
+                        continue
+                
+                if file_count > 5000:
+                    self.message_queue.put(('update_user_size', 
+                        f"~{format_bytes(total_size)}+ (estimated)"))
+                    return
+
+            self.message_queue.put(('update_user_size', 
+                f"~{format_bytes(total_size)} ({file_count:,} files)"))
+                
+        except Exception as e:
+            print(f"DEBUG: Error calculating user size: {e}")
+            self.message_queue.put(('update_user_size', "Calculation error"))
+
+    def _update_last_backup(self, user_name):
+        """Find last backup time (background)"""
+        try:
+            common_backup_paths = [
+                os.path.expanduser("~/Desktop"),
+                os.path.expanduser("~/Documents"),
+                "D:\\Backup",
+                "E:\\Backup",
+            ]
+            
+            latest_backup = None
+            latest_time = None
+            
+            for base_path in common_backup_paths:
+                if not os.path.exists(base_path):
+                    continue
+                    
+                try:
+                    user_lower = user_name.lower()
+                    for item in os.listdir(base_path):
+                        if item.lower().startswith(f"{user_lower}_backup_"):
+                            backup_path = os.path.join(base_path, item)
+                            if os.path.isdir(backup_path):
+                                mtime = os.path.getmtime(backup_path)
+                                if latest_time is None or mtime > latest_time:
+                                    latest_time = mtime
+                                    latest_backup = backup_path
+                except Exception:
+                    continue
+            
+            if latest_backup and latest_time:
+                backup_date = datetime.fromtimestamp(latest_time)
+                time_diff = datetime.now() - backup_date
+                
+                if time_diff.days > 365:
+                    time_str = f"{time_diff.days // 365} year(s) ago"
+                elif time_diff.days > 30:
+                    time_str = f"{time_diff.days // 30} month(s) ago"
+                elif time_diff.days > 0:
+                    time_str = f"{time_diff.days} day(s) ago"
+                elif time_diff.seconds > 3600:
+                    time_str = f"{time_diff.seconds // 3600} hour(s) ago"
+                else:
+                    time_str = f"{time_diff.seconds // 60} minute(s) ago"
+                
+                self.message_queue.put(('update_last_backup', 
+                    f"{backup_date.strftime('%Y-%m-%d %H:%M')} ({time_str})"))
+            else:
+                self.message_queue.put(('update_last_backup', "No backup found"))
+                
+        except Exception as e:
+            print(f"DEBUG: Error finding last backup: {e}")
+            self.message_queue.put(('update_last_backup', "Search error"))
 
     # --- New Function to check for hidden attribute ---
     def is_hidden(self, filepath):
@@ -1892,9 +2075,11 @@ class App(tk.Tk):
                 return
 
             self.write_detailed_log("\n[Old backup cleanup]")
-            backup_prefix = f"{user_name}_backup_"
-            
-            all_backups = [d for d in os.listdir(backup_path) if os.path.isdir(os.path.join(backup_path, d)) and d.startswith(backup_prefix)]
+            # backup_prefix = f"{user_name}_backup_"
+            user_name_lower = user_name.lower()
+            backup_prefix_lower = f"{user_name_lower}_backup_"
+            all_backups = [d for d in os.listdir(backup_path) if os.path.isdir(os.path.join(backup_path, d)) and d.lower().startswith(backup_prefix_lower)]
+            # all_backups = [d for d in os.listdir(backup_path) if os.path.isdir(os.path.join(backup_path, d)) and d.startswith(backup_prefix)]
             
             if len(all_backups) > retention_count:
                 self.write_detailed_log(f"Found {len(all_backups)} backups. Keeping the {retention_count} most recent.")
@@ -2015,7 +2200,10 @@ class App(tk.Tk):
             self.write_detailed_log(f"Restore start for user '{user_name}' from {backup_folder}")
 
             # backup_folders = [d for d in os.listdir(backup_folder) if d.startswith(f"{user_name}_backup_")]
-            backup_folders = [d for d in os.listdir(backup_folder) if os.path.isdir(os.path.join(backup_folder, d)) and d.startswith(f"{user_name}_backup_")]
+            # backup_folders = [d for d in os.listdir(backup_folder) if os.path.isdir(os.path.join(backup_folder, d)) and d.startswith(f"{user_name}_backup_")]
+            user_name_lower = user_name.lower()
+            backup_folders = [d for d in os.listdir(backup_folder) if os.path.isdir(os.path.join(backup_folder, d)) and d.lower().startswith(f"{user_name_lower}_backup_")]
+            
             
             if not backup_folders:
                 self.message_queue.put(('show_error', f"No backup data found for '{user_name}' in:\n{backup_folder}"))
@@ -5418,9 +5606,11 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
             if retention_count <= 0:
                 log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Backup cleanup is disabled (retention count is 0 or less).\n")
             else:
-                backup_prefix = f"{user_name}_backup_"
-                all_backups = [d for d in os.listdir(dest_dir) if os.path.isdir(os.path.join(dest_dir, d)) and d.startswith(backup_prefix)]
-                
+                # backup_prefix = f"{user_name}_backup_"
+                # all_backups = [d for d in os.listdir(dest_dir) if os.path.isdir(os.path.join(dest_dir, d)) and d.startswith(backup_prefix)]
+                backup_prefix_lower = f"{user_name.lower()}_backup_"
+                all_backups = [d for d in os.listdir(dest_dir) if os.path.isdir(os.path.join(dest_dir, d)) and d.lower().startswith(backup_prefix_lower)]
+                 
                 if len(all_backups) > retention_count:
                     log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Found {len(all_backups)} backups. Keeping the {retention_count} most recent.\n")
                     all_backups.sort()
