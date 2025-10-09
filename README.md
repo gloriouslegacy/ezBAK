@@ -44,12 +44,12 @@ Windows 사용자 데이터 GUI 환경 손쉽게 백업/복원할 수 있는 도
    - 프로그램 상단 `Select User`에서 백업/복원할 계정을 선택
 
 3. **주요 버튼**
-   - `Backup User Data` → 사용자 데이터 전체 백업 → 브라우저(Chrome/Edge) 북마크 포함
-   - `Restore User Data` → 선택한 백업 폴더에서 백업 데이터 복원
+   - `Backup Data` → 사용자 데이터 전체 백업 → 브라우저(Chrome/Edge) 북마크 포함
+   - `Restore Data` → 선택한 백업 폴더에서 백업 데이터 복원
    - `Backup Drivers` / `Restore Drivers` → 드라이버 관리
    - `Export Apps` → 설치 프로그램 목록 내보내기
-   - `Backup Browser Profiles` → Chrome/Edge/Firefox 프로필 백업
-   - `Schedule Backup` → 예약 백업 설정
+   - `Browser` → Chrome/Edge/Firefox 프로필 백업
+   - `Schedule` → 예약 백업 설정
    - `Check Space` → 대상 드라이브 여유 공간 확인
 
 4. **로그 관리**
