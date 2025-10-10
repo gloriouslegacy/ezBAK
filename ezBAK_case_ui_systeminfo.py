@@ -408,33 +408,33 @@ ezBAK Keyboard Shortcuts
 ┌─────────────────────────────────────────┐
 │           Main Features                 │
 ├─────────────────────────────────────────┤
-│ Ctrl + B        Backup User Data        │
-│ Ctrl + R        Restore User Data       │
+│ Ctrl + B        Backup Data             │
+│ Ctrl + R        Restore Data            │
 │ Ctrl + D        Backup Drivers          │
 │ Ctrl + Shift + D Restore Drivers        │
 ├─────────────────────────────────────────┤
 │           File management               │
 ├─────────────────────────────────────────┤
 │ Ctrl + C        Copy Data               │
-│ Ctrl + O        File Explorer           │
+│ Ctrl + O        Explorer                │
 │ Ctrl + S        Save Log                │
 ├─────────────────────────────────────────┤
 │           Tools and Utilities           │
 ├─────────────────────────────────────────┤
-│ Ctrl + M        Device Manager          │
+│ Ctrl + M        Device Mgr              │
 │ Ctrl + K        Check Space             │
 │ Ctrl + F        Filters                 │
-│ Ctrl + T        Schedule Backup         │
+│ Ctrl + T        Schedule                │
 ├─────────────────────────────────────────┤
 │           Browser and App               │
 ├─────────────────────────────────────────┤
-│ Ctrl + P        Backup Browser Profiles │
+│ Ctrl + P        Browser                 │
 │ Ctrl + W        Export Apps             │
 ├─────────────────────────────────────────┤
 │           Network                       │
 ├─────────────────────────────────────────┤
 │ Ctrl + N        Connect NAS             │
-│ Ctrl + Shift + N Disconnect NAS         │
+│ Ctrl + Shift + N Disconnect             │
 ├─────────────────────────────────────────┤
 │           General                       │
 ├─────────────────────────────────────────┤
@@ -657,9 +657,9 @@ class App(tk.Tk):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.log_text.config(state="normal")
         # Insert standard notice text
-        self.log_text.insert(tk.END, f"[{timestamp}] \nNotice:\n- Select User\n- Hidden and System attributes excluded.\n- %AppData% folder is not backed up.\n- Detailed log will be saved to a file during operations.\n- ")
+        self.log_text.insert(tk.END, f"[{timestamp}] \nNotice:\n- Select User to begin\n- Hidden and System attributes excluded\n- %AppData% folder is not backed up\n- Detailed log will be saved to a file during operations\n- ")
         # Insert the single bolded disclaimer
-        self.log_text.insert(tk.END, "Use of this program is the sole responsibility of the user.\n", 'bold')
+        self.log_text.insert(tk.END, "Use of this program is the sole responsibility of the user", 'bold')
         self.log_text.see(tk.END)
         self.log_text.config(state="disabled")
         self.update_idletasks()
@@ -682,7 +682,7 @@ class App(tk.Tk):
                               bg="#1a1f35", fg="#4CAF50")
         title_label.pack(side="left")
         
-        version_label = tk.Label(title_container, text="v0.6.8", font=("Arial", 9), 
+        version_label = tk.Label(title_container, text="v0.6.9", font=("Arial", 9), 
                                 bg="#1a1f35", fg="#888888")
         version_label.pack(side="left", padx=(8, 0), pady=(8, 0))
         
