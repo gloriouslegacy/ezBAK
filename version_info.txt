@@ -3,9 +3,9 @@
 VSVersionInfo(
   ffi=FixedFileInfo(
     # 파일 버전 (예: 1.0.0.0)
-    filevers=(0, 7, 0, 0),
+    filevers=(0, 7, 1 0),
     # 제품 버전 (예: 1.0.0.0)
-    prodvers=(0, 7, 0, 0),
+    prodvers=(0, 7, 1, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x40004,
@@ -26,7 +26,7 @@ VSVersionInfo(
         # 파일 설명
         StringStruct(u'FileDescription', u'ezBAK'),
         # 파일 버전
-        StringStruct(u'FileVersion', u'0.7.0.0'),
+        StringStruct(u'FileVersion', u'0.7.1.0'),
         # 내부 이름 (일반적으로 실행 파일 이름)
         StringStruct(u'InternalName', u'ezBAK.exe'),
         # 저작권
@@ -38,13 +38,13 @@ VSVersionInfo(
         # 제품 이름
         StringStruct(u'ProductName', u'ezBAK'),
         # 제품 버전
-        StringStruct(u'ProductVersion', u'0.7.0.0'),
+        StringStruct(u'ProductVersion', u'0.7.1.0'),
         # 특수 빌드 정보
         StringStruct(u'SpecialBuild', u'')
         ]
       )
       ]
     ),
-    VarFileInfo([VarStruct(u'Translation', [0x0412, 1200])]) # 0x0412: 한국어, 1200: Windows Multilingual
+    VarFileInfo([VarStruct(u'Translation', [0x0409, 1200])]) # 0x0409: 영어(미국), 0x0412: 한국어, 1200: Windows Multilingual
   ]
 )
