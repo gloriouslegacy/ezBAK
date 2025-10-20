@@ -109,11 +109,39 @@ jobs:
           
           $versionInfo | Out-File -FilePath "version_info.txt" -Encoding UTF8
 
-      # PyInstaller 빌드
+      # PyInstaller로 빌드
       - name: Build with PyInstaller
         run: |
-          pyinstaller --noconfirm --onefile --windowed --icon "./icon/ezbak.ico" --add-data "./icon/ezbak_title.ico;./icon" --hide-console "hide-early" --uac-admin --version-file "version_info.txt" "ezBAK.py"
+          pyinstaller --noconfirm --onefile --windowed --icon "./icon/ezbak.ico" --add-data "./icon/ezbak_title.ico;./icon" --hide-console "hide-early" --uac-admin --version-file "version_info.txt" --name "ezBAK" --clean "ezBAK.py"
         shell: pwsh
+
+      # 자체 서명 (Windows Defender 오탐 방지)
+      - name: Sign executable
+        shell: bash
+        run: |
+          # osslsigncode 설치
+          sudo apt-get update
+          sudo apt-get install -y osslsigncode
+          
+          # 자체 서명 인증서 생성
+          openssl req -new -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/C=KR/ST=Gwangju/L=Gwangju/O=ez/CN=ezBAK"
+          
+          # 실행 파일 서명
+          osslsigncode sign -certs cert.pem -key key.pem -n "ezBAK" -i "https://github.com/gloriouslegacy/ezBAK" -in dist/ezBAK.exe -out dist/ezBAK_signed.exe
+          
+          # 서명된 파일로 교체
+          mv dist/ezBAK_signed.exe dist/ezBAK.exe
+          
+          echo "✓ Executable signed successfully"
+
+      # VirusTotal 스캔 결과 URL 생성 (선택적)
+      - name: Generate file hash
+        shell: pwsh
+        run: |
+          $hash = Get-FileHash -Path "dist/ezBAK.exe" -Algorithm SHA256
+          Write-Host "SHA256: $($hash.Hash)"
+          Write-Host "VirusTotal URL: https://www.virustotal.com/gui/file/$($hash.Hash)"
+          Add-Content -Path $env:GITHUB_STEP_SUMMARY -Value "## Build Info`n- SHA256: ``$($hash.Hash)```n- [VirusTotal Scan](https://www.virustotal.com/gui/file/$($hash.Hash))"
 
       # 빌드 결과 확인 (디버깅용)
       - name: List build output
@@ -143,19 +171,23 @@ jobs:
           tag_name: v${{ steps.vars.outputs.base_version }}
           name: Release ${{ steps.vars.outputs.release_name }}
           body: |
-            📦 릴리스 안내
+            📦 Release Information
 
-            메인 프로그램: **ezBAK.zip**  
-            → 실행 파일(ezBAK.exe) 포함
+            Main Program: **ezBAK.zip**  
+            → Contains executable file (ezBAK.exe)
 
-            ## 설치 방법
-            1. ezBAK.zip 다운로드
-            2. 압축 해제
-            3. ezBAK.exe 실행
+            ## Installation
+            1. Download ezBAK.zip
+            2. Extract the archive
+            3. Run ezBAK.exe
 
-            ## 주의사항
-            - Windows Defender에서 경고가 나타날 수 있습니다
-            - 관리자 권한이 필요합니다
+            ## Notes
+            - Windows Defender may show a warning (false positive)
+            - Administrator privileges required
+            - This is open-source software - source code available in repository
+
+            ## SHA256 Hash
+            Check file integrity after download
           files: |
             ezBAK.zip
           prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
