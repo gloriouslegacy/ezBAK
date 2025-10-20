@@ -1,14 +1,14 @@
-# 1) ´ë»ó È®ÀÎ
+# 1) ëŒ€ìƒ í™•ì¸
 $files = Get-ChildItem -Path 'F:\' -Filter '*backup_2025-09-24*.log' | Where-Object { -not $_.PSIsContainer }
 $files | Select Name, LastWriteTime
 
-# 2) ÀĞ±âÀü¿ë ÇØÁ¦ + ³¯Â¥ -20ÀÏ·Î º¯°æ
+# 2) ì½ê¸°ì „ìš© í•´ì œ + ë‚ ì§œ -20ì¼ë¡œ ë³€ê²½
 foreach ($f in $files) {
     if ($f.IsReadOnly) { $f.IsReadOnly = $false }
     [System.IO.File]::SetLastWriteTime($f.FullName, (Get-Date).AddDays(-20))
 }
 
-# 3) °á°ú È®ÀÎ
+# 3) ê²°ê³¼ í™•ì¸
 Get-ChildItem -Path 'F:\' -Filter '*backup_2025-09-24*.log' | Where-Object { -not $_.PSIsContainer } |
   Select Name, LastWriteTime
 

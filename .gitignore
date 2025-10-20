@@ -4,6 +4,9 @@ docs/
 __pycache__/
 .ieda/
 .vs/
+final_build/
+obfuscated/
+.pyarmor/
 
 *.spec
 *.iml
