@@ -59,4 +59,4 @@ Write-Host ""
 # -----------------------------------------------------------------------------
 
 >>>>>>> 1e32fc836007db295ae960da03d3a840bc47d492
-pyinstaller --noconfirm --onefile --windowed --icon "./icon/ezbak.ico" --add-data "./icon/ezbak_title.ico;./icon" --hide-console "hide-early" --uac-admin --version-file "version_info.txt" $ScriptName
+pyinstaller --noconfirm --onefile --windowed --icon "./icon/ezbak.ico" --add-data "./icon/ezbak_title.ico;./icon" --hide-console "hide-early" --uac-admin --version-file "bak_version_info.txt" $ScriptName
