@@ -607,7 +607,7 @@ class App(tk.Tk):
                 self.iconbitmap(resource_path('./icon/ezbak.ico'))
             except tk.TclError:
                 pass 
-        self.geometry("1026x619")
+        self.geometry("1026x715")
         self.configure(bg="#2D3250")
 
         # UI elements setup
@@ -937,6 +937,81 @@ class App(tk.Tk):
         self.status_label = ttk.Label(self.progress_frame, text="Select User to begin", font=("Arial", 10), background="#2D3250", foreground="white")
         self.status_label.pack(pady=(5, 0))
 
+        # System Information Panel
+        status_panel_frame = tk.LabelFrame(main_frame, text="  📊 System Information  ",
+                                          bg="#424769", fg="white", font=("Arial", 10, "bold"),
+                                          relief="flat", bd=2)
+        status_panel_frame.pack(fill="x", pady=(10, 0))
+
+        info_container = tk.Frame(status_panel_frame, bg="#424769")
+        info_container.pack(fill="x", padx=10, pady=8)
+        
+		# IP Address
+        left_frame = tk.Frame(info_container, bg="#424769")
+        left_frame.pack(side="left", fill="both", expand=True)
+
+        tk.Label(left_frame, text="🌐 IP Address:", bg="#424769", fg="#AAAAAA", 
+		        font=("Arial", 9, "bold")).pack(anchor="w")
+        self.ip_label = tk.Label(left_frame, text="Loading...", bg="#424769", 
+		                        fg="white", font=("Arial", 9))
+        self.ip_label.pack(anchor="w", pady=(2, 0))
+
+		# CPU Usage
+        center_frame = tk.Frame(info_container, bg="#424769")
+        center_frame.pack(side="left", fill="both", expand=True, padx=20)
+
+        tk.Label(center_frame, text="💻 CPU Usage:", bg="#424769", fg="#AAAAAA", 
+		        font=("Arial", 9, "bold")).pack(anchor="w")
+        self.cpu_label = tk.Label(center_frame, text="Loading...", 
+		                         bg="#424769", fg="white", font=("Arial", 9))
+        self.cpu_label.pack(anchor="w", pady=(2, 0))
+
+		# RAM Usage
+        right_frame = tk.Frame(info_container, bg="#424769")
+        right_frame.pack(side="left", fill="both", expand=True)
+
+        tk.Label(right_frame, text="🎯 RAM Usage:", bg="#424769", fg="#AAAAAA", 
+		        font=("Arial", 9, "bold")).pack(anchor="w")
+        self.ram_label = tk.Label(right_frame, text="Loading...", 
+		                         bg="#424769", fg="white", font=("Arial", 9))
+        self.ram_label.pack(anchor="w", pady=(2, 0))
+
+		# Start system info update
+        self._update_system_info()
+
+        # # Last Backup
+        # left_frame = tk.Frame(info_container, bg="#424769")
+        # left_frame.pack(side="left", fill="both", expand=True)
+        
+        # tk.Label(left_frame, text="📅 Last Backup:", bg="#424769", fg="#AAAAAA", 
+        #         font=("Arial", 9, "bold")).pack(anchor="w")
+        # self.last_backup_label = tk.Label(left_frame, text="No backup found", bg="#424769", 
+        #                                  fg="white", font=("Arial", 9))
+        # self.last_backup_label.pack(anchor="w", pady=(2, 0))
+
+        # # Backup Location
+        # center_frame = tk.Frame(info_container, bg="#424769")
+        # center_frame.pack(side="left", fill="both", expand=True, padx=20)
+        
+        # tk.Label(center_frame, text="💾 Backup Location:", bg="#424769", fg="#AAAAAA", 
+        #         font=("Arial", 9, "bold")).pack(anchor="w")
+        # self.backup_space_label = tk.Label(center_frame, text="Select backup location", 
+        #                                   bg="#424769", fg="white", font=("Arial", 9))
+        # self.backup_space_label.pack(anchor="w", pady=(2, 0))
+
+        # # User Home Size
+        # right_frame = tk.Frame(info_container, bg="#424769")
+        # right_frame.pack(side="left", fill="both", expand=True)
+        
+        # tk.Label(right_frame, text="🏠 User Home Size:", bg="#424769", fg="#AAAAAA", 
+        #         font=("Arial", 9, "bold")).pack(anchor="w")
+        # self.user_size_label = tk.Label(right_frame, text="Select user first", 
+        #                                bg="#424769", fg="white", font=("Arial", 9))
+        # self.user_size_label.pack(anchor="w", pady=(2, 0))
+
+        # # User selection callback
+        # self.user_combo.bind("<<ComboboxSelected>>", self._on_user_selected)
+
         # Activity Log
         log_group = tk.LabelFrame(main_frame, text="  📝 Activity Log  ",
                                  bg="#424769", fg="white", font=("Arial", 10, "bold"),
@@ -1256,6 +1331,37 @@ class App(tk.Tk):
                         self.progress_bar['mode'] = "determinate"
                     except Exception:
                         pass
+                # elif task == 'update_user_size':
+                #     try:
+                #         self.user_size_label.config(text=value)
+                #     except Exception:
+                #         pass
+                # elif task == 'update_last_backup':
+                #     try:
+                #         self.last_backup_label.config(text=value)
+                #     except Exception:
+                #         pass
+                # elif task == 'update_backup_space':
+                #     try:
+                #         self.backup_space_label.config(text=value)
+                #     except Exception:
+                #         pass
+                
+                elif task == 'update_ip':
+                    try:
+                        self.ip_label.config(text=value)
+                    except Exception:
+                        pass
+                elif task == 'update_cpu':
+                    try:
+                        self.cpu_label.config(text=value)
+                    except Exception:
+                        pass
+                elif task == 'update_ram':
+                    try:
+                        self.ram_label.config(text=value)
+                    except Exception:
+                        pass
                 elif task == 'play_sound':
                     # Sound playback in main thread to avoid issues
                     try:
@@ -1405,6 +1511,172 @@ class App(tk.Tk):
             self.after(1000, self._update_header_time)
         except Exception:
             pass
+
+    def _update_system_info(self):
+        """Update system information every 3 seconds"""
+        try:
+            # Check if widgets exist
+            if not hasattr(self, 'ip_label'):
+                return
+                
+            threading.Thread(target=self._get_system_info, daemon=True).start()
+            self.after(3000, self._update_system_info)
+        except Exception as e:
+            print(f"DEBUG: Error in _update_system_info: {e}")
+            import traceback
+            traceback.print_exc()
+
+    def _get_system_info(self):
+        """Get system information (background thread)"""
+        try:
+            # Get IP Address
+            try:
+                import socket
+                hostname = socket.gethostname()
+                ip_address = socket.gethostbyname(hostname)
+                self.message_queue.put(('update_ip', f"{ip_address}"))
+            except Exception as e:
+                self.message_queue.put(('update_ip', "Unable to detect"))
+                print(f"DEBUG: IP detection error: {e}")
+
+            # Get CPU Usage
+            try:
+                import psutil
+                cpu_percent = psutil.cpu_percent(interval=0.1)
+                cpu_count = psutil.cpu_count()
+                self.message_queue.put(('update_cpu', f"{cpu_percent}% ({cpu_count} cores)"))
+            except ImportError:
+                import os
+                cpu_count = os.cpu_count() or "N/A"
+                self.message_queue.put(('update_cpu', f"N/A ({cpu_count} cores)"))
+            except Exception as e:
+                self.message_queue.put(('update_cpu', "Unable to detect"))
+                print(f"DEBUG: CPU detection error: {e}")
+
+            # Get RAM Usage
+            try:
+                import psutil
+                mem = psutil.virtual_memory()
+                used_gb = mem.used / (1024**3)
+                total_gb = mem.total / (1024**3)
+                percent = mem.percent
+                self.message_queue.put(('update_ram', f"{used_gb:.1f}GB / {total_gb:.1f}GB ({percent}%)"))
+            except ImportError:
+                self.message_queue.put(('update_ram', "Install psutil for RAM info"))
+            except Exception as e:
+                self.message_queue.put(('update_ram', "Unable to detect"))
+                print(f"DEBUG: RAM detection error: {e}")
+
+        except Exception as e:
+            print(f"DEBUG: System info error: {e}")
+            import traceback
+            traceback.print_exc()
+
+    # def _on_user_selected(self, event):
+    #     """Update status info when user is selected"""
+    #     try:
+    #         user_name = self.user_var.get()
+    #         if not user_name:
+    #             return
+
+    #         threading.Thread(target=self._update_user_size, args=(user_name,), daemon=True).start()
+    #         threading.Thread(target=self._update_last_backup, args=(user_name,), daemon=True).start()
+
+    #     except Exception as e:
+    #         print(f"DEBUG: Error updating user info: {e}")
+
+    # def _update_user_size(self, user_name):
+    #     """Calculate user home directory size (background)"""
+    #     try:
+    #         user_home = os.path.join("C:\\Users", user_name)
+    #         if not os.path.exists(user_home):
+    #             self.message_queue.put(('update_user_size', "User folder not found"))
+    #             return
+
+    #         total_size = 0
+    #         file_count = 0
+            
+    #         for dirpath, dirnames, filenames in os.walk(user_home, topdown=True, onerror=lambda e: None):
+    #             dirnames[:] = [d for d in dirnames if not d.startswith('.')][:50]
+                
+    #             for f in filenames[:100]:
+    #                 try:
+    #                     fp = os.path.join(dirpath, f)
+    #                     if not self.is_hidden(fp):
+    #                         total_size += os.path.getsize(fp)
+    #                         file_count += 1
+                            
+    #                         if total_size % (100 * 1024 * 1024) < 10000:
+    #                             self.message_queue.put(('update_user_size', 
+    #                                 f"~{format_bytes(total_size)} ({file_count:,} files)"))
+    #                 except (OSError, IOError):
+    #                     continue
+                
+    #             if file_count > 5000:
+    #                 self.message_queue.put(('update_user_size', 
+    #                     f"~{format_bytes(total_size)}+ (estimated)"))
+    #                 return
+
+    #         self.message_queue.put(('update_user_size', 
+    #             f"~{format_bytes(total_size)} ({file_count:,} files)"))
+                
+    #     except Exception as e:
+    #         print(f"DEBUG: Error calculating user size: {e}")
+    #         self.message_queue.put(('update_user_size', "Calculation error"))
+
+    # def _update_last_backup(self, user_name):
+    #     """Find last backup time (background)"""
+    #     try:
+    #         common_backup_paths = [
+    #             os.path.expanduser("~/Desktop"),
+    #             os.path.expanduser("~/Documents"),
+    #             "D:\\Backup",
+    #             "E:\\Backup",
+    #         ]
+            
+    #         latest_backup = None
+    #         latest_time = None
+            
+    #         for base_path in common_backup_paths:
+    #             if not os.path.exists(base_path):
+    #                 continue
+                    
+    #             try:
+    #                 user_lower = user_name.lower()
+    #                 for item in os.listdir(base_path):
+    #                     if item.lower().startswith(f"{user_lower}_backup_"):
+    #                         backup_path = os.path.join(base_path, item)
+    #                         if os.path.isdir(backup_path):
+    #                             mtime = os.path.getmtime(backup_path)
+    #                             if latest_time is None or mtime > latest_time:
+    #                                 latest_time = mtime
+    #                                 latest_backup = backup_path
+    #             except Exception:
+    #                 continue
+            
+    #         if latest_backup and latest_time:
+    #             backup_date = datetime.fromtimestamp(latest_time)
+    #             time_diff = datetime.now() - backup_date
+                
+    #             if time_diff.days > 365:
+    #                 time_str = f"{time_diff.days // 365} year(s) ago"
+    #             elif time_diff.days > 30:
+    #                 time_str = f"{time_diff.days // 30} month(s) ago"
+    #             elif time_diff.days > 0:
+    #                 time_str = f"{time_diff.days} day(s) ago"
+    #             elif time_diff.seconds > 3600:
+    #                 time_str = f"{time_diff.seconds // 3600} hour(s) ago"
+    #             else:
+    #                 time_str = f"{time_diff.seconds // 60} minute(s) ago"
+                
+    #             self.message_queue.put(('update_last_backup', 
+    #                 f"{backup_date.strftime('%Y-%m-%d %H:%M')} ({time_str})"))
+    #         else:
+    #             self.message_queue.put(('update_last_backup', "No backup found"))
+                
+    #     except Exception as e:
+    #         print(f"DEBUG: Error finding last backup: {e}")
+    #         self.message_queue.put(('update_last_backup', "Search error"))
 
     # --- New Function to check for hidden attribute ---
     def is_hidden(self, filepath):
