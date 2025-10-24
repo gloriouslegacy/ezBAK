@@ -131,9 +131,30 @@ def get_system_info():
         return cleaned if cleaned else None
 
     system_name = "Unknown"
+
+    # 1. Try to read from Windows Registry first
+    try:
+        import winreg
+        reg_path = r"HARDWARE\DESCRIPTION\System\BIOS"
+        reg_key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, reg_path, 0, winreg.KEY_READ)
+        
+        try:
+            baseboard_product, _ = winreg.QueryValueEx(reg_key, "BaseBoardProduct")
+            winreg.CloseKey(reg_key)
+            
+            clean_product = clean_name(baseboard_product)
+            if clean_product:
+                system_name = clean_product
+                print(f"DEBUG: Using registry BaseBoardProduct: {system_name}")
+                return system_name
+        except FileNotFoundError:
+            winreg.CloseKey(reg_key)
+            print(f"DEBUG: BaseBoardProduct not found in registry")
+    except Exception as e:
+        print(f"DEBUG: Registry query failed: {e}")
     
     try:
-        # 1. Baseboard product name 
+        # 2. Try WMI Baseboard product name 
         cmd = ['wmic', 'baseboard', 'get', 'product', '/value']
         result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore')
         if result.returncode == 0:
@@ -149,7 +170,7 @@ def get_system_info():
         print(f"DEBUG: Baseboard product query failed: {e}")
 
     try:
-        # 2. Computer system model name
+        # 3. Try WMI Computer system model name
         cmd = ['wmic', 'computersystem', 'get', 'model', '/value']
         result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore')
         if result.returncode == 0:
@@ -165,7 +186,7 @@ def get_system_info():
         print(f"DEBUG: Computer system model query failed: {e}")
 
     try:
-        # 3. Manufacturer's name (last resort)
+        # 4. Try WMI Manufacturer's name (last resort)
         cmd = ['wmic', 'computersystem', 'get', 'manufacturer', '/value']
         result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore')
         if result.returncode == 0:
@@ -596,6 +617,9 @@ def create_tooltip(self, widget, text):
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
+        # Hide window until fully initialized
+        self.withdraw()
+        
         self.log_retention_days_var = tk.StringVar(value='30')
         self.title("ezBAK")
         try:
@@ -661,6 +685,8 @@ class App(tk.Tk):
         self.log_text.config(state="disabled")
         self.update_idletasks()
         self.setup_keyboard_shortcuts()
+        # Show window after all initialization is complete
+        self.deiconify()
 
     def setup_keyboard_shortcuts(self):
         """Setting keyboard shortcuts"""
