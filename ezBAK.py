@@ -681,7 +681,7 @@ class App(tk.Tk):
         # Insert standard notice text
         self.log_text.insert(tk.END, f"[{timestamp}] \nNotice:\n- Select User to begin\n- Filters:Exclude Rules:Name->ondrive*\n- Hidden and System attributes excluded\n- %AppData% folder is not backed up\n- Detailed log will be saved to a file during operations\n- ")
         # Insert the single bolded disclaimer
-        self.log_text.insert(tk.END, "Use of this program is the sole responsibility of the user", 'bold')
+        self.log_text.insert(tk.END, "Use of this program is the sole responsibility of the user\n", 'bold')
         self.log_text.see(tk.END)
         self.log_text.config(state="disabled")
         self.update_idletasks()
@@ -706,7 +706,7 @@ class App(tk.Tk):
                               bg="#1a1f35", fg="#4CAF50")
         title_label.pack(side="left")
         
-        version_label = tk.Label(title_container, text="v0.7.8", font=("Arial", 9), 
+        version_label = tk.Label(title_container, text="v0.7.83", font=("Arial", 9), 
                                 bg="#1a1f35", fg="#888888")
         version_label.pack(side="left", padx=(8, 0), pady=(8, 0))
         

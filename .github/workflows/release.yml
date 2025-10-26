@@ -182,7 +182,7 @@ jobs:
             3. Run ezBAK.exe
 
             ## Notes
-            - Windows Defender may show a warning (false positive)
+            - Windows Defender may show a warning
             - Administrator privileges required
             - This is open-source software - source code available in repository
 
