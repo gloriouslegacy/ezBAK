@@ -706,7 +706,7 @@ class App(tk.Tk):
                               bg="#1a1f35", fg="#4CAF50")
         title_label.pack(side="left")
         
-        version_label = tk.Label(title_container, text="v0.7.83", font=("Arial", 9), 
+        version_label = tk.Label(title_container, text="v0.7.85", font=("Arial", 9), 
                                 bg="#1a1f35", fg="#888888")
         version_label.pack(side="left", padx=(8, 0), pady=(8, 0))
         
@@ -3785,7 +3785,8 @@ class App(tk.Tk):
             
             # Create log file manually with matching name (bypass open_log_file timestamp)
             log_filename = f"{backup_folder_name}.log"
-            log_path = os.path.join(folder_selected, log_filename)
+            # log_path = os.path.join(folder_selected, log_filename)
+            log_path = os.path.join(backup_full_path, log_filename)
             
             with self.log_lock:
                 self._log_file = open(log_path, "a", encoding="utf-8", errors="ignore")
@@ -3907,8 +3908,8 @@ class App(tk.Tk):
         driver_restore_success = False
         
         try:
-            # Get system info for log filename and matching
-            system_name = get_system_info()
+            # Get current system info
+            current_system_name = get_system_info()
             timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
             
             # Normalize path
@@ -3917,70 +3918,45 @@ class App(tk.Tk):
             # Check if selected folder is a driver backup folder itself
             folder_name = os.path.basename(folder_selected)
             
-            # If it's a driver backup folder, use it directly
-            if '_drivers_backup_' in folder_name.lower():
-                driver_backup_folder = folder_selected
-                log_folder = os.path.dirname(folder_selected)
-                self.write_detailed_log(f"Selected folder is a driver backup folder: {driver_backup_folder}")
-            else:
-                # Search for driver backup folders in the selected directory
-                try:
-                    items = os.listdir(folder_selected)
-                    driver_folders = [
-                        d for d in items 
-                        if os.path.isdir(os.path.join(folder_selected, d)) 
-                        and '_drivers_backup_' in d.lower()
-                    ]
-                    
-                    if not driver_folders:
-                        error_msg = f"No driver backup folder found in:\n{folder_selected}\n\nPlease select a folder containing driver backup (folder name should contain '_drivers_backup_')"
-                        self.message_queue.put(('show_error', error_msg))
-                        return
-                    
-                    # Try to find matching system name first
-                    system_name_lower = system_name.lower()
-                    matching_folders = [
-                        d for d in driver_folders 
-                        if d.lower().startswith(system_name_lower)
-                    ]
-                    
-                    if matching_folders:
-                        # Use the most recent matching folder
-                        latest_folder = sorted(matching_folders, reverse=True)[0]
-                        self.write_detailed_log(f"Found matching driver backup for system '{system_name}': {latest_folder}")
-                        self.message_queue.put(('log', f"Found matching driver backup for this system"))
-                    else:
-                        # No matching system found, use the most recent one
-                        latest_folder = sorted(driver_folders, reverse=True)[0]
-                        self.write_detailed_log(f"No matching system name found. Using most recent driver backup: {latest_folder}")
-                        self.message_queue.put(('log', f"Warning: System name mismatch. Using most recent backup"))
-                        
-                        # Show warning dialog
-                        folder_system = latest_folder.split('_drivers_backup_')[0] if '_drivers_backup_' in latest_folder else "Unknown"
-                        warning_msg = (
-                            f"Current System: {system_name}\n"
-                            f"Backup From: {folder_system}\n\n"
-                            f"The driver backup may not match your current system.\n"
-                            f"Do you want to continue?"
-                        )
-                        
-                        # Ask user for confirmation
-                        if not messagebox.askyesno("System Mismatch Warning", warning_msg, icon='warning'):
-                            self.write_detailed_log("User cancelled restore due to system mismatch")
-                            self.message_queue.put(('log', "Driver restore cancelled by user"))
-                            return
-                    
-                    driver_backup_folder = os.path.join(folder_selected, latest_folder)
-                    log_folder = folder_selected
-                    
-                except Exception as e:
-                    error_msg = f"Error searching for driver backup folders: {e}"
-                    self.message_queue.put(('show_error', error_msg))
-                    return
+            # Selected folder must be a driver backup folder
+            if '_drivers_backup_' not in folder_name.lower():
+                error_msg = f"Please select a driver backup folder.\n\nSelected: {folder_name}\n\nFolder name should contain '_drivers_backup_'"
+                self.message_queue.put(('show_error', error_msg))
+                return
             
-            # Create log filename
-            log_filename = f"{system_name}_drivers_restore_{timestamp}.log"
-            log_path = os.path.join(log_folder, log_filename)
+            # Use selected folder as driver backup folder
+            driver_backup_folder = folder_selected
+            
+            # Extract system name from backup folder name
+            # Example: PRIME_Z490-P_drivers_backup_2025-01-15_120000 -> PRIME_Z490-P
+            backup_system_name = folder_name.split('_drivers_backup_')[0] if '_drivers_backup_' in folder_name else "Unknown"
+            
+            self.write_detailed_log(f"Selected driver backup folder: {driver_backup_folder}")
+            self.write_detailed_log(f"Backup system name: {backup_system_name}")
+            self.write_detailed_log(f"Current system name: {current_system_name}")
+            
+            # Check system name mismatch
+            if backup_system_name.lower() != current_system_name.lower() and backup_system_name != "Unknown":
+                warning_msg = (
+                    f"Current System: {current_system_name}\n"
+                    f"Backup From: {backup_system_name}\n\n"
+                    f"The driver backup may not match your current system.\n"
+                    f"Do you want to continue?"
+                )
+                
+                # Ask user for confirmation
+                if not messagebox.askyesno("System Mismatch Warning", warning_msg, icon='warning'):
+                    self.write_detailed_log("User cancelled restore due to system mismatch")
+                    self.message_queue.put(('log', "Driver restore cancelled by user"))
+                    return
+                
+                self.message_queue.put(('log', f"Warning: Restoring from different system backup"))
+            else:
+                self.message_queue.put(('log', f"Restoring from matching system backup"))
+            
+            # Create log filename using backup system name and save inside backup folder
+            log_filename = f"{backup_system_name}_drivers_restore_{timestamp}.log"
+            log_path = os.path.join(driver_backup_folder, log_filename)
             
             # Create log file
             with self.log_lock:
@@ -3995,7 +3971,6 @@ class App(tk.Tk):
             self.message_queue.put(('log', f"Detailed log: {log_path}"))
             self.message_queue.put(('log', f"Restoring from: {os.path.basename(driver_backup_folder)}"))
             
-            self.write_detailed_log(f"Current system: {system_name}")
             self.write_detailed_log(f"Driver restore started from: {driver_backup_folder}")
             
             # Execute pnputil restore command (only search in the specific backup folder)
