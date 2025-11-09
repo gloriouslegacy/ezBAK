@@ -655,7 +655,8 @@ class App(tk.Tk):
         
         # Sound notifications enabled
         self.sound_enabled_var = tk.BooleanVar(value=True)
-        self.filters = {'include': [], 'exclude': []}
+        # self.filters = {'include': [], 'exclude': []}
+        self.filters = {'include': [], 'exclude': [{'type': 'NAME', 'pattern': 'onedrive*'}]}
         # Load persisted settings (if any)
         try:
             self.load_settings()
@@ -706,7 +707,7 @@ class App(tk.Tk):
                               bg="#1a1f35", fg="#4CAF50")
         title_label.pack(side="left")
         
-        version_label = tk.Label(title_container, text="v0.7.85", font=("Arial", 9), 
+        version_label = tk.Label(title_container, text="v0.7.86", font=("Arial", 9), 
                                 bg="#1a1f35", fg="#888888")
         version_label.pack(side="left", padx=(8, 0), pady=(8, 0))
         
