@@ -1132,7 +1132,7 @@ class App(tk.Tk):
                 self.iconbitmap(resource_path('./icon/ezbak.ico'))
             except tk.TclError:
                 pass
-        self.geometry("1026x935")  # Slightly taller for menu bar
+        self.geometry("1026x790")  # Slightly taller for menu bar
         self.configure(bg=self.theme.get('bg'))
 
         # UI elements setup
