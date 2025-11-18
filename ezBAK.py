@@ -950,83 +950,155 @@ class App(tk.Tk):
         # Create menu bar first
         self.create_menu_bar()
 
-        # Header
-        header_frame = tk.Frame(self, bg="#1a1f35", height=60)
+        # Modern Windows 11 Header with theme colors
+        header_frame = tk.Frame(self, bg=self.theme.get('bg_secondary'), height=65)
         header_frame.pack(fill="x", pady=0)
         header_frame.pack_propagate(False)
-        
-        title_container = tk.Frame(header_frame, bg="#1a1f35")
-        title_container.pack(side="left", padx=20, pady=10)
-        
-        title_label = tk.Label(title_container, text="ezBAK", font=("Arial", 18, "bold"), 
-                              bg="#1a1f35", fg="#4CAF50")
+
+        title_container = tk.Frame(header_frame, bg=self.theme.get('bg_secondary'))
+        title_container.pack(side="left", padx=24, pady=12)
+
+        title_label = tk.Label(title_container, text="ezBAK",
+                              font=("Segoe UI", 22, "bold"),
+                              bg=self.theme.get('bg_secondary'),
+                              fg=self.theme.get('accent'))
         title_label.pack(side="left")
-        
-        version_label = tk.Label(title_container, text="v0.7.9", font=("Arial", 9), 
-                                bg="#1a1f35", fg="#888888")
-        version_label.pack(side="left", padx=(8, 0), pady=(8, 0))
-        
-        header_right = tk.Frame(header_frame, bg="#1a1f35")
-        header_right.pack(side="right", padx=20, pady=10)
-        
-        self.header_time_label = tk.Label(header_right, text="", font=("Arial", 9), 
-                                         bg="#1a1f35", fg="#AAAAAA")
+
+        version_label = tk.Label(title_container, text="v0.7.9",
+                                font=("Segoe UI", 9),
+                                bg=self.theme.get('bg_secondary'),
+                                fg=self.theme.get('fg_secondary'))
+        version_label.pack(side="left", padx=(10, 0), pady=(10, 0))
+
+        header_right = tk.Frame(header_frame, bg=self.theme.get('bg_secondary'))
+        header_right.pack(side="right", padx=24, pady=12)
+
+        self.header_time_label = tk.Label(header_right, text="",
+                                         font=("Segoe UI", 9),
+                                         bg=self.theme.get('bg_secondary'),
+                                         fg=self.theme.get('fg_secondary'))
         self.header_time_label.pack()
         self._update_header_time()
 
-        # Main frame
-        main_frame = tk.Frame(self, bg="#2D3250", padx=20, pady=20)
+        # Main content frame with theme background
+        main_frame = tk.Frame(self, bg=self.theme.get('bg'), padx=24, pady=20)
         main_frame.pack(fill="both", expand=True)
 
-        # Small options row
-        options_row = tk.Frame(main_frame, bg="#2D3250")
-        options_row.pack(fill="x", pady=(2,6))
+        # Options row with modern styling
+        options_row = tk.Frame(main_frame, bg=self.theme.get('bg_elevated'), relief="flat", bd=0)
+        options_row.pack(fill="x", pady=(0, 12))
 
-        opt_frame = tk.Frame(options_row, bg="#2D3250")
-        opt_frame.pack(side="right")
+        opt_frame = tk.Frame(options_row, bg=self.theme.get('bg_elevated'))
+        opt_frame.pack(side="right", padx=12, pady=8)
 
-        radio_font = ("Arial", 10)
+        modern_font = ("Segoe UI", 9)
 
-        # System group
-        system_exclude = tk.Radiobutton(opt_frame, text="Exclude", variable=self.system_mode_var, value='exclude', bg="#2D3250", fg="white", selectcolor="#2D3250", font=radio_font, activebackground="#2D3250", activeforeground="white", bd=0)
-        system_exclude.pack(side="right", padx=(2,4))
-        system_include = tk.Radiobutton(opt_frame, text="Include", variable=self.system_mode_var, value='include', bg="#2D3250", fg="white", selectcolor="#2D3250", font=radio_font, activebackground="#2D3250", activeforeground="white", bd=0)
-        system_include.pack(side="right", padx=(0,6))
-        system_label = tk.Label(opt_frame, text="System:", bg="#2D3250", fg="white", font=("Arial", 10, "bold"))
-        system_label.pack(side="right", padx=(6,4))
+        # Retention count (left side)
+        retention_label = tk.Label(opt_frame, text="Backups to Keep:",
+                                  bg=self.theme.get('bg_elevated'),
+                                  fg=self.theme.get('fg'),
+                                  font=("Segoe UI", 9, "bold"))
+        retention_label.pack(side="left", padx=(8, 4))
+
+        retention_spinbox = tk.Spinbox(opt_frame, from_=0, to=99,
+                                      textvariable=self.retention_count_var,
+                                      width=5, font=modern_font,
+                                      bg=self.theme.get('bg_elevated'),
+                                      fg=self.theme.get('fg'),
+                                      buttonbackground=self.theme.get('accent'),
+                                      relief="solid", bd=1)
+        retention_spinbox.pack(side="left", padx=(0, 2))
+
+        retention_info_label = tk.Label(opt_frame, text="(0=all)",
+                                       bg=self.theme.get('bg_elevated'),
+                                       fg=self.theme.get('fg_secondary'),
+                                       font=modern_font)
+        retention_info_label.pack(side="left", padx=(0, 12))
 
         sep = ttk.Separator(opt_frame, orient='vertical')
-        sep.pack(side="right", fill='y', padx=8, pady=2)
+        sep.pack(side="left", fill='y', padx=10, pady=4)
 
-        # Hidden group
-        hidden_exclude = tk.Radiobutton(opt_frame, text="Exclude", variable=self.hidden_mode_var, value='exclude', bg="#2D3250", fg="white", selectcolor="#2D3250", font=radio_font, activebackground="#2D3250", activeforeground="white", bd=0)
-        hidden_exclude.pack(side="right", padx=(2,4))
-        hidden_include = tk.Radiobutton(opt_frame, text="Include", variable=self.hidden_mode_var, value='include', bg="#2D3250", fg="white", selectcolor="#2D3250", font=radio_font, activebackground="#2D3250", activeforeground="white", bd=0)
-        hidden_include.pack(side="right", padx=(0,6))
-        hidden_label = tk.Label(opt_frame, text="Hidden:", bg="#2D3250", fg="white", font=("Arial", 10, "bold"))
-        hidden_label.pack(side="right", padx=(4,2))
+        # Log retention
+        log_retention_label = tk.Label(opt_frame, text="Log Days:",
+                                      bg=self.theme.get('bg_elevated'),
+                                      fg=self.theme.get('fg'),
+                                      font=("Segoe UI", 9, "bold"))
+        log_retention_label.pack(side="left", padx=(0, 4))
+
+        log_retention_spinbox = tk.Spinbox(opt_frame, from_=0, to=365,
+                                          textvariable=self.log_retention_days_var,
+                                          width=5, font=modern_font,
+                                          bg=self.theme.get('bg_elevated'),
+                                          fg=self.theme.get('fg'),
+                                          buttonbackground=self.theme.get('accent'),
+                                          relief="solid", bd=1)
+        log_retention_spinbox.pack(side="left", padx=(0, 2))
+
+        log_retention_info_label = tk.Label(opt_frame, text="(0=off)",
+                                           bg=self.theme.get('bg_elevated'),
+                                           fg=self.theme.get('fg_secondary'),
+                                           font=modern_font)
+        log_retention_info_label.pack(side="left", padx=(0, 12))
 
         sep2 = ttk.Separator(opt_frame, orient='vertical')
-        sep2.pack(side="right", fill='y', padx=8, pady=2)
+        sep2.pack(side="left", fill='y', padx=10, pady=4)
 
-        # Log retention count
-        log_retention_info_label = tk.Label(opt_frame, text="days (0=disable)", bg="#2D3250", fg="gray", font=radio_font)
-        log_retention_info_label.pack(side="right", padx=(2, 4))
-        log_retention_spinbox = tk.Spinbox(opt_frame, from_=0, to=365, textvariable=self.log_retention_days_var, width=4)
-        log_retention_spinbox.pack(side="right", padx=(0, 2))
-        log_retention_label = tk.Label(opt_frame, text="Logs to Keep:", bg="#2D3250", fg="white", font=("Arial", 10, "bold"))
-        log_retention_label.pack(side="right", padx=(6, 4))
+        # Hidden files option
+        hidden_label = tk.Label(opt_frame, text="Hidden:",
+                               bg=self.theme.get('bg_elevated'),
+                               fg=self.theme.get('fg'),
+                               font=("Segoe UI", 9, "bold"))
+        hidden_label.pack(side="left", padx=(0, 6))
+
+        hidden_include = tk.Radiobutton(opt_frame, text="Include",
+                                       variable=self.hidden_mode_var, value='include',
+                                       bg=self.theme.get('bg_elevated'),
+                                       fg=self.theme.get('fg'),
+                                       selectcolor=self.theme.get('bg_elevated'),
+                                       activebackground=self.theme.get('bg_elevated'),
+                                       activeforeground=self.theme.get('accent'),
+                                       font=modern_font, bd=0, relief="flat")
+        hidden_include.pack(side="left", padx=(0, 4))
+
+        hidden_exclude = tk.Radiobutton(opt_frame, text="Exclude",
+                                       variable=self.hidden_mode_var, value='exclude',
+                                       bg=self.theme.get('bg_elevated'),
+                                       fg=self.theme.get('fg'),
+                                       selectcolor=self.theme.get('bg_elevated'),
+                                       activebackground=self.theme.get('bg_elevated'),
+                                       activeforeground=self.theme.get('accent'),
+                                       font=modern_font, bd=0, relief="flat")
+        hidden_exclude.pack(side="left", padx=(0, 12))
 
         sep3 = ttk.Separator(opt_frame, orient='vertical')
-        sep3.pack(side="right", fill='y', padx=8, pady=2)
+        sep3.pack(side="left", fill='y', padx=10, pady=4)
 
-        # Retention count
-        retention_info_label = tk.Label(opt_frame, text="(0=keep all)", bg="#2D3250", fg="gray", font=radio_font)
-        retention_info_label.pack(side="right", padx=(2, 4))
-        retention_spinbox = tk.Spinbox(opt_frame, from_=0, to=99, textvariable=self.retention_count_var, width=4)
-        retention_spinbox.pack(side="right", padx=(0, 2))
-        retention_label = tk.Label(opt_frame, text="Backups to Keep:", bg="#2D3250", fg="white", font=("Arial", 10, "bold"))
-        retention_label.pack(side="right", padx=(6, 4))
+        # System files option
+        system_label = tk.Label(opt_frame, text="System:",
+                               bg=self.theme.get('bg_elevated'),
+                               fg=self.theme.get('fg'),
+                               font=("Segoe UI", 9, "bold"))
+        system_label.pack(side="left", padx=(0, 6))
+
+        system_include = tk.Radiobutton(opt_frame, text="Include",
+                                       variable=self.system_mode_var, value='include',
+                                       bg=self.theme.get('bg_elevated'),
+                                       fg=self.theme.get('fg'),
+                                       selectcolor=self.theme.get('bg_elevated'),
+                                       activebackground=self.theme.get('bg_elevated'),
+                                       activeforeground=self.theme.get('accent'),
+                                       font=modern_font, bd=0, relief="flat")
+        system_include.pack(side="left", padx=(0, 4))
+
+        system_exclude = tk.Radiobutton(opt_frame, text="Exclude",
+                                       variable=self.system_mode_var, value='exclude',
+                                       bg=self.theme.get('bg_elevated'),
+                                       fg=self.theme.get('fg'),
+                                       selectcolor=self.theme.get('bg_elevated'),
+                                       activebackground=self.theme.get('bg_elevated'),
+                                       activeforeground=self.theme.get('accent'),
+                                       font=modern_font, bd=0, relief="flat")
+        system_exclude.pack(side="left", padx=(0, 8))
 
         # Persist settings
         try:
@@ -1037,225 +1109,229 @@ class App(tk.Tk):
         except Exception:
             pass
 
-        # User selection
-        user_selection_frame = tk.Frame(main_frame, bg="#2D3250")
-        user_selection_frame.pack(fill="x", pady=6)
+        # User selection with modern card style
+        user_card = tk.Frame(main_frame, bg=self.theme.get('bg_elevated'), relief="flat", bd=0)
+        user_card.pack(fill="x", pady=(0, 16))
 
-        ttk.Label(user_selection_frame, text="Select User:", font=("Arial", 12), background="#2D3250", foreground="white").pack(side="left", padx=5)
+        user_inner = tk.Frame(user_card, bg=self.theme.get('bg_elevated'))
+        user_inner.pack(fill="x", padx=16, pady=12)
+
+        tk.Label(user_inner, text="Select User:",
+                font=("Segoe UI", 11, "bold"),
+                background=self.theme.get('bg_elevated'),
+                foreground=self.theme.get('fg')).pack(side="left", padx=(0, 12))
 
         self.user_var = tk.StringVar()
-        self.user_combo = ttk.Combobox(user_selection_frame, textvariable=self.user_var, state="readonly", width=30)
-        self.user_combo.pack(side="left", padx=5, fill="x", expand=True)
+        self.user_combo = ttk.Combobox(user_inner, textvariable=self.user_var,
+                                      state="readonly", width=35, font=("Segoe UI", 10))
+        self.user_combo.pack(side="left", fill="x", expand=True)
         self.load_users()
 
-        # Main Operations Group
-        main_group = tk.LabelFrame(main_frame, text="", 
-                                   bg="#2D3250", fg="white", 
-                                   relief="flat", borderwidth=2)
-        main_group.pack(fill="x", pady=(10, 5))
-        # Header
-        main_header = tk.Frame(main_group, bg="#2D3250")
-        main_header.pack(fill="x", padx=10, pady=(5, 5))
-        
-        tk.Label(main_header, text="  🔹  Main Operations  ", bg="#2D3250", fg="white", font=("Arial", 11, "bold")).pack(side="left")
+        # Main Operations Card
+        main_card = tk.Frame(main_frame, bg=self.theme.get('bg_elevated'), relief="flat", bd=0)
+        main_card.pack(fill="x", pady=(0, 12))
 
-        # Right: Sound toggle (checkbox style)
-        sound_frame = tk.Frame(main_header, bg="#2D3250")
+        # Card header
+        main_header = tk.Frame(main_card, bg=self.theme.get('bg_elevated'))
+        main_header.pack(fill="x", padx=16, pady=(12, 8))
+
+        tk.Label(main_header, text="Main Operations",
+                bg=self.theme.get('bg_elevated'),
+                fg=self.theme.get('fg'),
+                font=("Segoe UI", 12, "bold")).pack(side="left")
+
+        # Sound toggle
+        sound_frame = tk.Frame(main_header, bg=self.theme.get('bg_elevated'))
         sound_frame.pack(side="right")
-        
+
         self.sound_check = tk.Checkbutton(
             sound_frame,
             text="🔊 Sound",
             variable=self.sound_enabled_var,
             command=self._on_sound_toggle,
-            bg="#2D3250",
-            fg="white",
-            selectcolor="#2D3250",
-            activebackground="#2D3250",
-            activeforeground="white",
-            font=("Arial", 10, "bold"),
+            bg=self.theme.get('bg_elevated'),
+            fg=self.theme.get('fg'),
+            selectcolor=self.theme.get('bg_elevated'),
+            activebackground=self.theme.get('bg_elevated'),
+            activeforeground=self.theme.get('accent'),
+            font=("Segoe UI", 10),
             relief="flat",
             bd=0,
             highlightthickness=0
         )
         self.sound_check.pack()
-               
-        main_buttons_frame = tk.Frame(main_group, bg="#2D3250")
-        main_buttons_frame.pack(fill="x", padx=10, pady=10)
-        
+
+        main_buttons_frame = tk.Frame(main_card, bg=self.theme.get('bg_elevated'))
+        main_buttons_frame.pack(fill="x", padx=16, pady=(0, 12))
+
         for i in range(5):
             main_buttons_frame.columnconfigure(i, weight=1, uniform="button")
 
-        button_font_size = 8
-        button_width = 15
-        button_padx = 5
-        button_pady = 3
+        btn_font = ("Segoe UI", 9, "bold")
+        btn_height = 2
 
-        # Row 1: Main operations
-        self.backup_btn = tk.Button(main_buttons_frame, text="📦 Backup Data", bg="#FF5733", fg="white", 
-                                  font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                  relief="flat", width=button_width, command=self.start_backup_thread)
-        self.backup_btn.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
-        self.backup_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FF7D5A"))
-        self.backup_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FF5733"))
+        # Create button helper function
+        def create_button(parent, text, bg_color, hover_color, command, row, col):
+            btn = tk.Button(parent, text=text, bg=bg_color, fg="white",
+                          font=btn_font, relief="flat", bd=0,
+                          height=btn_height, command=command,
+                          cursor="hand2")
+            btn.grid(row=row, column=col, padx=4, pady=4, sticky="ew")
+            btn.bind("<Enter>", lambda e: e.widget.config(bg=hover_color))
+            btn.bind("<Leave>", lambda e: e.widget.config(bg=bg_color))
+            return btn
 
-        self.restore_btn = tk.Button(main_buttons_frame, text="♻️ Restore Data", bg="#336BFF", fg="white", 
-                                   font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                   relief="flat", width=button_width, command=self.start_restore_thread)
-        self.restore_btn.grid(row=0, column=1, padx=2, pady=2, sticky="ew")
-        self.restore_btn.bind("<Enter>", lambda e: e.widget.config(bg="#5A8DFF"))
-        self.restore_btn.bind("<Leave>", lambda e: e.widget.config(bg="#336BFF"))
+        # Main operation buttons with Windows 11 accent colors
+        self.backup_btn = create_button(main_buttons_frame, "📦 Backup Data",
+                                        self.theme.get('danger'), self.theme.get('danger_hover'),
+                                        self.start_backup_thread, 0, 0)
 
-        self.filters_btn = tk.Button(main_buttons_frame, text="🔍 Filters", bg="#455A64", fg="white",
-                                     font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
-                                     relief="flat", width=button_width, command=self.open_filter_manager)
-        self.filters_btn.grid(row=0, column=2, padx=2, pady=2, sticky="ew")
-        self.filters_btn.bind("<Enter>", lambda e: e.widget.config(bg="#607D8B"))
-        self.filters_btn.bind("<Leave>", lambda e: e.widget.config(bg="#455A64"))
+        self.restore_btn = create_button(main_buttons_frame, "♻️ Restore Data",
+                                         self.theme.get('accent'), self.theme.get('accent_hover'),
+                                         self.start_restore_thread, 0, 1)
 
-        self.driver_backup_btn = tk.Button(main_buttons_frame, text="🔧 Backup Drivers", bg="#FF5733", fg="white", 
-                                         font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                         relief="flat", width=button_width, command=self.start_driver_backup_thread)
-        self.driver_backup_btn.grid(row=0, column=3, padx=2, pady=2, sticky="ew")
-        self.driver_backup_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FF7D5A"))
-        self.driver_backup_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FF5733"))
+        self.filters_btn = create_button(main_buttons_frame, "🔍 Filters",
+                                         self.theme.get('fg_secondary'), self.theme.get('disabled'),
+                                         self.open_filter_manager, 0, 2)
 
-        self.driver_restore_btn = tk.Button(main_buttons_frame, text="🔧 Restore Drivers", bg="#336BFF", fg="white", 
-                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                          relief="flat", width=button_width, command=self.start_driver_restore_thread)
-        self.driver_restore_btn.grid(row=0, column=4, padx=2, pady=2, sticky="ew")
-        self.driver_restore_btn.bind("<Enter>", lambda e: e.widget.config(bg="#5A8DFF"))
-        self.driver_restore_btn.bind("<Leave>", lambda e: e.widget.config(bg="#336BFF"))
+        self.driver_backup_btn = create_button(main_buttons_frame, "🔧 Backup Drivers",
+                                              self.theme.get('danger'), self.theme.get('danger_hover'),
+                                              self.start_driver_backup_thread, 0, 3)
 
-        # Tools Group
-        tools_group = tk.LabelFrame(main_frame, text="  🔹  Tools & Utilities  ", 
-                                    bg="#2D3250", fg="white", font=("Arial", 11, "bold"),
-                                    relief="flat", borderwidth=2)
-        tools_group.pack(fill="x", pady=5)
-        
-        tools_buttons_frame = tk.Frame(tools_group, bg="#2D3250")
-        tools_buttons_frame.pack(fill="x", padx=10, pady=10)
-        
+        self.driver_restore_btn = create_button(main_buttons_frame, "🔧 Restore Drivers",
+                                               self.theme.get('accent'), self.theme.get('accent_hover'),
+                                               self.start_driver_restore_thread, 0, 4)
+
+        # Tools & Utilities Card
+        tools_card = tk.Frame(main_frame, bg=self.theme.get('bg_elevated'), relief="flat", bd=0)
+        tools_card.pack(fill="x", pady=(0, 12))
+
+        tools_header = tk.Frame(tools_card, bg=self.theme.get('bg_elevated'))
+        tools_header.pack(fill="x", padx=16, pady=(12, 8))
+
+        tk.Label(tools_header, text="Tools & Utilities",
+                bg=self.theme.get('bg_elevated'),
+                fg=self.theme.get('fg'),
+                font=("Segoe UI", 12, "bold")).pack(side="left")
+
+        tools_buttons_frame = tk.Frame(tools_card, bg=self.theme.get('bg_elevated'))
+        tools_buttons_frame.pack(fill="x", padx=16, pady=(0, 12))
+
         for i in range(5):
             tools_buttons_frame.columnconfigure(i, weight=1, uniform="button")
 
-        self.browser_profiles_btn = tk.Button(tools_buttons_frame, text="🌐 Browser", bg="#1E88E5", fg="white",
-                                             font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
-                                             relief="flat", width=button_width, command=self.start_browser_profiles_backup_thread)
-        self.browser_profiles_btn.grid(row=0, column=0, padx=2, pady=2, sticky="ew")
-        self.browser_profiles_btn.bind("<Enter>", lambda e: e.widget.config(bg="#42A5F5"))
-        self.browser_profiles_btn.bind("<Leave>", lambda e: e.widget.config(bg="#1E88E5"))
+        # Tools buttons - Row 1
+        self.browser_profiles_btn = create_button(tools_buttons_frame, "🌐 Browser",
+                                                  self.theme.get('info'), self.theme.get('accent_hover'),
+                                                  self.start_browser_profiles_backup_thread, 0, 0)
 
-        self.check_space_btn = tk.Button(tools_buttons_frame, text="💾 Check Space", bg="#8E44AD", fg="white", 
-                                        font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                        relief="flat", width=button_width, command=self.check_space)
-        self.check_space_btn.grid(row=0, column=1, padx=2, pady=2, sticky="ew")
-        self.check_space_btn.bind("<Enter>", lambda e: e.widget.config(bg="#A569BD"))
-        self.check_space_btn.bind("<Leave>", lambda e: e.widget.config(bg="#8E44AD"))
+        self.check_space_btn = create_button(tools_buttons_frame, "💾 Check Space",
+                                            "#8E44AD", "#A569BD",
+                                            self.check_space, 0, 1)
 
-        self.save_log_btn = tk.Button(tools_buttons_frame, text="💾 Save Log", bg="#4CAF50", fg="white", 
-                                    font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                    relief="flat", width=button_width, command=self.save_log)
-        self.save_log_btn.grid(row=0, column=2, padx=2, pady=2, sticky="ew")
-        self.save_log_btn.bind("<Enter>", lambda e: e.widget.config(bg="#6EC571"))
-        self.save_log_btn.bind("<Leave>", lambda e: e.widget.config(bg="#4CAF50"))
+        self.save_log_btn = create_button(tools_buttons_frame, "💾 Save Log",
+                                          self.theme.get('success'), self.theme.get('success_hover'),
+                                          self.save_log, 0, 2)
 
-        self.copy_btn = tk.Button(tools_buttons_frame, text="📋 Copy Data", bg="#FFA500", fg="white", 
-                                font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                relief="flat", width=button_width, command=self.copy_files)
-        self.copy_btn.grid(row=0, column=3, padx=2, pady=2, sticky="ew")
-        self.copy_btn.bind("<Enter>", lambda e: e.widget.config(bg="#FFB733"))
-        self.copy_btn.bind("<Leave>", lambda e: e.widget.config(bg="#FFA500"))
+        self.copy_btn = create_button(tools_buttons_frame, "📋 Copy Data",
+                                      self.theme.get('warning'), "#FFB84D",
+                                      self.copy_files, 0, 3)
 
-        self.devmgr_btn = tk.Button(tools_buttons_frame, text="⚙️ Device Mgr", bg="#9A9B0B", fg="white", 
-                                  font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                  relief="flat", width=button_width, command=self.open_device_manager)
-        self.devmgr_btn.grid(row=0, column=4, padx=2, pady=2, sticky="ew")
-        self.devmgr_btn.bind("<Enter>", lambda e: e.widget.config(bg="#B4B50C"))
-        self.devmgr_btn.bind("<Leave>", lambda e: e.widget.config(bg="#9A9B0B"))
+        self.devmgr_btn = create_button(tools_buttons_frame, "⚙️ Device Mgr",
+                                       "#78909C", "#90A4AE",
+                                       self.open_device_manager, 0, 4)
 
-        # Row 2
-        self.schedule_btn = tk.Button(tools_buttons_frame, text="⏰ Schedule", bg="#2E7D32", fg="white",
-                                      font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
-                                      relief="flat", width=button_width, command=self.schedule_backup)
-        self.schedule_btn.grid(row=1, column=0, padx=2, pady=2, sticky="ew")
-        self.schedule_btn.bind("<Enter>", lambda e: e.widget.config(bg="#388E3C"))
-        self.schedule_btn.bind("<Leave>", lambda e: e.widget.config(bg="#2E7D32"))
+        # Tools buttons - Row 2
+        self.schedule_btn = create_button(tools_buttons_frame, "⏰ Schedule",
+                                         self.theme.get('success'), self.theme.get('success_hover'),
+                                         self.schedule_backup, 1, 0)
 
-        self.winget_export_btn = tk.Button(tools_buttons_frame, text="📦 Export Apps", bg="#00695C", fg="white",
-                                          font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
-                                          relief="flat", width=button_width, command=self.start_winget_export_thread)
-        self.winget_export_btn.grid(row=1, column=1, padx=2, pady=2, sticky="ew")
-        self.winget_export_btn.bind("<Enter>", lambda e: e.widget.config(bg="#00897B"))
-        self.winget_export_btn.bind("<Leave>", lambda e: e.widget.config(bg="#00695C"))
+        self.winget_export_btn = create_button(tools_buttons_frame, "📦 Export Apps",
+                                              "#00796B", "#009688",
+                                              self.start_winget_export_thread, 1, 1)
 
-        self.file_explorer_btn = tk.Button(tools_buttons_frame, text="📂 Explorer", bg="#7D98A1", fg="white", 
-                                         font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady, 
-                                         relief="flat", width=button_width, command=self.open_file_explorer)
-        self.file_explorer_btn.grid(row=1, column=2, padx=2, pady=2, sticky="ew")
-        self.file_explorer_btn.bind("<Enter>", lambda e: e.widget.config(bg="#92B0BB"))
-        self.file_explorer_btn.bind("<Leave>", lambda e: e.widget.config(bg="#7D98A1"))
+        self.file_explorer_btn = create_button(tools_buttons_frame, "📂 Explorer",
+                                              "#7D98A1", "#90A4AE",
+                                              self.open_file_explorer, 1, 2)
 
-        self.nas_connect_btn = tk.Button(tools_buttons_frame, text="🌐 Connect NAS", bg="#00796B", fg="white",
-                                         font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
-                                         relief="flat", width=button_width, command=self.open_nas_connect_dialog)
-        self.nas_connect_btn.grid(row=1, column=3, padx=2, pady=2, sticky="ew")
-        self.nas_connect_btn.bind("<Enter>", lambda e: e.widget.config(bg="#009688"))
-        self.nas_connect_btn.bind("<Leave>", lambda e: e.widget.config(bg="#00796B"))
+        self.nas_connect_btn = create_button(tools_buttons_frame, "🌐 Connect NAS",
+                                            "#00796B", "#00897B",
+                                            self.open_nas_connect_dialog, 1, 3)
 
-        self.nas_disconnect_btn = tk.Button(tools_buttons_frame, text="🔌 Disconnect", bg="#B71C1C", fg="white",
-                                            font=("Arial", button_font_size, "bold"), padx=button_padx, pady=button_pady,
-                                            relief="flat", width=button_width, command=self.open_nas_disconnect_dialog)
-        self.nas_disconnect_btn.grid(row=1, column=4, padx=2, pady=2, sticky="ew")
-        self.nas_disconnect_btn.bind("<Enter>", lambda e: e.widget.config(bg="#D32F2F"))
-        self.nas_disconnect_btn.bind("<Leave>", lambda e: e.widget.config(bg="#B71C1C"))
+        self.nas_disconnect_btn = create_button(tools_buttons_frame, "🔌 Disconnect",
+                                               self.theme.get('danger'), self.theme.get('danger_hover'),
+                                               self.open_nas_disconnect_dialog, 1, 4)
 
-        # Progress Bar
-        self.progress_frame = tk.Frame(main_frame, bg="#2D3250")
-        self.progress_frame.pack(fill="x", pady=(10, 0))
+        # Progress section
+        progress_card = tk.Frame(main_frame, bg=self.theme.get('bg_elevated'), relief="flat", bd=0)
+        progress_card.pack(fill="x", pady=(0, 12))
 
-        self.progress_bar = ttk.Progressbar(self.progress_frame, orient="horizontal", mode="determinate", style="green.Horizontal.TProgressbar")
-        self.progress_bar.pack(fill="x", expand=True)
+        progress_inner = tk.Frame(progress_card, bg=self.theme.get('bg_elevated'))
+        progress_inner.pack(fill="x", padx=16, pady=12)
 
-        self.status_label = ttk.Label(self.progress_frame, text="Select User to begin", font=("Arial", 10), background="#2D3250", foreground="white")
-        self.status_label.pack(pady=(5, 0))
+        self.progress_bar = ttk.Progressbar(progress_inner, orient="horizontal",
+                                           mode="determinate",
+                                           style="green.Horizontal.TProgressbar")
+        self.progress_bar.pack(fill="x", expand=True, pady=(0, 8))
 
-        # Activity Log
-        log_group = tk.LabelFrame(main_frame, text="  📝 Activity Log  ",
-                                 bg="#424769", fg="white", font=("Arial", 10, "bold"),
-                                 relief="flat", bd=2)
-        log_group.pack(fill="x", expand=False, pady=(10, 0))
+        self.status_label = tk.Label(progress_inner,
+                                     text=self.translator.get('select_user_begin'),
+                                     font=("Segoe UI", 10),
+                                     background=self.theme.get('bg_elevated'),
+                                     foreground=self.theme.get('fg_secondary'))
+        self.status_label.pack()
 
-        log_inner_frame = tk.Frame(log_group, bg="#424769")
-        log_inner_frame.pack(fill="x", padx=5, pady=5)
+        # Activity Log Card
+        log_card = tk.Frame(main_frame, bg=self.theme.get('bg_elevated'), relief="flat", bd=0)
+        log_card.pack(fill="x", expand=False, pady=(0, 12))
 
-        scrollbar = tk.Scrollbar(log_inner_frame, width=15, bg="#424769", 
-                                troughcolor="#2D3250", activebackground="#6EC571")
+        log_header = tk.Frame(log_card, bg=self.theme.get('bg_elevated'))
+        log_header.pack(fill="x", padx=16, pady=(12, 8))
+
+        tk.Label(log_header, text="📝 Activity Log",
+                bg=self.theme.get('bg_elevated'),
+                fg=self.theme.get('fg'),
+                font=("Segoe UI", 12, "bold")).pack(side="left")
+
+        log_inner_frame = tk.Frame(log_card, bg=self.theme.get('bg_elevated'))
+        log_inner_frame.pack(fill="x", padx=16, pady=(0, 12))
+
+        scrollbar = tk.Scrollbar(log_inner_frame, width=14,
+                                bg=self.theme.get('bg_elevated'),
+                                troughcolor=self.theme.get('bg'),
+                                activebackground=self.theme.get('accent'))
         scrollbar.pack(side="right", fill="y")
-        
-        self.log_text = tk.Text(log_inner_frame, height=7, bg="#424769", fg="white", 
-                               relief="flat", bd=0, font=("Consolas", 10), 
-                               state="disabled", yscrollcommand=scrollbar.set)
-        self.log_text.tag_configure('bold', font=("Consolas", 10, "bold"))
+
+        self.log_text = tk.Text(log_inner_frame, height=7,
+                               bg=self.theme.get('bg_secondary'),
+                               fg=self.theme.get('fg'),
+                               relief="flat", bd=0,
+                               font=("Consolas", 9),
+                               state="disabled",
+                               yscrollcommand=scrollbar.set,
+                               padx=8, pady=6)
+        self.log_text.tag_configure('bold', font=("Consolas", 9, "bold"))
         self.log_text.pack(fill="x", expand=False, side="left")
 
         scrollbar.config(command=self.log_text.yview)
 
-        # Footer
-        footer_frame = tk.Frame(main_frame, bg="#2D3250")
-        footer_frame.pack(fill="x", pady=(10, 0))
-        
-        self.github_label = tk.Label(footer_frame, text="🔗 gloriouslegacy", 
-                                     font=("Arial", 9, "underline"), fg="#2196F3", 
-                                     bg="#2D3250", cursor="hand2")
+        # Footer with theme colors
+        footer_frame = tk.Frame(main_frame, bg=self.theme.get('bg'))
+        footer_frame.pack(fill="x", pady=(8, 0))
+
+        self.github_label = tk.Label(footer_frame, text="🔗 gloriouslegacy",
+                                     font=("Segoe UI", 9, "underline"),
+                                     fg=self.theme.get('accent'),
+                                     bg=self.theme.get('bg'),
+                                     cursor="hand2")
         self.github_label.pack(side="left")
         self.github_label.bind("<Button-1>", self.open_github_link)
-        
-        shortcut_hint = tk.Label(footer_frame, text="Press F1 for keyboard shortcuts", 
-                                font=("Arial", 8), fg="#888888", bg="#2D3250")
-        shortcut_hint.pack(side="right")
 
-    # Hidden/System options removed from UI as requested; defaults remain 'exclude'
+        shortcut_hint = tk.Label(footer_frame, text="Press F1 for keyboard shortcuts",
+                                font=("Segoe UI", 8),
+                                fg=self.theme.get('fg_secondary'),
+                                bg=self.theme.get('bg'))
+        shortcut_hint.pack(side="right")
     
     def _on_sound_toggle(self):
         """Callback Called When Sound Toggle"""
@@ -4395,7 +4471,18 @@ class App(tk.Tk):
                             continue
                     return out
                 self.filters = {'include': _sanitize(inc), 'exclude': _sanitize(exc)}
-            except Exception:
+
+                # Load theme and language settings
+                if 'theme' in data:
+                    theme_mode = data.get('theme', 'dark')
+                    self.theme.current_mode = theme_mode
+                    self.theme.colors = self.theme.DARK if theme_mode == 'dark' else self.theme.LIGHT
+
+                if 'language' in data:
+                    lang_code = data.get('language', 'en')
+                    self.translator.current_lang = lang_code
+
+            except Exception as e:
                 print(f"DEBUG: Settings load error: {e}")
 
     def save_settings(self):
@@ -4409,28 +4496,31 @@ class App(tk.Tk):
                 'log_retention_days': self.log_retention_days_var.get(),
                 'sound_enabled': self.sound_enabled_var.get(),
                 'filters': self.filters,
+                'theme': self.theme.current_mode,
+                'language': self.translator.current_lang,
             }
             with open(path, 'w', encoding='utf-8') as f:
                 json.dump(data, f)
-        except Exception:
+        except Exception as e:
             print(f"DEBUG: Settings save error: {e}")
 
 class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
     def __init__(self, parent):
         print("DEBUG: ScheduleBackupDialog.__init__ started")
-        
+
         # Important initialization order: set basic properties first
         self.action = None
         self.result = None
         self.task_name = None
         self.parent = parent
-        
+        self.theme = parent.theme  # Use parent's theme
+
         try:
             tk.Toplevel.__init__(self, parent)  # Explicitly initialize Toplevel
             print("DEBUG: Toplevel initialized")
-            
+
             self.title("Schedule Backup")
-            self.configure(bg="#2D3250")
+            self.configure(bg=self.theme.get('bg'))
             
             # Handle window close safely - set first
             self.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -4503,7 +4593,7 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
         self.bind('<Alt-3>', lambda e: self._set_schedule("Monthly"))
 
     def _create_widgets(self):
-        """Create UI widgets (including shortcut notations)"""
+        """Create UI widgets with Windows 11 styling"""
         try:
             # Safely get user name
             user_name = "Unknown"
@@ -4513,106 +4603,149 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
             except Exception:
                 pass
 
+            # Modern styling
+            label_font = ("Segoe UI", 10, "bold")
+            entry_font = ("Segoe UI", 10)
+
             # Task Name
             row = 0
-            tk.Label(self, text="Task Name", bg="#2D3250", fg="white").grid(
-                row=row, column=0, sticky="w", padx=10, pady=5
+            tk.Label(self, text="Task Name", bg=self.theme.get('bg'),
+                    fg=self.theme.get('fg'), font=label_font).grid(
+                row=row, column=0, sticky="w", padx=15, pady=8
             )
             self.task_var = tk.StringVar(value=f"ezBAK_Backup_{user_name}")
-            tk.Entry(self, textvariable=self.task_var, width=40).grid(
-                row=row, column=1, columnspan=2, sticky="w", padx=10, pady=5
+            tk.Entry(self, textvariable=self.task_var, width=40, font=entry_font,
+                    bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
+                    relief="solid", bd=1).grid(
+                row=row, column=1, columnspan=2, sticky="ew", padx=15, pady=8
             )
 
-            # Destination Folder (add shortcut notation)
+            # Destination Folder
             row += 1
-            tk.Label(self, text="Destination Folder", bg="#2D3250", fg="white").grid(
-                row=row, column=0, sticky="w", padx=10, pady=5
+            tk.Label(self, text="Destination Folder", bg=self.theme.get('bg'),
+                    fg=self.theme.get('fg'), font=label_font).grid(
+                row=row, column=0, sticky="w", padx=15, pady=8
             )
             self.dest_var = tk.StringVar()
-            tk.Entry(self, textvariable=self.dest_var, width=30).grid(
-                row=row, column=1, sticky="w", padx=10, pady=5
+            tk.Entry(self, textvariable=self.dest_var, width=30, font=entry_font,
+                    bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
+                    relief="solid", bd=1).grid(
+                row=row, column=1, sticky="ew", padx=15, pady=8
             )
             tk.Button(
-                self, text=self.add_shortcut_text("Browse...", "Ctrl+B"), 
-                command=self._browse_destination
-            ).grid(row=row, column=2, padx=5, pady=5, sticky="w")
+                self, text=self.add_shortcut_text("Browse...", "Ctrl+B"),
+                command=self._browse_destination,
+                bg=self.theme.get('accent'), fg="white",
+                font=("Segoe UI", 9), relief="flat", bd=0,
+                cursor="hand2"
+            ).grid(row=row, column=2, padx=15, pady=8, sticky="ew")
 
-            # Schedule (add shortcut notation)
+            # Schedule
             row += 1
-            tk.Label(self, text=self.add_shortcut_text("Schedule", "Alt+1/2/3"), 
-                    bg="#2D3250", fg="white").grid(
-                row=row, column=0, sticky="w", padx=10, pady=5
+            tk.Label(self, text=self.add_shortcut_text("Schedule", "Alt+1/2/3"),
+                    bg=self.theme.get('bg'), fg=self.theme.get('fg'),
+                    font=label_font).grid(
+                row=row, column=0, sticky="w", padx=15, pady=8
             )
             self.schedule_var = tk.StringVar(value="Daily")
             schedule_combo = ttk.Combobox(
                 self, textvariable=self.schedule_var,
-                values=["Daily", "Weekly", "Monthly"], state="readonly", width=15
+                values=["Daily", "Weekly", "Monthly"], state="readonly",
+                width=18, font=entry_font
             )
-            schedule_combo.grid(row=row, column=1, sticky="w", padx=10, pady=5)
+            schedule_combo.grid(row=row, column=1, sticky="w", padx=15, pady=8)
 
             # Time
             row += 1
-            tk.Label(self, text="Time (HH:MM)", bg="#2D3250", fg="white").grid(
-                row=row, column=0, sticky="w", padx=10, pady=5
+            tk.Label(self, text="Time (HH:MM)", bg=self.theme.get('bg'),
+                    fg=self.theme.get('fg'), font=label_font).grid(
+                row=row, column=0, sticky="w", padx=15, pady=8
             )
             self.time_var = tk.StringVar(value="02:00")
-            tk.Entry(self, textvariable=self.time_var, width=15).grid(
-                row=row, column=1, sticky="w", padx=10, pady=5
+            tk.Entry(self, textvariable=self.time_var, width=18, font=entry_font,
+                    bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
+                    relief="solid", bd=1).grid(
+                row=row, column=1, sticky="w", padx=15, pady=8
             )
 
-            # Attributes - arrange in one line
+            # Attributes
             row += 1
-            tk.Label(self, text="Attributes", bg="#2D3250", fg="white").grid(
-                row=row, column=0, sticky="w", padx=10, pady=5
+            tk.Label(self, text="Attributes", bg=self.theme.get('bg'),
+                    fg=self.theme.get('fg'), font=label_font).grid(
+                row=row, column=0, sticky="w", padx=15, pady=8
             )
-            
-            attr_frame = tk.Frame(self, bg="#2D3250")
-            attr_frame.grid(row=row, column=1, columnspan=2, sticky="w", padx=10, pady=5)
-            
+
+            attr_frame = tk.Frame(self, bg=self.theme.get('bg'))
+            attr_frame.grid(row=row, column=1, columnspan=2, sticky="w", padx=15, pady=8)
+
             self.hidden_var = tk.BooleanVar(value=False)
             self.system_var = tk.BooleanVar(value=False)
-            
+
             tk.Checkbutton(attr_frame, text="Include Hidden", variable=self.hidden_var,
-                           bg="#2D3250", fg="white", selectcolor="#2D3250").pack(side="left")
-            
+                          bg=self.theme.get('bg'), fg=self.theme.get('fg'),
+                          selectcolor=self.theme.get('bg'),
+                          font=("Segoe UI", 9), relief="flat", bd=0).pack(side="left")
+
             tk.Checkbutton(attr_frame, text="Include System", variable=self.system_var,
-                           bg="#2D3250", fg="white", selectcolor="#2D3250").pack(side="left", padx=(15, 0))
+                          bg=self.theme.get('bg'), fg=self.theme.get('fg'),
+                          selectcolor=self.theme.get('bg'),
+                          font=("Segoe UI", 9), relief="flat", bd=0).pack(side="left", padx=(15, 0))
 
             # Backups to Keep
             row += 1
-            tk.Label(self, text="Backups to Keep (0=all):", bg="#2D3250", fg="white").grid(
-                row=row, column=0, sticky="w", padx=10, pady=5
+            tk.Label(self, text="Backups to Keep (0=all):", bg=self.theme.get('bg'),
+                    fg=self.theme.get('fg'), font=label_font).grid(
+                row=row, column=0, sticky="w", padx=15, pady=8
             )
             self.retention_count_var = tk.StringVar(value="2")
-            tk.Spinbox(self, from_=0, to=99, textvariable=self.retention_count_var, width=8).grid(
-                row=row, column=1, sticky="w", padx=10, pady=5
+            tk.Spinbox(self, from_=0, to=99, textvariable=self.retention_count_var,
+                      width=10, font=entry_font,
+                      bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
+                      buttonbackground=self.theme.get('accent'),
+                      relief="solid", bd=1).grid(
+                row=row, column=1, sticky="w", padx=15, pady=8
             )
 
             # Logs to Keep
             row += 1
-            tk.Label(self, text="Logs to Keep (days, 0=disable):", bg="#2D3250", fg="white").grid(
-                row=row, column=0, sticky="w", padx=10, pady=5
+            tk.Label(self, text="Logs to Keep (days, 0=off):", bg=self.theme.get('bg'),
+                    fg=self.theme.get('fg'), font=label_font).grid(
+                row=row, column=0, sticky="w", padx=15, pady=8
             )
             self.log_retention_days_var = tk.StringVar(value="30")
-            tk.Spinbox(self, from_=0, to=365, textvariable=self.log_retention_days_var, width=8).grid(
-                row=row, column=1, sticky="w", padx=10, pady=5
+            tk.Spinbox(self, from_=0, to=365, textvariable=self.log_retention_days_var,
+                      width=10, font=entry_font,
+                      bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
+                      buttonbackground=self.theme.get('accent'),
+                      relief="solid", bd=1).grid(
+                row=row, column=1, sticky="w", padx=15, pady=8
             )
 
-            # Button area (including shortcut notations)
+            # Button area with modern styling
             row += 1
-            btn_frame = tk.Frame(self, bg="#2D3250")
-            btn_frame.grid(row=row, column=0, columnspan=3, sticky="e", padx=10, pady=15)
+            btn_frame = tk.Frame(self, bg=self.theme.get('bg'))
+            btn_frame.grid(row=row, column=0, columnspan=3, sticky="e", padx=15, pady=20)
 
-            tk.Button(btn_frame, text=self.add_shortcut_text("Create", "Ctrl+C"), 
-                      command=self.on_create,
-                      bg="#1E88E5", fg="white", relief="flat", width=15).pack(side="right", padx=5)
-            tk.Button(btn_frame, text=self.add_shortcut_text("Delete", "Ctrl+D"), 
-                      command=self.on_delete,
-                      bg="#FF5733", fg="white", relief="flat", width=15).pack(side="right", padx=5)
-            tk.Button(btn_frame, text=self.add_shortcut_text("Close", "Esc"), 
-                      command=self.on_close,
-                      bg="#607D8B", fg="white", relief="flat", width=15).pack(side="right", padx=5)
-                      
+            # Modern button styling
+            tk.Button(btn_frame, text=self.add_shortcut_text("Create", "Ctrl+C"),
+                     command=self.on_create,
+                     bg=self.theme.get('accent'), fg="white",
+                     font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
+                     width=12, cursor="hand2", padx=15, pady=8).pack(side="right", padx=5)
+            tk.Button(btn_frame, text=self.add_shortcut_text("Delete", "Ctrl+D"),
+                     command=self.on_delete,
+                     bg=self.theme.get('danger'), fg="white",
+                     font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
+                     width=12, cursor="hand2", padx=15, pady=8).pack(side="right", padx=5)
+            tk.Button(btn_frame, text=self.add_shortcut_text("Close", "Esc"),
+                     command=self.on_close,
+                     bg=self.theme.get('fg_secondary'), fg="white",
+                     font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
+                     width=12, cursor="hand2", padx=15, pady=8).pack(side="right", padx=5)
+
+            # Configure grid weights
+            self.columnconfigure(1, weight=1)
+
         except Exception as widget_error:
             print(f"DEBUG: Widget creation failed: {widget_error}")
             raise widget_error
@@ -4648,32 +4781,36 @@ Shift + Tab  Move to Previous Field
         
         help_dlg = tk.Toplevel(self)
         help_dlg.title("Schedule Shortcuts Help")
-        help_dlg.configure(bg="#2D3250")
-        help_dlg.geometry("350x300")
+        help_dlg.configure(bg=self.theme.get('bg'))
+        help_dlg.geometry("400x350")
         help_dlg.transient(self)
         try:
             help_dlg.grab_set()
         except Exception:
             pass
-        
-        text_widget = tk.Text(help_dlg, 
-                             font=("Consolas", 10),  
-                             bg="#424769", 
-                             fg="white",
+
+        text_widget = tk.Text(help_dlg,
+                             font=("Consolas", 10),
+                             bg=self.theme.get('bg_secondary'),
+                             fg=self.theme.get('fg'),
                              relief="flat",
-                             wrap="word")
-        text_widget.pack(fill="both", expand=True, padx=10, pady=10)
-        
+                             wrap="word",
+                             padx=12, pady=12)
+        text_widget.pack(fill="both", expand=True, padx=15, pady=15)
+
         text_widget.insert("1.0", help_text)
         text_widget.configure(state="disabled")
-        
-        close_btn = tk.Button(help_dlg, 
-                             text="Close (Esc)", 
+
+        close_btn = tk.Button(help_dlg,
+                             text="Close (Esc)",
                              command=help_dlg.destroy,
-                             bg="#4CAF50", 
-                             fg="white", 
-                             relief="flat")
-        close_btn.pack(pady=10)
+                             bg=self.theme.get('accent'),
+                             fg="white",
+                             font=("Segoe UI", 10, "bold"),
+                             relief="flat", bd=0,
+                             cursor="hand2",
+                             padx=20, pady=8)
+        close_btn.pack(pady=15)
         
         help_dlg.bind('<Escape>', lambda e: help_dlg.destroy())
         help_dlg.focus_set()
@@ -4802,13 +4939,14 @@ Shift + Tab  Move to Previous Field
 class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
     def __init__(self, master, current_filters=None):
         tk.Toplevel.__init__(self, master)
+        self.theme = master.theme  # Use parent's theme
         self.title("Filter Manager")
         try:
             self.iconbitmap(resource_path('./icon/ezbak.ico'))
         except Exception:
             pass
-        self.configure(bg="#2D3250")
-        self.geometry("720x480")
+        self.configure(bg=self.theme.get('bg'))
+        self.geometry("750x520")
         self.transient(master)
         try:
             self.grab_set()
@@ -5238,15 +5376,16 @@ class SelectSourcesDialog(tk.Toplevel):
     def __init__(self, master, is_hidden_fn=None, title="Select Sources"):
         try:
             super().__init__(master)
+            self.theme = master.theme  # Use parent's theme
             print(f"DEBUG: SelectSourcesDialog initialized with title: {title}")
-            
+
             self.title(title)
             try:
                 self.iconbitmap(resource_path('./icon/ezbak.ico'))
             except Exception:
                 pass
-            self.configure(bg="#2D3250")
-            self.geometry("720x540")
+            self.configure(bg=self.theme.get('bg'))
+            self.geometry("780x580")
             self.transient(master)
             try:
                 self.grab_set()
