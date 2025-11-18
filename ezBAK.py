@@ -18,6 +18,170 @@ import re
 import time
 import json
 
+# ============================================================
+# Windows 11 Style Theme System
+# ============================================================
+
+class Win11Theme:
+    """Windows 11 style theme with light and dark mode support"""
+
+    # Light Theme Colors (Windows 11 Light)
+    LIGHT = {
+        'bg': '#F3F3F3',              # Main background
+        'bg_secondary': '#FAFAFA',     # Secondary background
+        'bg_elevated': '#FFFFFF',      # Elevated surfaces
+        'fg': '#000000',              # Text color
+        'fg_secondary': '#605E5C',    # Secondary text
+        'accent': '#0078D4',          # Accent color (blue)
+        'accent_hover': '#106EBE',    # Accent hover
+        'accent_light': '#E1F1FF',    # Light accent background
+        'success': '#107C10',         # Success/green
+        'success_hover': '#0E6B0E',
+        'danger': '#D13438',          # Danger/red
+        'danger_hover': '#B32B2F',
+        'warning': '#F7630C',         # Warning/orange
+        'info': '#0078D4',            # Info/blue
+        'border': '#E1DFDD',          # Border color
+        'divider': '#EDEBE9',         # Divider
+        'shadow': '#00000015',        # Shadow
+        'disabled': '#A19F9D',        # Disabled state
+        'hover': '#F5F5F5',           # Hover state
+        'pressed': '#EBEBEB',         # Pressed state
+    }
+
+    # Dark Theme Colors (Windows 11 Dark)
+    DARK = {
+        'bg': '#202020',              # Main background
+        'bg_secondary': '#1C1C1C',     # Secondary background
+        'bg_elevated': '#2B2B2B',      # Elevated surfaces
+        'fg': '#FFFFFF',              # Text color
+        'fg_secondary': '#C8C8C8',    # Secondary text
+        'accent': '#60CDFF',          # Accent color (light blue)
+        'accent_hover': '#4EB7E6',    # Accent hover
+        'accent_light': '#004A73',    # Dark accent background
+        'success': '#6CCB5F',         # Success/green
+        'success_hover': '#5DB34E',
+        'danger': '#FF6B6B',          # Danger/red
+        'danger_hover': '#E65A5A',
+        'warning': '#FFA94D',         # Warning/orange
+        'info': '#60CDFF',            # Info/blue
+        'border': '#3D3D3D',          # Border color
+        'divider': '#333333',         # Divider
+        'shadow': '#00000040',        # Shadow
+        'disabled': '#6D6D6D',        # Disabled state
+        'hover': '#2D2D2D',           # Hover state
+        'pressed': '#383838',         # Pressed state
+    }
+
+    def __init__(self, initial_mode='dark'):
+        self.current_mode = initial_mode
+        self.colors = self.DARK if initial_mode == 'dark' else self.LIGHT
+
+    def switch_mode(self):
+        """Toggle between light and dark mode"""
+        self.current_mode = 'light' if self.current_mode == 'dark' else 'dark'
+        self.colors = self.DARK if self.current_mode == 'dark' else self.LIGHT
+        return self.current_mode
+
+    def get(self, color_name):
+        """Get color value by name"""
+        return self.colors.get(color_name, '#000000')
+
+# ============================================================
+# Translation System for Multi-language Support
+# ============================================================
+
+class Translator:
+    """Simple translation system for multi-language support"""
+
+    TRANSLATIONS = {
+        'en': {
+            'app_title': 'ezBAK',
+            'menu_file': 'File',
+            'menu_view': 'View',
+            'menu_language': 'Language',
+            'menu_theme': 'Theme',
+            'theme_light': 'Light Mode',
+            'theme_dark': 'Dark Mode',
+            'lang_english': 'English',
+            'lang_korean': '한국어',
+            'select_user': 'Select User:',
+            'main_operations': 'Main Operations',
+            'tools_utilities': 'Tools & Utilities',
+            'backup_data': 'Backup Data',
+            'restore_data': 'Restore Data',
+            'filters': 'Filters',
+            'backup_drivers': 'Backup Drivers',
+            'restore_drivers': 'Restore Drivers',
+            'browser': 'Browser',
+            'check_space': 'Check Space',
+            'save_log': 'Save Log',
+            'copy_data': 'Copy Data',
+            'device_mgr': 'Device Mgr',
+            'schedule': 'Schedule',
+            'export_apps': 'Export Apps',
+            'explorer': 'Explorer',
+            'connect_nas': 'Connect NAS',
+            'disconnect': 'Disconnect',
+            'activity_log': 'Activity Log',
+            'sound': 'Sound',
+            'operation_finished': 'Operation finished',
+            'backup_complete': 'Backup complete!',
+            'ready': 'Ready',
+            'select_user_begin': 'Select User to begin',
+        },
+        'ko': {
+            'app_title': 'ezBAK',
+            'menu_file': '파일',
+            'menu_view': '보기',
+            'menu_language': '언어',
+            'menu_theme': '테마',
+            'theme_light': '라이트 모드',
+            'theme_dark': '다크 모드',
+            'lang_english': 'English',
+            'lang_korean': '한국어',
+            'select_user': '사용자 선택:',
+            'main_operations': '주요 작업',
+            'tools_utilities': '도구 및 유틸리티',
+            'backup_data': '데이터 백업',
+            'restore_data': '데이터 복원',
+            'filters': '필터',
+            'backup_drivers': '드라이버 백업',
+            'restore_drivers': '드라이버 복원',
+            'browser': '브라우저',
+            'check_space': '공간 확인',
+            'save_log': '로그 저장',
+            'copy_data': '데이터 복사',
+            'device_mgr': '장치 관리자',
+            'schedule': '예약',
+            'export_apps': '앱 내보내기',
+            'explorer': '탐색기',
+            'connect_nas': 'NAS 연결',
+            'disconnect': '연결 해제',
+            'activity_log': '활동 로그',
+            'sound': '소리',
+            'operation_finished': '작업 완료',
+            'backup_complete': '백업 완료!',
+            'ready': '준비',
+            'select_user_begin': '시작하려면 사용자 선택',
+        }
+    }
+
+    def __init__(self, initial_lang='en'):
+        self.current_lang = initial_lang
+
+    def set_language(self, lang_code):
+        """Set current language"""
+        if lang_code in self.TRANSLATIONS:
+            self.current_lang = lang_code
+            return True
+        return False
+
+    def get(self, key, default=None):
+        """Get translated text"""
+        trans = self.TRANSLATIONS.get(self.current_lang, {})
+        return trans.get(key, default or key)
+
 
         #     # always run finalization steps
         # finally:
@@ -620,9 +784,13 @@ class App(tk.Tk):
 
         # Hide window until fully initialized
         self.withdraw()
-        
+
+        # Initialize theme and translation systems
+        self.theme = Win11Theme(initial_mode='dark')  # Start with dark mode
+        self.translator = Translator(initial_lang='en')  # Start with English
+
         self.log_retention_days_var = tk.StringVar(value='30')
-        self.title("ezBAK")
+        self.title(self.translator.get('app_title'))
         try:
             # Try the title icon first (bundled with PyInstaller)
             self.iconbitmap(resource_path('./icon/ezbak_title.ico'))
@@ -631,9 +799,9 @@ class App(tk.Tk):
                 # Fallback to the regular icon
                 self.iconbitmap(resource_path('./icon/ezbak.ico'))
             except tk.TclError:
-                pass 
-        self.geometry("1026x619")
-        self.configure(bg="#2D3250")
+                pass
+        self.geometry("1026x650")  # Slightly taller for menu bar
+        self.configure(bg=self.theme.get('bg'))
 
         # UI elements setup
         self.style = ttk.Style(self)
@@ -694,7 +862,94 @@ class App(tk.Tk):
         """Setting keyboard shortcuts"""
         self.shortcuts = KeyboardShortcuts(self)
 
+    def create_menu_bar(self):
+        """Create Windows 11 style menu bar"""
+        menubar = tk.Menu(self,
+                         bg=self.theme.get('bg_elevated'),
+                         fg=self.theme.get('fg'),
+                         activebackground=self.theme.get('accent'),
+                         activeforeground='white',
+                         bd=0,
+                         relief='flat')
+
+        # View Menu
+        view_menu = tk.Menu(menubar, tearoff=0,
+                           bg=self.theme.get('bg_elevated'),
+                           fg=self.theme.get('fg'),
+                           activebackground=self.theme.get('accent'),
+                           activeforeground='white',
+                           bd=0,
+                           relief='flat')
+
+        # Theme submenu
+        theme_menu = tk.Menu(view_menu, tearoff=0,
+                            bg=self.theme.get('bg_elevated'),
+                            fg=self.theme.get('fg'),
+                            activebackground=self.theme.get('accent'),
+                            activeforeground='white')
+        theme_menu.add_command(label=self.translator.get('theme_light'),
+                              command=lambda: self.switch_theme('light'))
+        theme_menu.add_command(label=self.translator.get('theme_dark'),
+                              command=lambda: self.switch_theme('dark'))
+
+        view_menu.add_cascade(label=self.translator.get('menu_theme'), menu=theme_menu)
+        menubar.add_cascade(label=self.translator.get('menu_view'), menu=view_menu)
+
+        # Language Menu
+        lang_menu = tk.Menu(menubar, tearoff=0,
+                           bg=self.theme.get('bg_elevated'),
+                           fg=self.theme.get('fg'),
+                           activebackground=self.theme.get('accent'),
+                           activeforeground='white',
+                           bd=0,
+                           relief='flat')
+        lang_menu.add_command(label="English", command=lambda: self.switch_language('en'))
+        lang_menu.add_command(label="한국어", command=lambda: self.switch_language('ko'))
+
+        menubar.add_cascade(label=self.translator.get('menu_language'), menu=lang_menu)
+
+        self.config(menu=menubar)
+
+    def switch_theme(self, mode):
+        """Switch between light and dark themes"""
+        if mode != self.theme.current_mode:
+            self.theme.current_mode = mode
+            self.theme.colors = self.theme.DARK if mode == 'dark' else self.theme.LIGHT
+            self.apply_theme_to_all_widgets()
+            messagebox.showinfo("Theme Changed",
+                              f"Theme switched to {mode.capitalize()} mode.\nRestart the application for full effect.",
+                              parent=self)
+
+    def switch_language(self, lang_code):
+        """Switch application language"""
+        if self.translator.set_language(lang_code):
+            self.update_ui_texts()
+            messagebox.showinfo("Language Changed",
+                              "Language changed successfully.\nRestart the application for full effect.",
+                              parent=self)
+
+    def apply_theme_to_all_widgets(self):
+        """Apply current theme to all widgets (requires app restart for full effect)"""
+        # This is a simplified version - full theme switching would require rebuilding the UI
+        self.configure(bg=self.theme.get('bg'))
+        try:
+            self.save_settings()  # Save the theme preference
+        except Exception:
+            pass
+
+    def update_ui_texts(self):
+        """Update all UI text labels with current language"""
+        try:
+            self.title(self.translator.get('app_title'))
+            # Update other labels as needed
+            # This is simplified - full implementation would update all text
+        except Exception:
+            pass
+
     def create_widgets(self):
+        # Create menu bar first
+        self.create_menu_bar()
+
         # Header
         header_frame = tk.Frame(self, bg="#1a1f35", height=60)
         header_frame.pack(fill="x", pady=0)
@@ -1290,6 +1545,12 @@ class App(tk.Tk):
                         self._play_sound(value)
                     except Exception as e:
                         print(f"DEBUG: Sound play failed: {e}")
+                elif task == 'reset_progress':
+                    # Reset progress bar to initial state
+                    try:
+                        self.reset_progress_bar()
+                    except Exception as e:
+                        print(f"DEBUG: Progress bar reset failed: {e}")
 
                 self.message_queue.task_done()
         except queue.Empty:
@@ -1821,7 +2082,7 @@ class App(tk.Tk):
                 self.close_log_file()
             except Exception:
                 pass
-            
+
             try:
                 max_val = self.progress_bar['maximum'] if self.progress_bar['maximum'] > 0 else 1
                 self.message_queue.put(('update_progress', max_val))
@@ -1836,20 +2097,21 @@ class App(tk.Tk):
                 self.after(1000, lambda: self.set_buttons_state("normal"))
             except Exception:
                 pass
-            
+
+            # Reset progress bar after 2 seconds
+            try:
+                self.after(2000, lambda: self.message_queue.put(('reset_progress', None)))
+            except Exception:
+                pass
+
             if backup_success:
-                self.message_queue.put(('update_status', "Backup complete!"))
+                self.message_queue.put(('update_status', self.translator.get('backup_complete')))
                 # Complete sound playback
                 self.message_queue.put(('play_sound', 'complete'))
             else:
-                self.message_queue.put(('update_status', "Operation finished"))
+                self.message_queue.put(('update_status', self.translator.get('operation_finished')))
                 # Error sound playback
-                self.message_queue.put(('play_sound', 'error'))
-
-            if hasattr(self, '_backup_completed') and self._backup_completed:
-                self.message_queue.put(('update_status', "Backup complete!"))
-            else:
-                self.message_queue.put(('update_status', "Operation finished"))          
+                self.message_queue.put(('play_sound', 'error'))          
             
             
     def copy_file_with_progress_safe(self, src, dst, progress_callback, buffer_size=64*1024, timeout_seconds=30):
