@@ -140,6 +140,54 @@ class Translator:
             'notice_appdata': '%AppData% folder is not backed up',
             'notice_detailed_log': 'Detailed log will be saved to a file during operations',
             'notice_responsibility': 'Use of this program is the sole responsibility of the user',
+            # Dialog messages
+            'language_changed': 'Language Changed',
+            'language_changed_msg': 'Language changed successfully.\nRestart the application for full effect.',
+            'confirm_exit': 'Confirm Exit',
+            'confirm_exit_msg': 'Are you sure you want to exit ezBAK?',
+            'error': 'Error',
+            'warning': 'Warning',
+            'info': 'Info',
+            'space_check': 'Space Check',
+            'space_sufficient': '✓ Sufficient space available.',
+            'space_insufficient': '⚠ Insufficient space available.',
+            'no_log_content': 'No log content to save.',
+            'error_saving_log': 'Error occurred while saving UI log:',
+            'please_select_user': 'Please select a user.',
+            'data_will_be_overwritten': ' will be overwritten. Do you want to continue?',
+            'task_creation_failed': 'Task Creation Failed',
+            'task_deletion_failed': 'Task Deletion Failed',
+            'schedule_created': 'Schedule Created',
+            'task_name_required': 'Task Name is required to delete.',
+            'failed_to_delete_task': 'Failed to delete task:',
+            'task_scheduler': 'Task Scheduler',
+            'task_deleted': 'deleted.',
+            'source_selection_failed': 'Source selection failed:',
+            'filter_manager_error': 'Filter manager error:',
+            'unc_path_required': 'It should start with UNC Path \\\\ (ex: \\\\Server\\share)',
+            'password_required': 'Password is required if User is provided.',
+            'valid_drive_letter': 'Please enter a valid drive letter (ex: Z)',
+            'connected': 'Connected',
+            'open_share_now': 'Open the share now?',
+            'nas_connect': 'NAS Connect',
+            'failed_to_connect': 'Failed to connect.',
+            'nas_connect_error': 'NAS connect error:',
+            'unc_path_must_start': 'UNC path must start with \\\\ (e.g., \\\\server\\share)',
+            'map_drive': 'Map Drive',
+            'map_to_drive_letter': 'Map this share to a drive letter?',
+            'invalid_drive_letter': 'Invalid drive letter.',
+            'password': 'Password',
+            'password_required_when_username': 'Password is required when specifying username.',
+            'persistence': 'Persistence',
+            'reconnect_at_signin': 'Reconnect at sign-in? (Persistent)',
+            'nas_disconnect': 'NAS Disconnect',
+            'disconnected': 'Disconnected:',
+            'failed_to_disconnect': 'Failed to disconnect.',
+            'nas_disconnect_error': 'NAS disconnect error:',
+            'input_target': 'Input the target (Drive Letter or UNC)',
+            'invalid_drive_or_unc': 'Invalid drive letter or UNC path.',
+            'system_mismatch_warning': 'System Mismatch Warning',
+            'unable_to_open_device_manager': 'Unable to open Device Manager:',
         },
         'ko': {
             'app_title': 'ezBAK',
@@ -186,6 +234,54 @@ class Translator:
             'notice_appdata': '%AppData% 폴더는 백업되지 않습니다',
             'notice_detailed_log': '작업 중 자세한 로그가 파일로 저장됩니다',
             'notice_responsibility': '이 프로그램의 사용에 대한 책임은 전적으로 사용자에게 있습니다',
+            # Dialog messages
+            'language_changed': '언어 변경',
+            'language_changed_msg': '언어가 성공적으로 변경되었습니다.\n모든 효과를 적용하려면 애플리케이션을 다시 시작하세요.',
+            'confirm_exit': '종료 확인',
+            'confirm_exit_msg': '정말로 ezBAK을 종료하시겠습니까?',
+            'error': '오류',
+            'warning': '경고',
+            'info': '정보',
+            'space_check': '공간 확인',
+            'space_sufficient': '✓ 충분한 공간이 있습니다.',
+            'space_insufficient': '⚠ 공간이 부족합니다.',
+            'no_log_content': '저장할 로그 내용이 없습니다.',
+            'error_saving_log': 'UI 로그 저장 중 오류 발생:',
+            'please_select_user': '사용자를 선택하세요.',
+            'data_will_be_overwritten': '의 기존 데이터를 덮어씁니다. 계속하시겠습니까?',
+            'task_creation_failed': '작업 생성 실패',
+            'task_deletion_failed': '작업 삭제 실패',
+            'schedule_created': '예약 생성됨',
+            'task_name_required': '작업 이름이 필요합니다.',
+            'failed_to_delete_task': '작업 삭제 실패:',
+            'task_scheduler': '작업 스케줄러',
+            'task_deleted': '작업이 삭제되었습니다.',
+            'source_selection_failed': '소스 선택 실패:',
+            'filter_manager_error': '필터 관리자 오류:',
+            'unc_path_required': 'UNC 경로로 시작해야 합니다 \\\\ (예: \\\\Server\\share)',
+            'password_required': '사용자가 제공된 경우 비밀번호가 필요합니다.',
+            'valid_drive_letter': '유효한 드라이브 문자를 입력하세요 (예: Z)',
+            'connected': '연결됨',
+            'open_share_now': '지금 공유를 여시겠습니까?',
+            'nas_connect': 'NAS 연결',
+            'failed_to_connect': '연결에 실패했습니다.',
+            'nas_connect_error': 'NAS 연결 오류:',
+            'unc_path_must_start': 'UNC 경로는 \\\\로 시작해야 합니다 (예: \\\\server\\share)',
+            'map_drive': '드라이브 매핑',
+            'map_to_drive_letter': '이 공유를 드라이브 문자로 매핑하시겠습니까?',
+            'invalid_drive_letter': '유효하지 않은 드라이브 문자입니다.',
+            'password': '비밀번호',
+            'password_required_when_username': '사용자 이름이 설정된 경우 비밀번호가 필요합니다.',
+            'persistence': '지속성',
+            'reconnect_at_signin': '로그인 시 다시 연결하시겠습니까? (지속)',
+            'nas_disconnect': 'NAS 연결 해제',
+            'disconnected': '연결 해제됨:',
+            'failed_to_disconnect': '연결 해제에 실패했습니다.',
+            'nas_disconnect_error': 'NAS 연결 해제 오류:',
+            'input_target': '대상을 입력하세요 (드라이브 문자 또는 UNC)',
+            'invalid_drive_or_unc': '유효하지 않은 드라이브 문자 또는 UNC 경로입니다.',
+            'system_mismatch_warning': '시스템 불일치 경고',
+            'unable_to_open_device_manager': '장치 관리자를 열 수 없습니다:',
         }
     }
 
@@ -214,28 +310,22 @@ class Win11Dialog:
 
     @staticmethod
     def _create_dialog_button(parent, text, command, theme, is_primary=False):
-        """Create a Windows 11 style dialog button"""
-        if is_primary:
-            # Primary button with accent color
-            btn_bg = theme.get('accent')
-            btn_fg = '#FFFFFF'
-            hover_bg = theme.get('accent_hover')
-            hover_fg = '#FFFFFF'
-        else:
-            # Secondary button
-            btn_bg = theme.get('bg_elevated')
-            btn_fg = theme.get('fg')
-            hover_bg = theme.get('hover')
-            hover_fg = theme.get('fg')
+        """Create a Windows 11 style dialog button matching main screen style"""
+        # Use consistent theme colors for all buttons (no color distinction)
+        btn_bg = theme.get('bg_elevated')
+        btn_fg = theme.get('fg')
+        btn_hover_bg = theme.get('accent')
+        btn_hover_fg = '#FFFFFF'
+        btn_border = theme.get('border')
 
         btn = tk.Button(parent, text=text,
                        bg=btn_bg,
                        fg=btn_fg,
                        font=("Segoe UI", 9),
                        relief="flat",
-                       bd=0,
+                       bd=1,
                        highlightthickness=1,
-                       borderwidth=0,
+                       borderwidth=1,
                        width=10,
                        height=1,
                        command=command,
@@ -243,9 +333,11 @@ class Win11Dialog:
                        padx=8,
                        pady=4)
 
-        # Hover effects
-        btn.bind("<Enter>", lambda e: e.widget.config(bg=hover_bg, fg=hover_fg))
-        btn.bind("<Leave>", lambda e: e.widget.config(bg=btn_bg, fg=btn_fg))
+        btn.config(highlightbackground=btn_border, highlightcolor=btn_border)
+
+        # Hover effects matching main screen buttons
+        btn.bind("<Enter>", lambda e: e.widget.config(bg=btn_hover_bg, fg=btn_hover_fg, relief="flat"))
+        btn.bind("<Leave>", lambda e: e.widget.config(bg=btn_bg, fg=btn_fg, relief="flat"))
 
         return btn
 
@@ -902,7 +994,9 @@ Tips :  Shortcuts are not case-sensitive.
     def safe_exit(self):
         """Exit program  (Ctrl + Q)"""
         try:
-            if messagebox.askyesno("Confirm Exit", "Are you sure you want to exit ezBAK?"):
+            if Win11Dialog.askyesno(self.app.translator.get('confirm_exit'),
+                                   self.app.translator.get('confirm_exit_msg'),
+                                   parent=self.app, theme=self.app.theme, translator=self.app.translator):
                 try:
                     self.app.save_settings()
                     self.app.close_log_file()
@@ -1132,8 +1226,8 @@ class App(tk.Tk):
                 self.save_settings()  # Save the language preference
             except Exception:
                 pass
-            Win11Dialog.showinfo("🌐 Language Changed",
-                              "Language changed successfully.\nRestart the application for full effect.",
+            Win11Dialog.showinfo(self.translator.get('language_changed'),
+                              self.translator.get('language_changed_msg'),
                               parent=self, theme=self.theme, translator=self.translator)
 
     def apply_theme_to_all_widgets(self):
@@ -1150,6 +1244,9 @@ class App(tk.Tk):
         try:
             # Update window title
             self.title(self.translator.get('app_title'))
+
+            # Recreate menu bar to apply language changes
+            self.create_menu_bar()
 
             # Check if Korean language (no emojis for Korean)
             is_korean = self.translator.current_lang == 'ko'
@@ -1957,11 +2054,15 @@ class App(tk.Tk):
         )
         
         if required <= available:
-            messagebox.showinfo("Space Check", f"✓ Sufficient space available.\n\n{msg}")
+            Win11Dialog.showinfo(self.translator.get('space_check'),
+                               f"{self.translator.get('space_sufficient')}\n\n{msg}",
+                               parent=self, theme=self.theme, translator=self.translator)
             self.message_queue.put(('log', f"Space OK. Required={self.format_bytes(required)} Available={self.format_bytes(available)}"))
             self.message_queue.put(('update_status', "Space check completed - OK"))
         else:
-            messagebox.showwarning("Space Check", f"⚠ Insufficient space available.\n\n{msg}")
+            Win11Dialog.showwarning(self.translator.get('space_check'),
+                                  f"{self.translator.get('space_insufficient')}\n\n{msg}",
+                                  parent=self, theme=self.theme, translator=self.translator)
             self.message_queue.put(('log', f"Space LOW. Required={self.format_bytes(required)} Available={self.format_bytes(available)}"))
             self.message_queue.put(('update_status', "Space check completed - Insufficient"))
 
@@ -2032,7 +2133,9 @@ class App(tk.Tk):
     def save_log(self):
         """Saves the UI log content to a text file (UI only)."""
         if not self.log_text.get("1.0", tk.END).strip():
-            messagebox.showinfo("Info", "No log content to save.")
+            Win11Dialog.showinfo(self.translator.get('info'),
+                               self.translator.get('no_log_content'),
+                               parent=self, theme=self.theme, translator=self.translator)
             return
 
         file_path = filedialog.asksaveasfilename(
@@ -2052,7 +2155,9 @@ class App(tk.Tk):
             self.message_queue.put(('log', f"UI log saved to {file_path}"))
         except Exception as e:
             self.message_queue.put(('log', f"Error saving UI log: {e}"))
-            messagebox.showerror("Error", f"Error occurred while saving UI log: {e}")
+            Win11Dialog.showerror(self.translator.get('error'),
+                                f"{self.translator.get('error_saving_log')} {e}",
+                                parent=self, theme=self.theme, translator=self.translator)
 
     def load_users(self):
         """Gets a list of Windows users and adds them to the combo box."""
@@ -2273,7 +2378,9 @@ class App(tk.Tk):
     def start_backup_thread(self):
         """Starts the backup process in a separate thread."""
         if not self.user_var.get():
-            messagebox.showwarning("Warning", "Please select a user.")
+            Win11Dialog.showwarning(self.translator.get('warning'),
+                                  self.translator.get('please_select_user'),
+                                  parent=self, theme=self.theme, translator=self.translator)
             return
 
         backup_path = filedialog.askdirectory(title="Select Backup Folder")
@@ -2741,10 +2848,14 @@ class App(tk.Tk):
     def start_restore_thread(self):
         """Starts the restore process in a separate thread."""
         if not self.user_var.get():
-            messagebox.showwarning("Warning", "Please select a user.")
+            Win11Dialog.showwarning(self.translator.get('warning'),
+                                  self.translator.get('please_select_user'),
+                                  parent=self, theme=self.theme, translator=self.translator)
             return
 
-        response = messagebox.askyesno("Warning", f"Existing data for '{self.user_var.get()}' will be overwritten. Do you want to continue?")
+        response = Win11Dialog.askyesno(self.translator.get('warning'),
+                                       f"'{self.user_var.get()}'{self.translator.get('data_will_be_overwritten')}",
+                                       parent=self, theme=self.theme, translator=self.translator)
         if not response:
             self.message_queue.put(('log', "Restore process cancelled."))
             return
@@ -3639,18 +3750,24 @@ class App(tk.Tk):
         def on_ok():
             unc = (unc_var.get() or '').strip()
             if not unc or not unc.startswith('\\\\'):
-                messagebox.showerror("Error", "It should start with UNC Path \\\\ (ex: \\\\Server\\share)", parent=dlg)
+                Win11Dialog.showerror(self.translator.get('error'),
+                                    self.translator.get('unc_path_required'),
+                                    parent=dlg, theme=self.theme, translator=self.translator)
                 return
             user = (user_var.get() or '').strip()
             pwd = (pwd_var.get() or '')
             if user and not pwd:
-                messagebox.showerror("Error", "Password is required if User is provided.", parent=dlg)
+                Win11Dialog.showerror(self.translator.get('error'),
+                                    self.translator.get('password_required'),
+                                    parent=dlg, theme=self.theme, translator=self.translator)
                 return
             drv = None
             if map_var.get():
                 d = (drive_var.get() or '').strip().rstrip(':').upper()
                 if not (len(d) == 1 and 'A' <= d <= 'Z'):
-                    messagebox.showerror("Error", "Please enter a valid drive letter (ex: Z)", parent=dlg)
+                    Win11Dialog.showerror(self.translator.get('error'),
+                                        self.translator.get('valid_drive_letter'),
+                                        parent=dlg, theme=self.theme, translator=self.translator)
                     return
                 drv = d + ':'
             result.update(ok=True, unc=unc, drive=drv, user=user, pwd=pwd, persistent=persist_var.get())
@@ -3719,7 +3836,9 @@ class App(tk.Tk):
             if res.returncode == 0:
                 self.message_queue.put(('log', f"NAS connected: {drive or unc}"))
                 try:
-                    if messagebox.askyesno("Connected", "Open the share now?"):
+                    if Win11Dialog.askyesno(self.translator.get('connected'),
+                                          self.translator.get('open_share_now'),
+                                          parent=self, theme=self.theme, translator=self.translator):
                         os.startfile(drive if drive else unc)
                 except Exception:
                     pass
@@ -3727,13 +3846,17 @@ class App(tk.Tk):
                 msg = err or out or f"Failed with code {res.returncode}"
                 self.message_queue.put(('log', f"NAS connect failed: {msg}"))
                 try:
-                    messagebox.showerror("NAS Connect", f"Failed to connect.\n\n{msg}")
+                    Win11Dialog.showerror(self.translator.get('nas_connect'),
+                                        f"{self.translator.get('failed_to_connect')}\n\n{msg}",
+                                        parent=self, theme=self.theme, translator=self.translator)
                 except Exception:
                     pass
         except Exception as e:
             self.message_queue.put(('log', f"NAS connect error: {e}"))
             try:
-                messagebox.showerror("Error", f"NAS connect error: {e}")
+                Win11Dialog.showerror(self.translator.get('error'),
+                                    f"{self.translator.get('nas_connect_error')} {e}",
+                                    parent=self, theme=self.theme, translator=self.translator)
             except Exception:
                 pass
             if not unc:
@@ -3798,7 +3921,9 @@ class App(tk.Tk):
             if res.returncode == 0:
                 self.message_queue.put(('log', f"NAS connected: {drive or unc}"))
                 try:
-                    if messagebox.askyesno("Connected", "Open the share now?"):
+                    if Win11Dialog.askyesno(self.translator.get('connected'),
+                                          self.translator.get('open_share_now'),
+                                          parent=self, theme=self.theme, translator=self.translator):
                         os.startfile(drive if drive else unc)
                 except Exception:
                     pass
@@ -3806,13 +3931,17 @@ class App(tk.Tk):
                 msg = err or out or f"Failed with code {res.returncode}"
                 self.message_queue.put(('log', f"NAS connect failed: {msg}"))
                 try:
-                    messagebox.showerror("NAS Connect", f"Failed to connect.\n\n{msg}")
+                    Win11Dialog.showerror(self.translator.get('nas_connect'),
+                                        f"{self.translator.get('failed_to_connect')}\n\n{msg}",
+                                        parent=self, theme=self.theme, translator=self.translator)
                 except Exception:
                     pass
         except Exception as e:
             self.message_queue.put(('log', f"NAS connect error: {e}"))
             try:
-                messagebox.showerror("Error", f"NAS connect error: {e}")
+                Win11Dialog.showerror(self.translator.get('error'),
+                                    f"{self.translator.get('nas_connect_error')} {e}",
+                                    parent=self, theme=self.theme, translator=self.translator)
             except Exception:
                 pass
 
