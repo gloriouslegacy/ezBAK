@@ -140,6 +140,57 @@ class Translator:
             'notice_appdata': '%AppData% folder is not backed up',
             'notice_detailed_log': 'Detailed log will be saved to a file during operations',
             'notice_responsibility': 'Use of this program is the sole responsibility of the user',
+            # Dialog titles and messages
+            'confirm_exit': 'Confirm Exit',
+            'confirm_exit_msg': 'Are you sure you want to exit ezBAK?',
+            'error': 'Error',
+            'warning': 'Warning',
+            'info': 'Info',
+            'space_check': 'Space Check',
+            'sufficient_space': '✓ Sufficient space available.',
+            'insufficient_space': '⚠ Insufficient space available.',
+            'no_log_content': 'No log content to save.',
+            'error_saving_log': 'Error occurred while saving UI log: {0}',
+            'select_user_warning': 'Please select a user.',
+            'overwrite_warning': 'Existing data for \'{0}\' will be overwritten. Do you want to continue?',
+            'task_creation_failed': 'Task Creation Failed',
+            'task_deletion_failed': 'Task Deletion Failed',
+            'schedule_created': 'Schedule Created',
+            'task_scheduler': 'Task Scheduler',
+            'task_deleted': 'Task \'{0}\' deleted.',
+            'task_name_required': 'Task Name is required to delete.',
+            'failed_to_delete_task': 'Failed to delete task:\n{0}',
+            'source_selection_failed': 'Source selection failed: {0}',
+            'filter_manager_error': 'Filter manager error: {0}',
+            'unc_path_required': 'It should start with UNC Path \\\\ (ex: \\\\Server\\share)',
+            'password_required': 'Password is required if User is provided.',
+            'invalid_drive_letter': 'Please enter a valid drive letter (ex: Z)',
+            'connected': 'Connected',
+            'open_share_now': 'Open the share now?',
+            'nas_connect': 'NAS Connect',
+            'failed_to_connect': 'Failed to connect.\n\n{0}',
+            'nas_connect_error': 'NAS connect error: {0}',
+            'unc_path_must_start': 'UNC path must start with \\\\ (e.g., \\\\server\\share)',
+            'map_drive': 'Map Drive',
+            'map_to_drive_letter': 'Map this share to a drive letter?',
+            'persistence': 'Persistence',
+            'reconnect_at_signin': 'Reconnect at sign-in? (Persistent)',
+            'nas_disconnect': 'NAS Disconnect',
+            'disconnected': 'Disconnected: {0}',
+            'failed_to_disconnect': 'Failed to disconnect.\n\n{0}',
+            'nas_disconnect_error': 'NAS disconnect error: {0}',
+            'input_target': 'Input the target (Drive Letter or UNC)',
+            'invalid_drive_or_unc': 'Invalid drive letter or UNC path.',
+            'system_mismatch_warning': 'System Mismatch Warning',
+            'unable_to_open_devmgr': 'Unable to open Device Manager:\n{0}',
+            'task_name_required_create': 'Task name is required.',
+            'destination_required': 'Destination folder is required.',
+            'invalid_time_format': 'Invalid time format. Use HH:MM (e.g., 14:30)',
+            'failed_to_create_schedule': 'Failed to create schedule: {0}',
+            'task_name_required_delete': 'Task name is required for deletion.',
+            'failed_to_delete_schedule': 'Failed to delete schedule: {0}',
+            'please_enter_pattern': 'Please enter a pattern.',
+            'continue_anyway': 'Continue anyway?',
         },
         'ko': {
             'app_title': 'ezBAK',
@@ -186,6 +237,57 @@ class Translator:
             'notice_appdata': '%AppData% 폴더는 백업되지 않습니다',
             'notice_detailed_log': '작업 중 자세한 로그가 파일로 저장됩니다',
             'notice_responsibility': '이 프로그램의 사용에 대한 책임은 전적으로 사용자에게 있습니다',
+            # Dialog titles and messages
+            'confirm_exit': '종료 확인',
+            'confirm_exit_msg': 'ezBAK을 종료하시겠습니까?',
+            'error': '오류',
+            'warning': '경고',
+            'info': '정보',
+            'space_check': '공간 확인',
+            'sufficient_space': '✓ 충분한 공간이 있습니다.',
+            'insufficient_space': '⚠ 공간이 부족합니다.',
+            'no_log_content': '저장할 로그 내용이 없습니다.',
+            'error_saving_log': 'UI 로그 저장 중 오류 발생: {0}',
+            'select_user_warning': '사용자를 선택하세요.',
+            'overwrite_warning': '\'{0}\'의 기존 데이터를 덮어씁니다. 계속하시겠습니까?',
+            'task_creation_failed': '작업 생성 실패',
+            'task_deletion_failed': '작업 삭제 실패',
+            'schedule_created': '예약 생성됨',
+            'task_scheduler': '작업 스케줄러',
+            'task_deleted': '작업 \'{0}\'이(가) 삭제되었습니다.',
+            'task_name_required': '삭제하려면 작업 이름이 필요합니다.',
+            'failed_to_delete_task': '작업 삭제 실패:\n{0}',
+            'source_selection_failed': '소스 선택 실패: {0}',
+            'filter_manager_error': '필터 관리자 오류: {0}',
+            'unc_path_required': 'UNC 경로 \\\\로 시작해야 합니다 (예: \\\\Server\\share)',
+            'password_required': '사용자가 제공된 경우 비밀번호가 필요합니다.',
+            'invalid_drive_letter': '올바른 드라이브 문자를 입력하세요 (예: Z)',
+            'connected': '연결됨',
+            'open_share_now': '지금 공유를 여시겠습니까?',
+            'nas_connect': 'NAS 연결',
+            'failed_to_connect': '연결 실패.\n\n{0}',
+            'nas_connect_error': 'NAS 연결 오류: {0}',
+            'unc_path_must_start': 'UNC 경로는 \\\\로 시작해야 합니다 (예: \\\\server\\share)',
+            'map_drive': '드라이브 매핑',
+            'map_to_drive_letter': '이 공유를 드라이브 문자에 매핑하시겠습니까?',
+            'persistence': '지속성',
+            'reconnect_at_signin': '로그인 시 다시 연결하시겠습니까? (지속)',
+            'nas_disconnect': 'NAS 연결 해제',
+            'disconnected': '연결 해제됨: {0}',
+            'failed_to_disconnect': '연결 해제 실패.\n\n{0}',
+            'nas_disconnect_error': 'NAS 연결 해제 오류: {0}',
+            'input_target': '대상을 입력하세요 (드라이브 문자 또는 UNC)',
+            'invalid_drive_or_unc': '잘못된 드라이브 문자 또는 UNC 경로입니다.',
+            'system_mismatch_warning': '시스템 불일치 경고',
+            'unable_to_open_devmgr': '장치 관리자를 열 수 없습니다:\n{0}',
+            'task_name_required_create': '작업 이름이 필요합니다.',
+            'destination_required': '대상 폴더가 필요합니다.',
+            'invalid_time_format': '잘못된 시간 형식입니다. HH:MM 형식을 사용하세요 (예: 14:30)',
+            'failed_to_create_schedule': '예약 생성 실패: {0}',
+            'task_name_required_delete': '삭제하려면 작업 이름이 필요합니다.',
+            'failed_to_delete_schedule': '예약 삭제 실패: {0}',
+            'please_enter_pattern': '패턴을 입력하세요.',
+            'continue_anyway': '계속하시겠습니까?',
         }
     }
 
@@ -215,18 +317,12 @@ class Win11Dialog:
     @staticmethod
     def _create_dialog_button(parent, text, command, theme, is_primary=False):
         """Create a Windows 11 style dialog button"""
-        if is_primary:
-            # Primary button with accent color
-            btn_bg = theme.get('accent')
-            btn_fg = '#FFFFFF'
-            hover_bg = theme.get('accent_hover')
-            hover_fg = '#FFFFFF'
-        else:
-            # Secondary button
-            btn_bg = theme.get('bg_elevated')
-            btn_fg = theme.get('fg')
-            hover_bg = theme.get('hover')
-            hover_fg = theme.get('fg')
+        # All buttons have no background color, only border
+        btn_bg = theme.get('bg_elevated')
+        btn_fg = theme.get('fg')
+        hover_bg = theme.get('hover')
+        hover_fg = theme.get('fg')
+        border_color = theme.get('border')
 
         btn = tk.Button(parent, text=text,
                        bg=btn_bg,
@@ -235,6 +331,8 @@ class Win11Dialog:
                        relief="flat",
                        bd=0,
                        highlightthickness=1,
+                       highlightbackground=border_color,
+                       highlightcolor=border_color,
                        borderwidth=0,
                        width=10,
                        height=1,
@@ -902,7 +1000,9 @@ Tips :  Shortcuts are not case-sensitive.
     def safe_exit(self):
         """Exit program  (Ctrl + Q)"""
         try:
-            if messagebox.askyesno("Confirm Exit", "Are you sure you want to exit ezBAK?"):
+            if Win11Dialog.askyesno(self.app.translator.get('confirm_exit'),
+                                   self.app.translator.get('confirm_exit_msg'),
+                                   parent=self.app, theme=self.app.theme, translator=self.app.translator):
                 try:
                     self.app.save_settings()
                     self.app.close_log_file()
@@ -1631,7 +1731,13 @@ class App(tk.Tk):
                                 fg=self.theme.get('fg_secondary'),
                                 bg=self.theme.get('bg'))
         shortcut_hint.pack(side="right")
-    
+
+        # Apply language settings after all widgets are created
+        try:
+            self.update_ui_texts()
+        except Exception as e:
+            print(f"DEBUG: Failed to update UI texts after widget creation: {e}")
+
     def _on_sound_toggle(self):
         """Callback Called When Sound Toggle"""
         try:
@@ -1907,7 +2013,8 @@ class App(tk.Tk):
                     except Exception as e:
                         print(f"DEBUG: Button enable failed: {e}")
                 elif task == 'show_error':
-                    messagebox.showerror("Error", value)
+                    Win11Dialog.showerror(self.translator.get('error'), value,
+                                        parent=self, theme=self.theme, translator=self.translator)
                 elif task == 'open_folder':
                     try:
                         os.startfile(value)
@@ -1957,11 +2064,15 @@ class App(tk.Tk):
         )
         
         if required <= available:
-            messagebox.showinfo("Space Check", f"✓ Sufficient space available.\n\n{msg}")
+            Win11Dialog.showinfo(self.translator.get('space_check'),
+                               f"{self.translator.get('sufficient_space')}\n\n{msg}",
+                               parent=self, theme=self.theme, translator=self.translator)
             self.message_queue.put(('log', f"Space OK. Required={self.format_bytes(required)} Available={self.format_bytes(available)}"))
             self.message_queue.put(('update_status', "Space check completed - OK"))
         else:
-            messagebox.showwarning("Space Check", f"⚠ Insufficient space available.\n\n{msg}")
+            Win11Dialog.showwarning(self.translator.get('space_check'),
+                                  f"{self.translator.get('insufficient_space')}\n\n{msg}",
+                                  parent=self, theme=self.theme, translator=self.translator)
             self.message_queue.put(('log', f"Space LOW. Required={self.format_bytes(required)} Available={self.format_bytes(available)}"))
             self.message_queue.put(('update_status', "Space check completed - Insufficient"))
 
@@ -2032,7 +2143,9 @@ class App(tk.Tk):
     def save_log(self):
         """Saves the UI log content to a text file (UI only)."""
         if not self.log_text.get("1.0", tk.END).strip():
-            messagebox.showinfo("Info", "No log content to save.")
+            Win11Dialog.showinfo(self.translator.get('info'),
+                               self.translator.get('no_log_content'),
+                               parent=self, theme=self.theme, translator=self.translator)
             return
 
         file_path = filedialog.asksaveasfilename(
@@ -2052,7 +2165,9 @@ class App(tk.Tk):
             self.message_queue.put(('log', f"UI log saved to {file_path}"))
         except Exception as e:
             self.message_queue.put(('log', f"Error saving UI log: {e}"))
-            messagebox.showerror("Error", f"Error occurred while saving UI log: {e}")
+            Win11Dialog.showerror(self.translator.get('error'),
+                                self.translator.get('error_saving_log').format(e),
+                                parent=self, theme=self.theme, translator=self.translator)
 
     def load_users(self):
         """Gets a list of Windows users and adds them to the combo box."""
@@ -2273,7 +2388,9 @@ class App(tk.Tk):
     def start_backup_thread(self):
         """Starts the backup process in a separate thread."""
         if not self.user_var.get():
-            messagebox.showwarning("Warning", "Please select a user.")
+            Win11Dialog.showwarning(self.translator.get('warning'),
+                                  self.translator.get('select_user_warning'),
+                                  parent=self, theme=self.theme, translator=self.translator)
             return
 
         backup_path = filedialog.askdirectory(title="Select Backup Folder")
@@ -2741,10 +2858,14 @@ class App(tk.Tk):
     def start_restore_thread(self):
         """Starts the restore process in a separate thread."""
         if not self.user_var.get():
-            messagebox.showwarning("Warning", "Please select a user.")
+            Win11Dialog.showwarning(self.translator.get('warning'),
+                                  self.translator.get('select_user_warning'),
+                                  parent=self, theme=self.theme, translator=self.translator)
             return
 
-        response = messagebox.askyesno("Warning", f"Existing data for '{self.user_var.get()}' will be overwritten. Do you want to continue?")
+        response = Win11Dialog.askyesno(self.translator.get('warning'),
+                                       self.translator.get('overwrite_warning').format(self.user_var.get()),
+                                       parent=self, theme=self.theme, translator=self.translator)
         if not response:
             self.message_queue.put(('log', "Restore process cancelled."))
             return
@@ -3102,7 +3223,8 @@ class App(tk.Tk):
                             error_msg = f"Failed to create scheduled task: {str(task_error)}"
                             self.message_queue.put(('log', error_msg))
                             try:
-                                messagebox.showerror("Task Creation Failed", error_msg)
+                                Win11Dialog.showerror(self.translator.get('task_creation_failed'), error_msg,
+                                                    parent=self, theme=self.theme, translator=self.translator)
                             except Exception:
                                 print(f"ERROR: {error_msg}")
                     else:
@@ -3119,7 +3241,8 @@ class App(tk.Tk):
                             error_msg = f"Failed to delete scheduled task: {str(delete_error)}"
                             self.message_queue.put(('log', error_msg))
                             try:
-                                messagebox.showerror("Task Deletion Failed", error_msg)
+                                Win11Dialog.showerror(self.translator.get('task_deletion_failed'), error_msg,
+                                                    parent=self, theme=self.theme, translator=self.translator)
                             except Exception:
                                 print(f"ERROR: {error_msg}")
                 else:
@@ -3137,7 +3260,8 @@ class App(tk.Tk):
             
             # Handle the messagebox call safely as wel
             try:
-                messagebox.showerror("Error", error_msg)
+                Win11Dialog.showerror(self.translator.get('error'), error_msg,
+                                    parent=self, theme=self.theme, translator=self.translator)
             except Exception as mb_error:
                 print(f"DEBUG: messagebox.showerror failed: {mb_error}")
 
@@ -3279,7 +3403,8 @@ class App(tk.Tk):
                     self.message_queue.put(('log', f"Scheduled task '{task_name}' created with administrator privileges"))
                     
                     try:
-                        messagebox.showinfo("Schedule Created", success_msg)
+                        Win11Dialog.showinfo(self.translator.get('schedule_created'), success_msg,
+                                           parent=self, theme=self.theme, translator=self.translator)
                     except Exception as mb_error:
                         self.write_detailed_log(f"messagebox.showinfo failed: {mb_error}")
                         print(f"Task created successfully with admin privileges: {task_name}")
@@ -3372,7 +3497,8 @@ class App(tk.Tk):
     def delete_scheduled_task(self, task_name):
         if not task_name:
             try:
-                messagebox.showwarning("Warning", "Task Name is required to delete.")
+                Win11Dialog.showwarning(self.translator.get('warning'), self.translator.get('task_name_required'),
+                                      parent=self, theme=self.theme, translator=self.translator)
             except Exception:
                 pass
             return
@@ -3382,13 +3508,15 @@ class App(tk.Tk):
                 raise RuntimeError(res.stderr or res.stdout)
         except Exception as e:
             try:
-                messagebox.showerror("Error", f"Failed to delete task:\n{e}")
+                Win11Dialog.showerror(self.translator.get('error'), f"{self.translator.get('failed_to_delete_task')}:\n{e}",
+                                    parent=self, theme=self.theme, translator=self.translator)
             except Exception:
                 pass
             self.message_queue.put(('log', f"Schedule delete failed: {e}"))
             return
         try:
-            messagebox.showinfo("Task Scheduler", f"Task '{task_name}' deleted.")
+            Win11Dialog.showinfo(self.translator.get('task_scheduler'), f"{self.translator.get('task_deleted')}: '{task_name}'",
+                               parent=self, theme=self.theme, translator=self.translator)
         except Exception:
             pass
         self.message_queue.put(('log', f"Task deleted: {task_name}"))
@@ -3403,7 +3531,8 @@ class App(tk.Tk):
             self.wait_window(dlg)
             sources = dlg.selected_paths if getattr(dlg, 'selected_paths', None) else []
         except Exception as e:
-            messagebox.showerror("Error", f"Source selection failed: {e}")
+            Win11Dialog.showerror(self.translator.get('error'), f"{self.translator.get('source_selection_failed')}: {e}",
+                                parent=self, theme=self.theme, translator=self.translator)
             return
         
         if not sources:
@@ -3508,7 +3637,8 @@ class App(tk.Tk):
                 self.message_queue.put(('log', 'Filters updated.'))
         except Exception as e:
             try:
-                messagebox.showerror('Error', f'Filter manager error: {e}')
+                Win11Dialog.showerror(self.translator.get('error'), f"{self.translator.get('filter_manager_error')}: {e}",
+                                    parent=self, theme=self.theme, translator=self.translator)
             except Exception:
                 pass
 
@@ -3639,18 +3769,18 @@ class App(tk.Tk):
         def on_ok():
             unc = (unc_var.get() or '').strip()
             if not unc or not unc.startswith('\\\\'):
-                messagebox.showerror("Error", "It should start with UNC Path \\\\ (ex: \\\\Server\\share)", parent=dlg)
+                Win11Dialog.showerror(self.translator.get('error'), self.translator.get('unc_path_required'), parent=dlg, theme=self.theme, translator=self.translator)
                 return
             user = (user_var.get() or '').strip()
             pwd = (pwd_var.get() or '')
             if user and not pwd:
-                messagebox.showerror("Error", "Password is required if User is provided.", parent=dlg)
+                Win11Dialog.showerror(self.translator.get('error'), self.translator.get('password_required'), parent=dlg, theme=self.theme, translator=self.translator)
                 return
             drv = None
             if map_var.get():
                 d = (drive_var.get() or '').strip().rstrip(':').upper()
                 if not (len(d) == 1 and 'A' <= d <= 'Z'):
-                    messagebox.showerror("Error", "Please enter a valid drive letter (ex: Z)", parent=dlg)
+                    Win11Dialog.showerror(self.translator.get('error'), self.translator.get('invalid_drive_letter'), parent=dlg, theme=self.theme, translator=self.translator)
                     return
                 drv = d + ':'
             result.update(ok=True, unc=unc, drive=drv, user=user, pwd=pwd, persistent=persist_var.get())
@@ -3719,7 +3849,7 @@ class App(tk.Tk):
             if res.returncode == 0:
                 self.message_queue.put(('log', f"NAS connected: {drive or unc}"))
                 try:
-                    if messagebox.askyesno("Connected", "Open the share now?"):
+                    if Win11Dialog.askyesno(self.translator.get('connected'), self.translator.get('open_share_now'), parent=self, theme=self.theme, translator=self.translator):
                         os.startfile(drive if drive else unc)
                 except Exception:
                     pass
@@ -3727,23 +3857,23 @@ class App(tk.Tk):
                 msg = err or out or f"Failed with code {res.returncode}"
                 self.message_queue.put(('log', f"NAS connect failed: {msg}"))
                 try:
-                    messagebox.showerror("NAS Connect", f"Failed to connect.\n\n{msg}")
+                    Win11Dialog.showerror(self.translator.get('nas_connect'), self.translator.get('failed_to_connect').format(msg), parent=self, theme=self.theme, translator=self.translator)
                 except Exception:
                     pass
         except Exception as e:
             self.message_queue.put(('log', f"NAS connect error: {e}"))
             try:
-                messagebox.showerror("Error", f"NAS connect error: {e}")
+                Win11Dialog.showerror(self.translator.get('error'), f"NAS connect error: {e}", parent=self, theme=self.theme, translator=self.translator)
             except Exception:
                 pass
             if not unc:
                 self.message_queue.put(('log', "NAS connect cancelled (no path)."))
                 return
             if not unc.startswith('\\\\'):
-                messagebox.showerror("Error", "UNC path must start with \\\\ (e.g., \\\\server\\share)")
+                Win11Dialog.showerror(self.translator.get('error'), self.translator.get('unc_path_required'), parent=self, theme=self.theme, translator=self.translator)
                 return
 
-            map_drive = messagebox.askyesno("Map Drive", "Map this share to a drive letter?")
+            map_drive = Win11Dialog.askyesno(self.translator.get('map_drive'), self.translator.get('map_to_drive_letter'), parent=self, theme=self.theme, translator=self.translator)
             drive = None
             if map_drive:
                 default_drive = self.find_free_drive_letter() or 'Z'
@@ -3752,7 +3882,7 @@ class App(tk.Tk):
                     val = default_drive
                 val = (val.strip().rstrip(':').upper() if isinstance(val, str) else str(val)).rstrip(':')
                 if not (len(val) == 1 and 'A' <= val <= 'Z'):
-                    messagebox.showerror("Error", "Invalid drive letter.")
+                    Win11Dialog.showerror(self.translator.get('error'), self.translator.get('invalid_drive_letter'), parent=self, theme=self.theme, translator=self.translator)
                     return
                 drive = val + ':'
 
@@ -3761,10 +3891,10 @@ class App(tk.Tk):
             if username:
                 password = simpledialog.askstring("Password", "Password (required when username is set)", show='*', parent=self)
                 if not password:
-                    messagebox.showerror("Error", "Password is required when specifying username.")
+                    Win11Dialog.showerror(self.translator.get('error'), self.translator.get('password_required'), parent=self, theme=self.theme, translator=self.translator)
                     return
 
-            persistent = messagebox.askyesno("Persistence", "Reconnect at sign-in? (Persistent)")
+            persistent = Win11Dialog.askyesno(self.translator.get('persistence'), self.translator.get('reconnect_at_signin'), parent=self, theme=self.theme, translator=self.translator)
 
             # Build command
             cmd = ['net', 'use']
@@ -3798,7 +3928,7 @@ class App(tk.Tk):
             if res.returncode == 0:
                 self.message_queue.put(('log', f"NAS connected: {drive or unc}"))
                 try:
-                    if messagebox.askyesno("Connected", "Open the share now?"):
+                    if Win11Dialog.askyesno(self.translator.get('connected'), self.translator.get('open_share_now'), parent=self, theme=self.theme, translator=self.translator):
                         os.startfile(drive if drive else unc)
                 except Exception:
                     pass
@@ -3806,13 +3936,13 @@ class App(tk.Tk):
                 msg = err or out or f"Failed with code {res.returncode}"
                 self.message_queue.put(('log', f"NAS connect failed: {msg}"))
                 try:
-                    messagebox.showerror("NAS Connect", f"Failed to connect.\n\n{msg}")
+                    Win11Dialog.showerror(self.translator.get('nas_connect'), self.translator.get('failed_to_connect').format(msg), parent=self, theme=self.theme, translator=self.translator)
                 except Exception:
                     pass
         except Exception as e:
             self.message_queue.put(('log', f"NAS connect error: {e}"))
             try:
-                messagebox.showerror("Error", f"NAS connect error: {e}")
+                Win11Dialog.showerror(self.translator.get('error'), f"NAS connect error: {e}", parent=self, theme=self.theme, translator=self.translator)
             except Exception:
                 pass
 
@@ -3854,7 +3984,7 @@ class App(tk.Tk):
         def on_ok():
             val = (target_var.get() or '').strip()
             if not val:
-                messagebox.showerror("Error", "Input the target (Drive Letter or UNC)", parent=dlg)
+                Win11Dialog.showerror(self.translator.get('error'), self.translator.get('error'), parent=dlg, theme=self.theme, translator=self.translator)
                 return
             result.update(ok=True, target=val)
             dlg.destroy()
@@ -3890,7 +4020,7 @@ class App(tk.Tk):
             else:
                 drv = target.rstrip(':').upper() + ':'
                 if not (len(drv) == 2 and 'A' <= drv[0] <= 'Z' and drv[1] == ':'):
-                    messagebox.showerror("Error", "Invalid drive letter or UNC path.")
+                    Win11Dialog.showerror(self.translator.get('error'), self.translator.get('invalid_drive_letter'), parent=self, theme=self.theme, translator=self.translator)
                     return
                 args = ['net', 'use', drv, '/delete', '/y']
                 label = drv
@@ -3905,20 +4035,20 @@ class App(tk.Tk):
             if res.returncode == 0:
                 self.message_queue.put(('log', f"NAS disconnected: {label}"))
                 try:
-                    messagebox.showinfo("NAS Disconnect", f"Disconnected: {label}")
+                    Win11Dialog.showinfo(self.translator.get('nas_disconnect'), self.translator.get('disconnected').format(label), parent=self, theme=self.theme, translator=self.translator)
                 except Exception:
                     pass
             else:
                 msg = err or out or f"Failed with code {res.returncode}"
                 self.message_queue.put(('log', f"NAS disconnect failed: {msg}"))
                 try:
-                    messagebox.showerror("NAS Disconnect", f"Failed to disconnect.\n\n{msg}")
+                    Win11Dialog.showerror(self.translator.get('nas_disconnect'), self.translator.get('failed_to_disconnect').format(msg), parent=self, theme=self.theme, translator=self.translator)
                 except Exception:
                     pass
         except Exception as e:
             self.message_queue.put(('log', f"NAS disconnect error: {e}"))
             try:
-                messagebox.showerror("Error", f"NAS disconnect error: {e}")
+                Win11Dialog.showerror(self.translator.get('error'), f"NAS disconnect error: {e}", parent=self, theme=self.theme, translator=self.translator)
             except Exception:
                 pass
             if not target:
@@ -3931,7 +4061,7 @@ class App(tk.Tk):
             else:
                 drv = target.rstrip(':').upper() + ':'
                 if not (len(drv) == 2 and 'A' <= drv[0] <= 'Z' and drv[1] == ':'):
-                    messagebox.showerror("Error", "Invalid drive letter or UNC path.")
+                    Win11Dialog.showerror(self.translator.get('error'), self.translator.get('invalid_drive_letter'), parent=self, theme=self.theme, translator=self.translator)
                     return
                 args = ['net', 'use', drv, '/delete', '/y']
                 label = drv
@@ -3946,20 +4076,20 @@ class App(tk.Tk):
             if res.returncode == 0:
                 self.message_queue.put(('log', f"NAS disconnected: {label}"))
                 try:
-                    messagebox.showinfo("NAS Disconnect", f"Disconnected: {label}")
+                    Win11Dialog.showinfo(self.translator.get('nas_disconnect'), self.translator.get('disconnected').format(label), parent=self, theme=self.theme, translator=self.translator)
                 except Exception:
                     pass
             else:
                 msg = err or out or f"Failed with code {res.returncode}"
                 self.message_queue.put(('log', f"NAS disconnect failed: {msg}"))
                 try:
-                    messagebox.showerror("NAS Disconnect", f"Failed to disconnect.\n\n{msg}")
+                    Win11Dialog.showerror(self.translator.get('nas_disconnect'), self.translator.get('failed_to_disconnect').format(msg), parent=self, theme=self.theme, translator=self.translator)
                 except Exception:
                     pass
         except Exception as e:
             self.message_queue.put(('log', f"NAS disconnect error: {e}"))
             try:
-                messagebox.showerror("Error", f"NAS disconnect error: {e}")
+                Win11Dialog.showerror(self.translator.get('error'), f"NAS disconnect error: {e}", parent=self, theme=self.theme, translator=self.translator)
             except Exception:
                 pass
 
@@ -4592,7 +4722,8 @@ class App(tk.Tk):
                 )
                 
                 # Ask user for confirmation
-                if not messagebox.askyesno("System Mismatch Warning", warning_msg, icon='warning'):
+                if not Win11Dialog.askyesno(self.translator.get('system_mismatch_warning'), warning_msg,
+                                          parent=self, theme=self.theme, translator=self.translator):
                     self.write_detailed_log("User cancelled restore due to system mismatch")
                     self.message_queue.put(('log', "Driver restore cancelled by user"))
                     return
@@ -4703,7 +4834,8 @@ class App(tk.Tk):
         except Exception as e:
             self.log(f"Error opening Device Manager: {e}")
             try:
-                messagebox.showerror("Error", f"Unable to open Device Manager:\n{e}")
+                Win11Dialog.showerror(self.translator.get('error'), f"{self.translator.get('unable_to_open_devmgr')}:\n{e}",
+                                    parent=self, theme=self.theme, translator=self.translator)
             except Exception:
                 pass
 
@@ -4789,11 +4921,7 @@ class App(tk.Tk):
                 if 'language' in data:
                     lang_code = data.get('language', 'en')
                     self.translator.current_lang = lang_code
-                    # Apply language to UI after loading
-                    try:
-                        self.update_ui_texts()
-                    except Exception as lang_error:
-                        print(f"DEBUG: Failed to update UI texts after loading language: {lang_error}")
+                    # Note: UI texts will be updated after widgets are created in create_widgets()
 
             except Exception as e:
                 print(f"DEBUG: Settings load error: {e}")
@@ -5150,17 +5278,19 @@ Shift + Tab  Move to Previous Field
             dest = self.dest_var.get().strip()
             
             if not task_name:
-                messagebox.showerror("Error", "Task name is required.", parent=self)
+                Win11Dialog.showerror(self.translator.get('error'), self.translator.get('task_name_required_create'),
+                                    parent=self, theme=self.theme, translator=self.translator)
                 return
                 
             if not dest:
-                messagebox.showerror("Error", "Destination folder is required.", parent=self)
+                Win11Dialog.showerror(self.translator.get('error'), self.translator.get('destination_required'),
+                                    parent=self, theme=self.theme, translator=self.translator)
                 return
                 
             if not os.path.isdir(dest):
-                if not messagebox.askyesno("Warning", 
-                    f"Destination folder does not exist:\n{dest}\n\nContinue anyway?", 
-                    parent=self):
+                if not Win11Dialog.askyesno(self.translator.get('warning'),
+                    f"{self.translator.get('overwrite_warning')}:\n{dest}\n\n{self.translator.get('continue_anyway')}",
+                    parent=self, theme=self.theme, translator=self.translator):
                     return
             
             # Validate time format
@@ -5170,7 +5300,8 @@ Shift + Tab  Move to Previous Field
                 time_obj = datetime.strptime(time_str, "%H:%M")
                 time_str = time_obj.strftime("%H:%M")
             except ValueError:
-                messagebox.showerror("Error", "Invalid time format. Use HH:MM (e.g., 14:30)", parent=self)
+                Win11Dialog.showerror(self.translator.get('error'), self.translator.get('invalid_time_format'),
+                                    parent=self, theme=self.theme, translator=self.translator)
                 return
 
             # Get user name
@@ -5199,7 +5330,8 @@ Shift + Tab  Move to Previous Field
         except Exception as create_error:
             print(f"DEBUG: on_create failed: {create_error}")
             try:
-                messagebox.showerror("Error", f"Failed to create schedule: {create_error}", parent=self)
+                Win11Dialog.showerror(self.translator.get('error'), f"{self.translator.get('failed_to_create_schedule')}: {create_error}",
+                                    parent=self, theme=self.theme, translator=self.translator)
             except Exception:
                 print(f"ERROR: {create_error}")
 
@@ -5209,7 +5341,8 @@ Shift + Tab  Move to Previous Field
         try:
             task_name = self.task_var.get().strip()
             if not task_name:
-                messagebox.showerror("Error", "Task name is required for deletion.", parent=self)
+                Win11Dialog.showerror(self.translator.get('error'), self.translator.get('task_name_required_delete'),
+                                    parent=self, theme=self.theme, translator=self.translator)
                 return
                 
             self.action = "delete"
@@ -5219,7 +5352,8 @@ Shift + Tab  Move to Previous Field
         except Exception as delete_error:
             print(f"DEBUG: on_delete failed: {delete_error}")
             try:
-                messagebox.showerror("Error", f"Failed to delete schedule: {delete_error}", parent=self)
+                Win11Dialog.showerror(self.translator.get('error'), f"{self.translator.get('failed_to_delete_schedule')}: {delete_error}",
+                                    parent=self, theme=self.theme, translator=self.translator)
             except Exception:
                 print(f"ERROR: {delete_error}")
 
@@ -5539,7 +5673,8 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         def _ok():
             p = vpat.get().strip()
             if not p:
-                messagebox.showwarning("Warning", "Please enter a pattern.", parent=dlg)
+                Win11Dialog.showwarning(self.parent.translator.get('warning'), self.parent.translator.get('please_enter_pattern'),
+                                      parent=dlg, theme=self.parent.theme, translator=self.parent.translator)
                 return
             
             rule_type = vtype.get().strip().lower()
