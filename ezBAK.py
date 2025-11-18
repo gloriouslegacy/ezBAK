@@ -140,13 +140,20 @@ class Translator:
             'notice_appdata': '%AppData% folder is not backed up',
             'notice_detailed_log': 'Detailed log will be saved to a file during operations',
             'notice_responsibility': 'Use of this program is the sole responsibility of the user',
+
             # Dialog titles and messages
+
+            # Dialog messages
+            'language_changed': 'Language Changed',
+            'language_changed_msg': 'Language changed successfully.\nRestart the application for full effect.',
+
             'confirm_exit': 'Confirm Exit',
             'confirm_exit_msg': 'Are you sure you want to exit ezBAK?',
             'error': 'Error',
             'warning': 'Warning',
             'info': 'Info',
             'space_check': 'Space Check',
+
             'sufficient_space': '✓ Sufficient space available.',
             'insufficient_space': '⚠ Insufficient space available.',
             'no_log_content': 'No log content to save.',
@@ -191,6 +198,45 @@ class Translator:
             'failed_to_delete_schedule': 'Failed to delete schedule: {0}',
             'please_enter_pattern': 'Please enter a pattern.',
             'continue_anyway': 'Continue anyway?',
+            'space_sufficient': '✓ Sufficient space available.',
+            'space_insufficient': '⚠ Insufficient space available.',
+            'no_log_content': 'No log content to save.',
+            'error_saving_log': 'Error occurred while saving UI log:',
+            'please_select_user': 'Please select a user.',
+            'data_will_be_overwritten': ' will be overwritten. Do you want to continue?',
+            'task_creation_failed': 'Task Creation Failed',
+            'task_deletion_failed': 'Task Deletion Failed',
+            'schedule_created': 'Schedule Created',
+            'task_name_required': 'Task Name is required to delete.',
+            'failed_to_delete_task': 'Failed to delete task:',
+            'task_scheduler': 'Task Scheduler',
+            'task_deleted': 'deleted.',
+            'source_selection_failed': 'Source selection failed:',
+            'filter_manager_error': 'Filter manager error:',
+            'unc_path_required': 'It should start with UNC Path \\\\ (ex: \\\\Server\\share)',
+            'password_required': 'Password is required if User is provided.',
+            'valid_drive_letter': 'Please enter a valid drive letter (ex: Z)',
+            'connected': 'Connected',
+            'open_share_now': 'Open the share now?',
+            'nas_connect': 'NAS Connect',
+            'failed_to_connect': 'Failed to connect.',
+            'nas_connect_error': 'NAS connect error:',
+            'unc_path_must_start': 'UNC path must start with \\\\ (e.g., \\\\server\\share)',
+            'map_drive': 'Map Drive',
+            'map_to_drive_letter': 'Map this share to a drive letter?',
+            'invalid_drive_letter': 'Invalid drive letter.',
+            'password': 'Password',
+            'password_required_when_username': 'Password is required when specifying username.',
+            'persistence': 'Persistence',
+            'reconnect_at_signin': 'Reconnect at sign-in? (Persistent)',
+            'nas_disconnect': 'NAS Disconnect',
+            'disconnected': 'Disconnected:',
+            'failed_to_disconnect': 'Failed to disconnect.',
+            'nas_disconnect_error': 'NAS disconnect error:',
+            'input_target': 'Input the target (Drive Letter or UNC)',
+            'invalid_drive_or_unc': 'Invalid drive letter or UNC path.',
+            'system_mismatch_warning': 'System Mismatch Warning',
+            'unable_to_open_device_manager': 'Unable to open Device Manager:',
         },
         'ko': {
             'app_title': 'ezBAK',
@@ -329,7 +375,7 @@ class Win11Dialog:
                        fg=btn_fg,
                        font=("Segoe UI", 9),
                        relief="flat",
-                       bd=0,
+                       bd=1,
                        highlightthickness=1,
                        highlightbackground=border_color,
                        highlightcolor=border_color,
@@ -341,9 +387,11 @@ class Win11Dialog:
                        padx=8,
                        pady=4)
 
-        # Hover effects
-        btn.bind("<Enter>", lambda e: e.widget.config(bg=hover_bg, fg=hover_fg))
-        btn.bind("<Leave>", lambda e: e.widget.config(bg=btn_bg, fg=btn_fg))
+        btn.config(highlightbackground=btn_border, highlightcolor=btn_border)
+
+        # Hover effects matching main screen buttons
+        btn.bind("<Enter>", lambda e: e.widget.config(bg=btn_hover_bg, fg=btn_hover_fg, relief="flat"))
+        btn.bind("<Leave>", lambda e: e.widget.config(bg=btn_bg, fg=btn_fg, relief="flat"))
 
         return btn
 
@@ -1232,8 +1280,8 @@ class App(tk.Tk):
                 self.save_settings()  # Save the language preference
             except Exception:
                 pass
-            Win11Dialog.showinfo("🌐 Language Changed",
-                              "Language changed successfully.\nRestart the application for full effect.",
+            Win11Dialog.showinfo(self.translator.get('language_changed'),
+                              self.translator.get('language_changed_msg'),
                               parent=self, theme=self.theme, translator=self.translator)
 
     def apply_theme_to_all_widgets(self):
@@ -1250,6 +1298,9 @@ class App(tk.Tk):
         try:
             # Update window title
             self.title(self.translator.get('app_title'))
+
+            # Recreate menu bar to apply language changes
+            self.create_menu_bar()
 
             # Check if Korean language (no emojis for Korean)
             is_korean = self.translator.current_lang == 'ko'
