@@ -1595,6 +1595,11 @@ class App(tk.Tk):
     def open_github_link(self, event):
         webbrowser.open_new("https://github.com/gloriouslegacy/ezBAK/releases")
 
+    def show_keyboard_shortcuts_help(self):
+        """Show keyboard shortcuts help dialog"""
+        if hasattr(self, 'shortcuts') and self.shortcuts:
+            self.shortcuts.show_help()
+
     # UI log (summarized)
     def log(self, message):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
