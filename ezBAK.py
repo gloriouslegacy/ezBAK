@@ -1176,6 +1176,9 @@ class App(tk.Tk):
 
         self.create_widgets()
 
+        # Update UI texts with saved language settings
+        self.update_ui_texts()
+
         # Initial message for the log box (UI short notice) with only the final sentence bolded
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.log_text.config(state="normal")
@@ -5023,7 +5026,7 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
                 pass
                 
             # Set window size and position
-            w, h = 546, 380
+            w, h = 546, 420
             self.geometry(f"{w}x{h}")
             
             try:
@@ -5124,7 +5127,7 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
             tk.Button(
                 self, text=self.add_shortcut_text("Browse...", "Ctrl+B"),
                 command=self._browse_destination,
-                bg=self.theme.get('accent'), fg="white",
+                bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
                 font=("Segoe UI", 9), relief="flat", bd=0,
                 cursor="hand2"
             ).grid(row=row, column=2, padx=15, pady=8, sticky="ew")
@@ -5218,20 +5221,20 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
             # Modern button styling with borders - match FilterManagerDialog button sizes
             tk.Button(btn_frame, text=self.add_shortcut_text("Create", "Ctrl+C"),
                      command=self.on_create,
-                     bg=self.theme.get('accent'), fg="white",
-                     font=("Segoe UI", 10, "bold"), relief="solid", bd=1,
+                     bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
+                     font=("Segoe UI", 10), relief="solid", bd=1,
                      highlightthickness=1, highlightbackground=self.theme.get('border'),
                      width=12, cursor="hand2").pack(side="right", padx=5)
             tk.Button(btn_frame, text=self.add_shortcut_text("Delete", "Ctrl+D"),
                      command=self.on_delete,
-                     bg=self.theme.get('danger'), fg="white",
-                     font=("Segoe UI", 10, "bold"), relief="solid", bd=1,
+                     bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
+                     font=("Segoe UI", 10), relief="solid", bd=1,
                      highlightthickness=1, highlightbackground=self.theme.get('border'),
                      width=12, cursor="hand2").pack(side="right", padx=5)
             tk.Button(btn_frame, text=self.add_shortcut_text("Close", "Esc"),
                      command=self.on_close,
-                     bg=self.theme.get('fg_secondary'), fg="white",
-                     font=("Segoe UI", 10, "bold"), relief="solid", bd=1,
+                     bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
+                     font=("Segoe UI", 10), relief="solid", bd=1,
                      highlightthickness=1, highlightbackground=self.theme.get('border'),
                      width=12, cursor="hand2").pack(side="right", padx=5)
 
@@ -5515,12 +5518,12 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         btn_row_inc.pack(fill='x', padx=6, pady=(0,6))
 
         tk.Button(btn_row_inc, text="Add", width=8, command=lambda: self._add_rule('include'),
-                 bg=self.theme.get('accent'), fg="white", relief="flat").pack(side='left')
+                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left')
         tk.Button(btn_row_inc, text=self.add_shortcut_text("Remove", "Del"), width=12,
                  command=lambda: self._remove_selected('include'),
-                 bg=self.theme.get('danger'), fg="white", relief="flat").pack(side='left', padx=(6,0))
+                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left', padx=(6,0))
         tk.Button(btn_row_inc, text="Clear All", width=10, command=lambda: self._clear('include'),
-                 bg=self.theme.get('fg_secondary'), fg="white", relief="flat").pack(side='left', padx=(6,0))
+                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left', padx=(6,0))
 
         # Exclude panel (add shortcut notation)
         exc_frame = tk.LabelFrame(top, text=self.add_shortcut_text("Exclude Rules", "Ctrl+E"),
@@ -5535,12 +5538,12 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         btn_row_exc.pack(fill='x', padx=6, pady=(0,6))
 
         tk.Button(btn_row_exc, text="Add", width=8, command=lambda: self._add_rule('exclude'),
-                 bg=self.theme.get('accent'), fg="white", relief="flat").pack(side='left')
+                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left')
         tk.Button(btn_row_exc, text=self.add_shortcut_text("Remove", "Del"), width=12,
                  command=lambda: self._remove_selected('exclude'),
-                 bg=self.theme.get('danger'), fg="white", relief="flat").pack(side='left', padx=(6,0))
+                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left', padx=(6,0))
         tk.Button(btn_row_exc, text="Clear All", width=10, command=lambda: self._clear('exclude'),
-                 bg=self.theme.get('fg_secondary'), fg="white", relief="flat").pack(side='left', padx=(6,0))
+                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left', padx=(6,0))
 
         # Bottom shortcut guide
         shortcut_frame = tk.Frame(self, bg=self.theme.get('bg_elevated'))
@@ -5555,14 +5558,14 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         actions.pack(fill='x', padx=12, pady=12)
 
         tk.Button(actions, text=self.add_shortcut_text("Help", "F1"), width=10,
-                 command=self._show_filter_help, bg=self.theme.get('warning'), fg="white",
+                 command=self._show_filter_help, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
                  relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='left')
 
         tk.Button(actions, text=self.add_shortcut_text("Save", "Ctrl+S"), width=12,
-                 command=self._save, bg=self.theme.get('success'), fg="white",
+                 command=self._save, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
                  relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='right')
         tk.Button(actions, text=self.add_shortcut_text("Cancel", "Esc"), width=12,
-                 command=self._cancel, bg=self.theme.get('fg_secondary'), fg="white",
+                 command=self._cancel, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
                  relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='right', padx=(0,8))
 
     def _rule_to_text(self, r):
