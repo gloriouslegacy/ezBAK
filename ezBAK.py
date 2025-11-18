@@ -51,9 +51,9 @@ class Win11Theme:
 
     # Dark Theme Colors (Windows 11 Dark)
     DARK = {
-        'bg': '#1E1E1E',              # Main background - darker, more modern
-        'bg_secondary': '#252525',     # Secondary background
-        'bg_elevated': '#2D2D2D',      # Elevated surfaces
+        'bg': '#0A0A0A',              # Main background - pure black-based
+        'bg_secondary': '#121212',     # Secondary background - very dark
+        'bg_elevated': '#1A1A1A',      # Elevated surfaces - dark black
         'fg': '#F5F5F5',              # Text color - slightly softer white
         'fg_secondary': '#B0B0B0',    # Secondary text
         'accent': '#0078D4',          # Accent color - Windows blue
@@ -65,12 +65,12 @@ class Win11Theme:
         'danger_hover': '#D13438',
         'warning': '#F7630C',         # Warning/orange - Windows orange
         'info': '#0078D4',            # Info/blue
-        'border': '#3E3E3E',          # Border color
-        'divider': '#333333',         # Divider
-        'shadow': '#00000040',        # Shadow
+        'border': '#2A2A2A',          # Border color - subtle gray
+        'divider': '#1F1F1F',         # Divider - very dark
+        'shadow': '#00000060',        # Shadow - stronger
         'disabled': '#6D6D6D',        # Disabled state
-        'hover': '#373737',           # Hover state - lighter for visibility
-        'pressed': '#404040',         # Pressed state
+        'hover': '#252525',           # Hover state - slightly lighter
+        'pressed': '#303030',         # Pressed state
     }
 
     def __init__(self, initial_mode='dark'):
@@ -231,17 +231,17 @@ class Win11Dialog:
         btn = tk.Button(parent, text=text,
                        bg=btn_bg,
                        fg=btn_fg,
-                       font=("Segoe UI", 10),
+                       font=("Segoe UI", 9),
                        relief="flat",
                        bd=0,
                        highlightthickness=1,
                        borderwidth=0,
-                       width=12,
+                       width=10,
                        height=1,
                        command=command,
                        cursor="hand2",
-                       padx=12,
-                       pady=6)
+                       padx=8,
+                       pady=4)
 
         # Hover effects
         btn.bind("<Enter>", lambda e: e.widget.config(bg=hover_bg, fg=hover_fg))
@@ -266,7 +266,7 @@ class Win11Dialog:
 
         # Center the dialog
         dlg.update_idletasks()
-        width = 400
+        width = 420
         height = 200
         x = (dlg.winfo_screenwidth() // 2) - (width // 2)
         y = (dlg.winfo_screenheight() // 2) - (height // 2)
@@ -276,12 +276,23 @@ class Win11Dialog:
         msg_frame = tk.Frame(dlg, bg=theme.get('bg_elevated'))
         msg_frame.pack(fill='both', expand=True, padx=24, pady=20)
 
-        tk.Label(msg_frame, text=message,
+        # Icon and message in horizontal layout
+        content_frame = tk.Frame(msg_frame, bg=theme.get('bg_elevated'))
+        content_frame.pack(fill='both', expand=True)
+
+        # Add info icon
+        icon_label = tk.Label(content_frame, text="ℹ️",
+                             bg=theme.get('bg_elevated'),
+                             fg=theme.get('accent'),
+                             font=("Segoe UI", 24))
+        icon_label.pack(side='left', padx=(0, 12))
+
+        tk.Label(content_frame, text=message,
                 bg=theme.get('bg_elevated'),
                 fg=theme.get('fg'),
                 font=("Segoe UI", 10),
-                wraplength=350,
-                justify='left').pack()
+                wraplength=320,
+                justify='left').pack(side='left', fill='both', expand=True)
 
         # Button area
         btn_frame = tk.Frame(dlg, bg=theme.get('bg_elevated'))
@@ -1117,6 +1128,10 @@ class App(tk.Tk):
         """Switch application language"""
         if self.translator.set_language(lang_code):
             self.update_ui_texts()
+            try:
+                self.save_settings()  # Save the language preference
+            except Exception:
+                pass
             Win11Dialog.showinfo("Language Changed",
                               "Language changed successfully.\nRestart the application for full effect.",
                               parent=self, theme=self.theme, translator=self.translator)
@@ -1136,39 +1151,57 @@ class App(tk.Tk):
             # Update window title
             self.title(self.translator.get('app_title'))
 
+            # Check if Korean language (no emojis for Korean)
+            is_korean = self.translator.current_lang == 'ko'
+
             # Update button texts
             if hasattr(self, 'backup_btn'):
-                self.backup_btn.config(text=f"📦 {self.translator.get('backup_data')}")
+                text = self.translator.get('backup_data')
+                self.backup_btn.config(text=text if is_korean else f"📦 {text}")
             if hasattr(self, 'restore_btn'):
-                self.restore_btn.config(text=f"♻️ {self.translator.get('restore_data')}")
+                text = self.translator.get('restore_data')
+                self.restore_btn.config(text=text if is_korean else f"♻️ {text}")
             if hasattr(self, 'filters_btn'):
-                self.filters_btn.config(text=f"🔍 {self.translator.get('filters')}")
+                text = self.translator.get('filters')
+                self.filters_btn.config(text=text if is_korean else f"🔍 {text}")
             if hasattr(self, 'driver_backup_btn'):
-                self.driver_backup_btn.config(text=f"🔧 {self.translator.get('backup_drivers')}")
+                text = self.translator.get('backup_drivers')
+                self.driver_backup_btn.config(text=text if is_korean else f"🔧 {text}")
             if hasattr(self, 'driver_restore_btn'):
-                self.driver_restore_btn.config(text=f"🔧 {self.translator.get('restore_drivers')}")
+                text = self.translator.get('restore_drivers')
+                self.driver_restore_btn.config(text=text if is_korean else f"🔧 {text}")
 
             # Update tools buttons
             if hasattr(self, 'browser_profiles_btn'):
-                self.browser_profiles_btn.config(text=f"🌐 {self.translator.get('browser')}")
+                text = self.translator.get('browser')
+                self.browser_profiles_btn.config(text=text if is_korean else f"🌐 {text}")
             if hasattr(self, 'check_space_btn'):
-                self.check_space_btn.config(text=f"💾 {self.translator.get('check_space')}")
+                text = self.translator.get('check_space')
+                self.check_space_btn.config(text=text if is_korean else f"💾 {text}")
             if hasattr(self, 'save_log_btn'):
-                self.save_log_btn.config(text=f"💾 {self.translator.get('save_log')}")
+                text = self.translator.get('save_log')
+                self.save_log_btn.config(text=text if is_korean else f"💾 {text}")
             if hasattr(self, 'copy_btn'):
-                self.copy_btn.config(text=f"📋 {self.translator.get('copy_data')}")
+                text = self.translator.get('copy_data')
+                self.copy_btn.config(text=text if is_korean else f"📋 {text}")
             if hasattr(self, 'devmgr_btn'):
-                self.devmgr_btn.config(text=f"⚙️ {self.translator.get('device_mgr')}")
+                text = self.translator.get('device_mgr')
+                self.devmgr_btn.config(text=text if is_korean else f"⚙️ {text}")
             if hasattr(self, 'schedule_btn'):
-                self.schedule_btn.config(text=f"⏰ {self.translator.get('schedule')}")
+                text = self.translator.get('schedule')
+                self.schedule_btn.config(text=text if is_korean else f"⏰ {text}")
             if hasattr(self, 'winget_export_btn'):
-                self.winget_export_btn.config(text=f"📦 {self.translator.get('export_apps')}")
+                text = self.translator.get('export_apps')
+                self.winget_export_btn.config(text=text if is_korean else f"📦 {text}")
             if hasattr(self, 'file_explorer_btn'):
-                self.file_explorer_btn.config(text=f"📂 {self.translator.get('explorer')}")
+                text = self.translator.get('explorer')
+                self.file_explorer_btn.config(text=text if is_korean else f"📂 {text}")
             if hasattr(self, 'nas_connect_btn'):
-                self.nas_connect_btn.config(text=f"🌐 {self.translator.get('connect_nas')}")
+                text = self.translator.get('connect_nas')
+                self.nas_connect_btn.config(text=text if is_korean else f"🌐 {text}")
             if hasattr(self, 'nas_disconnect_btn'):
-                self.nas_disconnect_btn.config(text=f"🔌 {self.translator.get('disconnect')}")
+                text = self.translator.get('disconnect')
+                self.nas_disconnect_btn.config(text=text if is_korean else f"🔌 {text}")
 
             # Update status label
             if hasattr(self, 'status_label'):
@@ -1179,7 +1212,8 @@ class App(tk.Tk):
             # Update sound checkbox
             if hasattr(self, 'sound_check'):
                 is_enabled = self.sound_enabled_var.get()
-                self.sound_check.config(text=f"{'🔊' if is_enabled else '🔇'} {self.translator.get('sound')}")
+                sound_text = self.translator.get('sound')
+                self.sound_check.config(text=sound_text if is_korean else f"{'🔊' if is_enabled else '🔇'} {sound_text}")
 
         except Exception as e:
             print(f"DEBUG: Error updating UI texts: {e}")
@@ -1391,8 +1425,8 @@ class App(tk.Tk):
         for i in range(5):
             main_buttons_frame.columnconfigure(i, weight=1, uniform="button")
 
-        btn_font = ("Segoe UI", 10)
-        btn_height = 2
+        btn_font = ("Segoe UI", 9)
+        btn_height = 1
 
         # Create button helper function - Windows 11 style
         def create_button(parent, text, bg_color, hover_color, command, row, col):
@@ -1401,7 +1435,7 @@ class App(tk.Tk):
             btn_bg = self.theme.get('bg_elevated')
             btn_fg = self.theme.get('fg')
             btn_hover_bg = self.theme.get('accent')
-            btn_hover_fg = self.theme.get('bg')
+            btn_hover_fg = '#FFFFFF'
             btn_border = self.theme.get('border')
 
             btn = tk.Button(parent, text=text,
@@ -1409,16 +1443,16 @@ class App(tk.Tk):
                           fg=btn_fg,
                           font=btn_font,
                           relief="flat",
-                          bd=0,
+                          bd=1,
                           highlightthickness=1,
-                          borderwidth=0,
+                          borderwidth=1,
                           height=btn_height,
                           command=command,
                           cursor="hand2",
-                          padx=12,
-                          pady=8)
+                          padx=6,
+                          pady=3)
             btn.config(highlightbackground=btn_border, highlightcolor=btn_border)
-            btn.grid(row=row, column=col, padx=6, pady=6, sticky="ew")
+            btn.grid(row=row, column=col, padx=4, pady=4, sticky="ew")
 
             # Windows 11 style hover effect
             btn.bind("<Enter>", lambda e: e.widget.config(
@@ -3499,7 +3533,7 @@ class App(tk.Tk):
             dlg.iconbitmap(resource_path('./icon/ezbak.ico'))
         except Exception:
             pass
-        dlg.configure(bg="#2D3250")
+        dlg.configure(bg=self.theme.get('bg_elevated'))
         dlg.geometry("680x380")
         dlg.transient(self)
         try:
@@ -3512,18 +3546,18 @@ class App(tk.Tk):
             "Connect: net use [<drive_letter>:] \\Server\\share [/user:id pwd] /persistent:{yes|no}\n\n"
             "Disconnect: net use [<drive_letter>:|\\Server\\share] /delete /y"
         )
-        tk.Label(dlg, text=help_text, bg="#2D3250", fg="white", justify='left', anchor='w', font=("Consolas", 10), wraplength=wrap).pack(fill='x', padx=12, pady=(12, 8))
+        tk.Label(dlg, text=help_text, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), justify='left', anchor='w', font=("Consolas", 10), wraplength=wrap).pack(fill='x', padx=12, pady=(12, 8))
 
-        form = tk.Frame(dlg, bg="#2D3250")
+        form = tk.Frame(dlg, bg=self.theme.get('bg_elevated'))
         form.pack(fill='both', expand=True, padx=16)
 
         row = 0
         def add_label(text):
             nonlocal row
-            tk.Label(form, text=text, bg="#2D3250", fg="white").grid(row=row, column=0, sticky='w', pady=6)
+            tk.Label(form, text=text, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg')).grid(row=row, column=0, sticky='w', pady=6)
         def add_entry(var, width=42, show=None):
             nonlocal row
-            e = tk.Entry(form, textvariable=var, width=width, show=show)
+            e = tk.Entry(form, textvariable=var, width=width, show=show, bg=self.theme.get('bg'), fg=self.theme.get('fg'), insertbackground=self.theme.get('fg'))
             e.grid(row=row, column=1, sticky='w', pady=6)
             row += 1
             return e
@@ -3538,10 +3572,10 @@ class App(tk.Tk):
         def_drive = self.find_free_drive_letter() or 'Z'
         drive_var = tk.StringVar(value=def_drive)
 
-        map_frame = tk.Frame(form, bg="#2D3250")
-        tk.Checkbutton(map_frame, text="Map as drive letter", variable=map_var, bg="#2D3250", fg="white", selectcolor="#2D3250").pack(side='left')
-        tk.Label(map_frame, text="Letter:", bg="#2D3250", fg="white").pack(side='left', padx=(12,4))
-        drive_entry = tk.Entry(map_frame, textvariable=drive_var, width=6)
+        map_frame = tk.Frame(form, bg=self.theme.get('bg_elevated'))
+        tk.Checkbutton(map_frame, text="Map as drive letter", variable=map_var, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), selectcolor=self.theme.get('bg_elevated'), activebackground=self.theme.get('bg_elevated'), activeforeground=self.theme.get('fg')).pack(side='left')
+        tk.Label(map_frame, text="Letter:", bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg')).pack(side='left', padx=(12,4))
+        drive_entry = tk.Entry(map_frame, textvariable=drive_var, width=6, bg=self.theme.get('bg'), fg=self.theme.get('fg'), insertbackground=self.theme.get('fg'))
         drive_entry.pack(side='left')
         map_frame.grid(row=row, column=0, columnspan=2, sticky='w', pady=6)
         row += 1
@@ -3572,12 +3606,12 @@ class App(tk.Tk):
 
         # Persistent
         persist_var = tk.BooleanVar(value=True)
-        persist_chk = tk.Checkbutton(form, text="Reconnect at logon (Persistent)", variable=persist_var, bg="#2D3250", fg="white", selectcolor="#2D3250")
+        persist_chk = tk.Checkbutton(form, text="Reconnect at logon (Persistent)", variable=persist_var, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), selectcolor=self.theme.get('bg_elevated'), activebackground=self.theme.get('bg_elevated'), activeforeground=self.theme.get('fg'))
         persist_chk.grid(row=row, column=0, columnspan=2, sticky='w', pady=8)
         row += 1
 
         # Buttons
-        btns = tk.Frame(dlg, bg="#2D3250")
+        btns = tk.Frame(dlg, bg=self.theme.get('bg_elevated'))
         btns.pack(fill='x', pady=(6,12))
 
         result = {'ok': False}
@@ -3770,7 +3804,7 @@ class App(tk.Tk):
             dlg.iconbitmap(resource_path('./icon/ezbak.ico'))
         except Exception:
             pass
-        dlg.configure(bg="#2D3250")
+        dlg.configure(bg=self.theme.get('bg_elevated'))
         dlg.geometry("680x260")
         dlg.transient(self)
         try:
@@ -3783,16 +3817,16 @@ class App(tk.Tk):
             "Connect: net use [<drive_letter>:] \\\\server\\share [/user:username password] /persistent:{yes|no}\n\n"
             "Disconnect: net use [drive_letter:|\\\\server\\share] /delete /y"
         )
-        tk.Label(dlg, text=help_text, bg="#2D3250", fg="white", justify='left', anchor='w', font=("Consolas", 10), wraplength=wrap).pack(fill='x', padx=12, pady=(12, 8))
+        tk.Label(dlg, text=help_text, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), justify='left', anchor='w', font=("Consolas", 10), wraplength=wrap).pack(fill='x', padx=12, pady=(12, 8))
 
-        form = tk.Frame(dlg, bg="#2D3250")
+        form = tk.Frame(dlg, bg=self.theme.get('bg_elevated'))
         form.pack(fill='both', expand=True, padx=16)
 
-        tk.Label(form, text="Target (Driver Letter ex: Z: or UNC ex: \\Server\\Share)", bg="#2D3250", fg="white").grid(row=0, column=0, sticky='w', pady=6)
+        tk.Label(form, text="Target (Driver Letter ex: Z: or UNC ex: \\Server\\Share)", bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg')).grid(row=0, column=0, sticky='w', pady=6)
         target_var = tk.StringVar()
-        tk.Entry(form, textvariable=target_var, width=42).grid(row=0, column=1, sticky='w', pady=6)
+        tk.Entry(form, textvariable=target_var, width=42, bg=self.theme.get('bg'), fg=self.theme.get('fg'), insertbackground=self.theme.get('fg')).grid(row=0, column=1, sticky='w', pady=6)
 
-        btns = tk.Frame(dlg, bg="#2D3250")
+        btns = tk.Frame(dlg, bg=self.theme.get('bg_elevated'))
         btns.pack(fill='x', pady=(6,12))
 
         result = {'ok': False}
@@ -5246,76 +5280,76 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
     def _create_filter_widgets(self):
         """Create filter widgets (including shortcut notations)"""
         # Top description
-        info_frame = tk.Frame(self, bg="#2D3250")
+        info_frame = tk.Frame(self, bg=self.theme.get('bg_elevated'))
         info_frame.pack(fill='x', padx=12, pady=(12,6))
-        
+
         info_text = "Include: Files must match at least one rule to be included\nExclude: Files matching any rule will be skipped (takes priority)"
-        tk.Label(info_frame, text=info_text, bg="#2D3250", fg="#CCCCCC", 
+        tk.Label(info_frame, text=info_text, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg_secondary'),
                 font=("Arial", 9), justify='left').pack(anchor='w')
 
         # Layout
-        top = tk.Frame(self, bg="#2D3250")
+        top = tk.Frame(self, bg=self.theme.get('bg_elevated'))
         top.pack(fill='both', expand=True, padx=12, pady=6)
 
         # Include panel (add shortcut notation)
-        inc_frame = tk.LabelFrame(top, text=self.add_shortcut_text("Include Rules", "Ctrl+N"), 
-                                 bg="#2D3250", fg="white", font=("Arial", 10, "bold"))
+        inc_frame = tk.LabelFrame(top, text=self.add_shortcut_text("Include Rules", "Ctrl+N"),
+                                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), font=("Arial", 10, "bold"))
         inc_frame.pack(side='left', fill='both', expand=True, padx=(0,6))
-        
+
         self.inc_list = tk.Listbox(inc_frame, height=14, font=("Consolas", 9),
-                                  bg="#424769", fg="white", selectbackground="#6EC571")
+                                  bg=self.theme.get('bg_secondary'), fg=self.theme.get('fg'), selectbackground=self.theme.get('success'))
         self.inc_list.pack(fill='both', expand=True, padx=6, pady=6)
-        
-        btn_row_inc = tk.Frame(inc_frame, bg="#2D3250")
+
+        btn_row_inc = tk.Frame(inc_frame, bg=self.theme.get('bg_elevated'))
         btn_row_inc.pack(fill='x', padx=6, pady=(0,6))
-        
-        tk.Button(btn_row_inc, text="Add", width=8, command=lambda: self._add_rule('include'), 
-                 bg="#336BFF", fg="white", relief="flat").pack(side='left')
-        tk.Button(btn_row_inc, text=self.add_shortcut_text("Remove", "Del"), width=12, 
-                 command=lambda: self._remove_selected('include'), 
-                 bg="#FF5733", fg="white", relief="flat").pack(side='left', padx=(6,0))
-        tk.Button(btn_row_inc, text="Clear All", width=10, command=lambda: self._clear('include'), 
-                 bg="#7D98A1", fg="white", relief="flat").pack(side='left', padx=(6,0))
+
+        tk.Button(btn_row_inc, text="Add", width=8, command=lambda: self._add_rule('include'),
+                 bg=self.theme.get('accent'), fg="white", relief="flat").pack(side='left')
+        tk.Button(btn_row_inc, text=self.add_shortcut_text("Remove", "Del"), width=12,
+                 command=lambda: self._remove_selected('include'),
+                 bg=self.theme.get('danger'), fg="white", relief="flat").pack(side='left', padx=(6,0))
+        tk.Button(btn_row_inc, text="Clear All", width=10, command=lambda: self._clear('include'),
+                 bg=self.theme.get('fg_secondary'), fg="white", relief="flat").pack(side='left', padx=(6,0))
 
         # Exclude panel (add shortcut notation)
-        exc_frame = tk.LabelFrame(top, text=self.add_shortcut_text("Exclude Rules", "Ctrl+E"), 
-                                 bg="#2D3250", fg="white", font=("Arial", 10, "bold"))
+        exc_frame = tk.LabelFrame(top, text=self.add_shortcut_text("Exclude Rules", "Ctrl+E"),
+                                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), font=("Arial", 10, "bold"))
         exc_frame.pack(side='left', fill='both', expand=True, padx=(6,0))
-        
+
         self.exc_list = tk.Listbox(exc_frame, height=14, font=("Consolas", 9),
-                                  bg="#424769", fg="white", selectbackground="#FF7D5A")
+                                  bg=self.theme.get('bg_secondary'), fg=self.theme.get('fg'), selectbackground=self.theme.get('danger'))
         self.exc_list.pack(fill='both', expand=True, padx=6, pady=6)
-        
-        btn_row_exc = tk.Frame(exc_frame, bg="#2D3250")
+
+        btn_row_exc = tk.Frame(exc_frame, bg=self.theme.get('bg_elevated'))
         btn_row_exc.pack(fill='x', padx=6, pady=(0,6))
-        
-        tk.Button(btn_row_exc, text="Add", width=8, command=lambda: self._add_rule('exclude'), 
-                 bg="#336BFF", fg="white", relief="flat").pack(side='left')
-        tk.Button(btn_row_exc, text=self.add_shortcut_text("Remove", "Del"), width=12, 
-                 command=lambda: self._remove_selected('exclude'), 
-                 bg="#FF5733", fg="white", relief="flat").pack(side='left', padx=(6,0))
-        tk.Button(btn_row_exc, text="Clear All", width=10, command=lambda: self._clear('exclude'), 
-                 bg="#7D98A1", fg="white", relief="flat").pack(side='left', padx=(6,0))
+
+        tk.Button(btn_row_exc, text="Add", width=8, command=lambda: self._add_rule('exclude'),
+                 bg=self.theme.get('accent'), fg="white", relief="flat").pack(side='left')
+        tk.Button(btn_row_exc, text=self.add_shortcut_text("Remove", "Del"), width=12,
+                 command=lambda: self._remove_selected('exclude'),
+                 bg=self.theme.get('danger'), fg="white", relief="flat").pack(side='left', padx=(6,0))
+        tk.Button(btn_row_exc, text="Clear All", width=10, command=lambda: self._clear('exclude'),
+                 bg=self.theme.get('fg_secondary'), fg="white", relief="flat").pack(side='left', padx=(6,0))
 
         # Bottom shortcut guide
-        shortcut_frame = tk.Frame(self, bg="#2D3250")
+        shortcut_frame = tk.Frame(self, bg=self.theme.get('bg_elevated'))
         shortcut_frame.pack(fill='x', padx=12, pady=(6,0))
-        
+
         shortcut_text = "F1: Help  •  Tab: Switch Lists  •  Del: Remove Selected  •  Ctrl+R: Clear Active List"
-        tk.Label(shortcut_frame, text=shortcut_text, bg="#2D3250", fg="#888888", 
+        tk.Label(shortcut_frame, text=shortcut_text, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg_secondary'),
                 font=("Arial", 8)).pack(anchor='w')
 
         # Bottom actions (add shortcut notation)
-        actions = tk.Frame(self, bg="#2D3250")
+        actions = tk.Frame(self, bg=self.theme.get('bg_elevated'))
         actions.pack(fill='x', padx=12, pady=12)
-        
-        tk.Button(actions, text=self.add_shortcut_text("Help", "F1"), width=10, 
-                 command=self._show_filter_help, bg="#8E44AD", fg="white", relief="flat").pack(side='left')
-        
-        tk.Button(actions, text=self.add_shortcut_text("Save", "Ctrl+S"), width=12, 
-                 command=self._save, bg="#2E7D32", fg="white", relief="flat").pack(side='right')
-        tk.Button(actions, text=self.add_shortcut_text("Cancel", "Esc"), width=12, 
-                 command=self._cancel, bg="#7D98A1", fg="white", relief="flat").pack(side='right', padx=(0,8))
+
+        tk.Button(actions, text=self.add_shortcut_text("Help", "F1"), width=10,
+                 command=self._show_filter_help, bg=self.theme.get('warning'), fg="white", relief="flat").pack(side='left')
+
+        tk.Button(actions, text=self.add_shortcut_text("Save", "Ctrl+S"), width=12,
+                 command=self._save, bg=self.theme.get('success'), fg="white", relief="flat").pack(side='right')
+        tk.Button(actions, text=self.add_shortcut_text("Cancel", "Esc"), width=12,
+                 command=self._cancel, bg=self.theme.get('fg_secondary'), fg="white", relief="flat").pack(side='right', padx=(0,8))
 
     def _rule_to_text(self, r):
         """Convert rule to display text"""
@@ -5710,38 +5744,38 @@ class SelectSourcesDialog(tk.Toplevel):
         try:
             print("DEBUG: Creating info frame...")
             # Top description
-            info_frame = tk.Frame(self, bg="#2D3250")
+            info_frame = tk.Frame(self, bg=self.theme.get('bg_elevated'))
             info_frame.pack(fill="x", padx=15, pady=(15, 10))
-            
+
             tk.Label(info_frame, text="Select folders and files to copy",
-                     bg="#2D3250", fg="white", font=("Arial", 12, "bold")).pack(anchor='w')
-            
+                     bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), font=("Arial", 12, "bold")).pack(anchor='w')
+
             tk.Label(info_frame, text="Use checkboxes or Space key to select items. Selected folders include all contents.",
-                     bg="#2D3250", fg="#CCCCCC", font=("Arial", 9)).pack(anchor='w', pady=(2,0))
+                     bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg_secondary'), font=("Arial", 9)).pack(anchor='w', pady=(2,0))
 
             print("DEBUG: Creating top controls...")
             # Top controls
-            top_controls = tk.Frame(self, bg="#2D3250")
+            top_controls = tk.Frame(self, bg=self.theme.get('bg_elevated'))
             top_controls.pack(fill="x", padx=15, pady=(0, 10))
 
-            self.add_root_btn = tk.Button(top_controls, text=self.add_shortcut_text("Add Root Folder...", "Ctrl+R"), 
+            self.add_root_btn = tk.Button(top_controls, text=self.add_shortcut_text("Add Root Folder...", "Ctrl+R"),
                                           command=self._choose_root,
-                                          bg="#7D98A1", fg="white", relief="flat", width=20)
+                                          bg=self.theme.get('fg_secondary'), fg="white", relief="flat", width=20)
             self.add_root_btn.pack(side="left")
 
-            self.sel_all_btn = tk.Button(top_controls, text=self.add_shortcut_text("Select All", "Ctrl+A"), 
+            self.sel_all_btn = tk.Button(top_controls, text=self.add_shortcut_text("Select All", "Ctrl+A"),
                                          command=self._select_all,
-                                         bg="#4CAF50", fg="white", relief="flat", width=15)
+                                         bg=self.theme.get('success'), fg="white", relief="flat", width=15)
             self.sel_all_btn.pack(side="left", padx=(8, 0))
 
-            self.clear_all_btn = tk.Button(top_controls, text=self.add_shortcut_text("Clear All", "Ctrl+N"), 
+            self.clear_all_btn = tk.Button(top_controls, text=self.add_shortcut_text("Clear All", "Ctrl+N"),
                                            command=self._clear_all,
-                                           bg="#FF5733", fg="white", relief="flat", width=15)
+                                           bg=self.theme.get('danger'), fg="white", relief="flat", width=15)
             self.clear_all_btn.pack(side="left", padx=(8, 0))
 
             print("DEBUG: Creating tree area...")
             # Tree area
-            tree_frame = tk.Frame(self, bg="#2D3250")
+            tree_frame = tk.Frame(self, bg=self.theme.get('bg_elevated'))
             tree_frame.pack(fill="both", expand=True, padx=15, pady=5)
 
             self.tree = ttk.Treeview(tree_frame, columns=("fullpath",), displaycolumns=())
@@ -5755,26 +5789,26 @@ class SelectSourcesDialog(tk.Toplevel):
 
             print("DEBUG: Creating status frame...")
             # Bottom shortcut guide
-            status_frame = tk.Frame(self, bg="#2D3250")
+            status_frame = tk.Frame(self, bg=self.theme.get('bg_elevated'))
             status_frame.pack(fill='x', padx=15, pady=(5,0))
-            
-            self.status_label = tk.Label(status_frame, text="Ready - Use mouse or keyboard to select items", 
-                                        bg="#2D3250", fg="#CCCCCC", font=("Arial", 9))
+
+            self.status_label = tk.Label(status_frame, text="Ready - Use mouse or keyboard to select items",
+                                        bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg_secondary'), font=("Arial", 9))
             self.status_label.pack(side='left')
 
             print("DEBUG: Creating action buttons...")
             # Action buttons
-            action_frame = tk.Frame(self, bg="#2D3250")
+            action_frame = tk.Frame(self, bg=self.theme.get('bg_elevated'))
             action_frame.pack(fill="x", padx=15, pady=15)
 
-            ok_btn = tk.Button(action_frame, text=self.add_shortcut_text("OK", "Enter"), 
+            ok_btn = tk.Button(action_frame, text=self.add_shortcut_text("OK", "Enter"),
                               width=12, command=self._on_ok,
-                              bg="#336BFF", fg="white", relief="flat")
+                              bg=self.theme.get('accent'), fg="white", relief="flat")
             ok_btn.pack(side="right")
-            
-            cancel_btn = tk.Button(action_frame, text=self.add_shortcut_text("Cancel", "Esc"), 
+
+            cancel_btn = tk.Button(action_frame, text=self.add_shortcut_text("Cancel", "Esc"),
                                   width=12, command=self._on_cancel,
-                                  bg="#FF3333", fg="white", relief="flat")
+                                  bg=self.theme.get('danger'), fg="white", relief="flat")
             cancel_btn.pack(side="right", padx=(0, 8))
             
             print("DEBUG: Widget creation complete")
@@ -5889,27 +5923,27 @@ TIPS:
         try:
             help_dlg = tk.Toplevel(self)
             help_dlg.title("Source Selection Help")
-            help_dlg.configure(bg="#2D3250")
+            help_dlg.configure(bg=self.theme.get('bg_elevated'))
             help_dlg.geometry("500x400")
             help_dlg.transient(self)
             help_dlg.grab_set()
-            
-            text_widget = tk.Text(help_dlg, 
-                                 font=("Consolas", 10),  
-                                 bg="#424769", 
-                                 fg="white",
+
+            text_widget = tk.Text(help_dlg,
+                                 font=("Consolas", 10),
+                                 bg=self.theme.get('bg_secondary'),
+                                 fg=self.theme.get('fg'),
                                  relief="flat",
                                  wrap="word")
             text_widget.pack(fill="both", expand=True, padx=15, pady=15)
-            
+
             text_widget.insert("1.0", help_text)
             text_widget.configure(state="disabled")
-            
-            close_btn = tk.Button(help_dlg, 
-                                 text="Close (Esc)", 
+
+            close_btn = tk.Button(help_dlg,
+                                 text="Close (Esc)",
                                  command=help_dlg.destroy,
-                                 bg="#4CAF50", 
-                                 fg="white", 
+                                 bg=self.theme.get('success'),
+                                 fg="white",
                                  relief="flat")
             close_btn.pack(pady=(0,15))
             
