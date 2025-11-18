@@ -51,26 +51,26 @@ class Win11Theme:
 
     # Dark Theme Colors (Windows 11 Dark)
     DARK = {
-        'bg': '#202020',              # Main background
-        'bg_secondary': '#1C1C1C',     # Secondary background
-        'bg_elevated': '#2B2B2B',      # Elevated surfaces
-        'fg': '#FFFFFF',              # Text color
-        'fg_secondary': '#C8C8C8',    # Secondary text
-        'accent': '#60CDFF',          # Accent color (light blue)
-        'accent_hover': '#4EB7E6',    # Accent hover
-        'accent_light': '#004A73',    # Dark accent background
-        'success': '#6CCB5F',         # Success/green
-        'success_hover': '#5DB34E',
-        'danger': '#FF6B6B',          # Danger/red
-        'danger_hover': '#E65A5A',
-        'warning': '#FFA94D',         # Warning/orange
-        'info': '#60CDFF',            # Info/blue
-        'border': '#3D3D3D',          # Border color
+        'bg': '#1E1E1E',              # Main background - darker, more modern
+        'bg_secondary': '#252525',     # Secondary background
+        'bg_elevated': '#2D2D2D',      # Elevated surfaces
+        'fg': '#F5F5F5',              # Text color - slightly softer white
+        'fg_secondary': '#B0B0B0',    # Secondary text
+        'accent': '#0078D4',          # Accent color - Windows blue
+        'accent_hover': '#1A86D9',    # Accent hover - lighter blue
+        'accent_light': '#003D5C',    # Dark accent background
+        'success': '#107C10',         # Success/green - Windows green
+        'success_hover': '#0E6B0E',
+        'danger': '#C42B1C',          # Danger/red - Windows red
+        'danger_hover': '#D13438',
+        'warning': '#F7630C',         # Warning/orange - Windows orange
+        'info': '#0078D4',            # Info/blue
+        'border': '#3E3E3E',          # Border color
         'divider': '#333333',         # Divider
         'shadow': '#00000040',        # Shadow
         'disabled': '#6D6D6D',        # Disabled state
-        'hover': '#2D2D2D',           # Hover state
-        'pressed': '#383838',         # Pressed state
+        'hover': '#373737',           # Hover state - lighter for visibility
+        'pressed': '#404040',         # Pressed state
     }
 
     def __init__(self, initial_mode='dark'):
@@ -129,6 +129,17 @@ class Translator:
             'backup_complete': 'Backup complete!',
             'ready': 'Ready',
             'select_user_begin': 'Select User to begin',
+            'dialog_ok': 'OK',
+            'dialog_yes': 'Yes',
+            'dialog_no': 'No',
+            'dialog_cancel': 'Cancel',
+            'notice_title': 'Notice:',
+            'notice_select_user': 'Select User to begin',
+            'notice_filters': 'Filters:Exclude Rules:Name->ondrive*',
+            'notice_hidden_system': 'Hidden and System attributes excluded',
+            'notice_appdata': '%AppData% folder is not backed up',
+            'notice_detailed_log': 'Detailed log will be saved to a file during operations',
+            'notice_responsibility': 'Use of this program is the sole responsibility of the user',
         },
         'ko': {
             'app_title': 'ezBAK',
@@ -164,6 +175,17 @@ class Translator:
             'backup_complete': '백업 완료!',
             'ready': '준비',
             'select_user_begin': '시작하려면 사용자 선택',
+            'dialog_ok': '확인',
+            'dialog_yes': '예',
+            'dialog_no': '아니오',
+            'dialog_cancel': '취소',
+            'notice_title': '안내:',
+            'notice_select_user': '시작하려면 사용자를 선택하세요',
+            'notice_filters': '필터:제외 규칙:이름->ondrive*',
+            'notice_hidden_system': '숨김 및 시스템 속성 제외됨',
+            'notice_appdata': '%AppData% 폴더는 백업되지 않습니다',
+            'notice_detailed_log': '작업 중 자세한 로그가 파일로 저장됩니다',
+            'notice_responsibility': '이 프로그램의 사용에 대한 책임은 전적으로 사용자에게 있습니다',
         }
     }
 
@@ -195,10 +217,10 @@ class Win11Dialog:
         """Create a Windows 11 style dialog button"""
         if is_primary:
             # Primary button with accent color
-            btn_bg = theme.get('bg_elevated')
-            btn_fg = theme.get('fg')
+            btn_bg = theme.get('accent')
+            btn_fg = '#FFFFFF'
             hover_bg = theme.get('accent_hover')
-            hover_fg = 'white'
+            hover_fg = '#FFFFFF'
         else:
             # Secondary button
             btn_bg = theme.get('bg_elevated')
@@ -210,14 +232,16 @@ class Win11Dialog:
                        bg=btn_bg,
                        fg=btn_fg,
                        font=("Segoe UI", 10),
-                       relief="solid",
-                       bd=1,
-                       highlightthickness=0,
-                       borderwidth=1,
+                       relief="flat",
+                       bd=0,
+                       highlightthickness=1,
+                       borderwidth=0,
                        width=12,
                        height=1,
                        command=command,
-                       cursor="hand2")
+                       cursor="hand2",
+                       padx=12,
+                       pady=6)
 
         # Hover effects
         btn.bind("<Enter>", lambda e: e.widget.config(bg=hover_bg, fg=hover_fg))
@@ -226,10 +250,12 @@ class Win11Dialog:
         return btn
 
     @staticmethod
-    def showinfo(title, message, parent=None, theme=None):
+    def showinfo(title, message, parent=None, theme=None, translator=None):
         """Show information dialog"""
         if theme is None:
             theme = Win11Theme('dark')
+        if translator is None:
+            translator = Translator('en')
 
         dlg = tk.Toplevel(parent)
         dlg.title(title)
@@ -261,25 +287,27 @@ class Win11Dialog:
         btn_frame = tk.Frame(dlg, bg=theme.get('bg_elevated'))
         btn_frame.pack(fill='x', padx=24, pady=(0, 20))
 
-        Win11Dialog._create_dialog_button(btn_frame, "OK", dlg.destroy, theme, is_primary=True).pack(side='right')
+        Win11Dialog._create_dialog_button(btn_frame, translator.get('dialog_ok'), dlg.destroy, theme, is_primary=True).pack(side='right')
 
         dlg.wait_window()
 
     @staticmethod
-    def showwarning(title, message, parent=None, theme=None):
+    def showwarning(title, message, parent=None, theme=None, translator=None):
         """Show warning dialog"""
-        Win11Dialog.showinfo(title, f"⚠ {message}", parent, theme)
+        Win11Dialog.showinfo(title, message, parent, theme, translator)
 
     @staticmethod
-    def showerror(title, message, parent=None, theme=None):
+    def showerror(title, message, parent=None, theme=None, translator=None):
         """Show error dialog"""
-        Win11Dialog.showinfo(title, f"❌ {message}", parent, theme)
+        Win11Dialog.showinfo(title, message, parent, theme, translator)
 
     @staticmethod
-    def askyesno(title, message, parent=None, theme=None):
+    def askyesno(title, message, parent=None, theme=None, translator=None):
         """Show yes/no dialog"""
         if theme is None:
             theme = Win11Theme('dark')
+        if translator is None:
+            translator = Translator('en')
 
         result = [False]
 
@@ -321,8 +349,8 @@ class Win11Dialog:
             result[0] = False
             dlg.destroy()
 
-        Win11Dialog._create_dialog_button(btn_frame, "No", on_no, theme, is_primary=False).pack(side='right', padx=(8, 0))
-        Win11Dialog._create_dialog_button(btn_frame, "Yes", on_yes, theme, is_primary=True).pack(side='right')
+        Win11Dialog._create_dialog_button(btn_frame, translator.get('dialog_no'), on_no, theme, is_primary=False).pack(side='right', padx=(8, 0))
+        Win11Dialog._create_dialog_button(btn_frame, translator.get('dialog_yes'), on_yes, theme, is_primary=True).pack(side='right')
 
         dlg.wait_window()
         return result[0]
@@ -992,10 +1020,16 @@ class App(tk.Tk):
         # Initial message for the log box (UI short notice) with only the final sentence bolded
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.log_text.config(state="normal")
-        # Insert standard notice text
-        self.log_text.insert(tk.END, f"[{timestamp}] \nNotice:\n- Select User to begin\n- Filters:Exclude Rules:Name->ondrive*\n- Hidden and System attributes excluded\n- %AppData% folder is not backed up\n- Detailed log will be saved to a file during operations\n- ")
+        # Insert standard notice text with translations
+        notice_text = f"[{timestamp}] \n{self.translator.get('notice_title')}\n"
+        notice_text += f"- {self.translator.get('notice_select_user')}\n"
+        notice_text += f"- {self.translator.get('notice_filters')}\n"
+        notice_text += f"- {self.translator.get('notice_hidden_system')}\n"
+        notice_text += f"- {self.translator.get('notice_appdata')}\n"
+        notice_text += f"- {self.translator.get('notice_detailed_log')}\n- "
+        self.log_text.insert(tk.END, notice_text)
         # Insert the single bolded disclaimer
-        self.log_text.insert(tk.END, "Use of this program is the sole responsibility of the user\n", 'bold')
+        self.log_text.insert(tk.END, self.translator.get('notice_responsibility') + "\n", 'bold')
         self.log_text.see(tk.END)
         self.log_text.config(state="disabled")
         self.update_idletasks()
@@ -1077,7 +1111,7 @@ class App(tk.Tk):
             self.apply_theme_to_all_widgets()
             Win11Dialog.showinfo("Theme Changed",
                               f"Theme switched to {mode.capitalize()} mode.\nRestart the application for full effect.",
-                              parent=self, theme=self.theme)
+                              parent=self, theme=self.theme, translator=self.translator)
 
     def switch_language(self, lang_code):
         """Switch application language"""
@@ -1085,7 +1119,7 @@ class App(tk.Tk):
             self.update_ui_texts()
             Win11Dialog.showinfo("Language Changed",
                               "Language changed successfully.\nRestart the application for full effect.",
-                              parent=self, theme=self.theme)
+                              parent=self, theme=self.theme, translator=self.translator)
 
     def apply_theme_to_all_widgets(self):
         """Apply current theme to all widgets (requires app restart for full effect)"""
@@ -1336,7 +1370,7 @@ class App(tk.Tk):
 
         self.sound_check = tk.Checkbutton(
             sound_frame,
-            text="🔊 Sound",
+            text="Sound",
             variable=self.sound_enabled_var,
             command=self._on_sound_toggle,
             bg=self.theme.get('bg_elevated'),
@@ -1357,7 +1391,7 @@ class App(tk.Tk):
         for i in range(5):
             main_buttons_frame.columnconfigure(i, weight=1, uniform="button")
 
-        btn_font = ("Segoe UI", 9, "bold")
+        btn_font = ("Segoe UI", 10)
         btn_height = 2
 
         # Create button helper function - Windows 11 style
@@ -1366,55 +1400,57 @@ class App(tk.Tk):
             # Use theme colors for consistent styling
             btn_bg = self.theme.get('bg_elevated')
             btn_fg = self.theme.get('fg')
-            btn_hover_bg = self.theme.get('accent_hover')  # Dark blue hover
-            btn_hover_fg = 'white'
+            btn_hover_bg = self.theme.get('accent')
+            btn_hover_fg = self.theme.get('bg')
             btn_border = self.theme.get('border')
 
             btn = tk.Button(parent, text=text,
                           bg=btn_bg,
                           fg=btn_fg,
                           font=btn_font,
-                          relief="solid",
-                          bd=1,
-                          highlightthickness=0,
-                          borderwidth=1,
+                          relief="flat",
+                          bd=0,
+                          highlightthickness=1,
+                          borderwidth=0,
                           height=btn_height,
                           command=command,
-                          cursor="hand2")
+                          cursor="hand2",
+                          padx=12,
+                          pady=8)
             btn.config(highlightbackground=btn_border, highlightcolor=btn_border)
-            btn.grid(row=row, column=col, padx=4, pady=4, sticky="ew")
+            btn.grid(row=row, column=col, padx=6, pady=6, sticky="ew")
 
-            # Windows 11 style hover: dark blue background
+            # Windows 11 style hover effect
             btn.bind("<Enter>", lambda e: e.widget.config(
                 bg=btn_hover_bg,
                 fg=btn_hover_fg,
-                relief="solid"
+                relief="flat"
             ))
             btn.bind("<Leave>", lambda e: e.widget.config(
                 bg=btn_bg,
                 fg=btn_fg,
-                relief="solid"
+                relief="flat"
             ))
             return btn
 
         # Main operation buttons with Windows 11 accent colors
-        self.backup_btn = create_button(main_buttons_frame, "📦 Backup Data",
+        self.backup_btn = create_button(main_buttons_frame, "Backup Data",
                                         self.theme.get('danger'), self.theme.get('danger_hover'),
                                         self.start_backup_thread, 0, 0)
 
-        self.restore_btn = create_button(main_buttons_frame, "♻️ Restore Data",
+        self.restore_btn = create_button(main_buttons_frame, "Restore Data",
                                          self.theme.get('accent'), self.theme.get('accent_hover'),
                                          self.start_restore_thread, 0, 1)
 
-        self.filters_btn = create_button(main_buttons_frame, "🔍 Filters",
+        self.filters_btn = create_button(main_buttons_frame, "Filters",
                                          self.theme.get('fg_secondary'), self.theme.get('disabled'),
                                          self.open_filter_manager, 0, 2)
 
-        self.driver_backup_btn = create_button(main_buttons_frame, "🔧 Backup Drivers",
+        self.driver_backup_btn = create_button(main_buttons_frame, "Backup Drivers",
                                               self.theme.get('danger'), self.theme.get('danger_hover'),
                                               self.start_driver_backup_thread, 0, 3)
 
-        self.driver_restore_btn = create_button(main_buttons_frame, "🔧 Restore Drivers",
+        self.driver_restore_btn = create_button(main_buttons_frame, "Restore Drivers",
                                                self.theme.get('accent'), self.theme.get('accent_hover'),
                                                self.start_driver_restore_thread, 0, 4)
 
@@ -1437,44 +1473,44 @@ class App(tk.Tk):
             tools_buttons_frame.columnconfigure(i, weight=1, uniform="button")
 
         # Tools buttons - Row 1
-        self.browser_profiles_btn = create_button(tools_buttons_frame, "🌐 Browser",
+        self.browser_profiles_btn = create_button(tools_buttons_frame, "Browser",
                                                   self.theme.get('info'), self.theme.get('accent_hover'),
                                                   self.start_browser_profiles_backup_thread, 0, 0)
 
-        self.check_space_btn = create_button(tools_buttons_frame, "💾 Check Space",
+        self.check_space_btn = create_button(tools_buttons_frame, "Check Space",
                                             "#8E44AD", "#A569BD",
                                             self.check_space, 0, 1)
 
-        self.save_log_btn = create_button(tools_buttons_frame, "💾 Save Log",
+        self.save_log_btn = create_button(tools_buttons_frame, "Save Log",
                                           self.theme.get('success'), self.theme.get('success_hover'),
                                           self.save_log, 0, 2)
 
-        self.copy_btn = create_button(tools_buttons_frame, "📋 Copy Data",
+        self.copy_btn = create_button(tools_buttons_frame, "Copy Data",
                                       self.theme.get('warning'), "#FFB84D",
                                       self.copy_files, 0, 3)
 
-        self.devmgr_btn = create_button(tools_buttons_frame, "⚙️ Device Mgr",
+        self.devmgr_btn = create_button(tools_buttons_frame, "Device Mgr",
                                        "#78909C", "#90A4AE",
                                        self.open_device_manager, 0, 4)
 
         # Tools buttons - Row 2
-        self.schedule_btn = create_button(tools_buttons_frame, "⏰ Schedule",
+        self.schedule_btn = create_button(tools_buttons_frame, "Schedule",
                                          self.theme.get('success'), self.theme.get('success_hover'),
                                          self.schedule_backup, 1, 0)
 
-        self.winget_export_btn = create_button(tools_buttons_frame, "📦 Export Apps",
+        self.winget_export_btn = create_button(tools_buttons_frame, "Export Apps",
                                               "#00796B", "#009688",
                                               self.start_winget_export_thread, 1, 1)
 
-        self.file_explorer_btn = create_button(tools_buttons_frame, "📂 Explorer",
+        self.file_explorer_btn = create_button(tools_buttons_frame, "Explorer",
                                               "#7D98A1", "#90A4AE",
                                               self.open_file_explorer, 1, 2)
 
-        self.nas_connect_btn = create_button(tools_buttons_frame, "🌐 Connect NAS",
+        self.nas_connect_btn = create_button(tools_buttons_frame, "Connect NAS",
                                             "#00796B", "#00897B",
                                             self.open_nas_connect_dialog, 1, 3)
 
-        self.nas_disconnect_btn = create_button(tools_buttons_frame, "🔌 Disconnect",
+        self.nas_disconnect_btn = create_button(tools_buttons_frame, "Disconnect",
                                                self.theme.get('danger'), self.theme.get('danger_hover'),
                                                self.open_nas_disconnect_dialog, 1, 4)
 
@@ -1499,18 +1535,18 @@ class App(tk.Tk):
 
         # Activity Log Card
         log_card = tk.Frame(main_frame, bg=self.theme.get('bg_elevated'), relief="flat", bd=0)
-        log_card.pack(fill="x", expand=False, pady=(0, 12))
+        log_card.pack(fill="both", expand=True, pady=(0, 12))
 
         log_header = tk.Frame(log_card, bg=self.theme.get('bg_elevated'))
         log_header.pack(fill="x", padx=16, pady=(12, 8))
 
-        tk.Label(log_header, text="📝 Activity Log",
+        tk.Label(log_header, text="Activity Log",
                 bg=self.theme.get('bg_elevated'),
                 fg=self.theme.get('fg'),
                 font=("Segoe UI", 12, "bold")).pack(side="left")
 
         log_inner_frame = tk.Frame(log_card, bg=self.theme.get('bg_elevated'))
-        log_inner_frame.pack(fill="x", padx=16, pady=(0, 12))
+        log_inner_frame.pack(fill="both", expand=True, padx=16, pady=(0, 12))
 
         scrollbar = tk.Scrollbar(log_inner_frame, width=14,
                                 bg=self.theme.get('bg_elevated'),
@@ -1527,7 +1563,7 @@ class App(tk.Tk):
                                yscrollcommand=scrollbar.set,
                                padx=8, pady=6)
         self.log_text.tag_configure('bold', font=("Consolas", 9, "bold"))
-        self.log_text.pack(fill="x", expand=False, side="left")
+        self.log_text.pack(fill="both", expand=True, side="left")
 
         scrollbar.config(command=self.log_text.yview)
 
@@ -1545,19 +1581,19 @@ class App(tk.Tk):
         """Callback Called When Sound Toggle"""
         try:
             is_enabled = self.sound_enabled_var.get()
-            
+
             if is_enabled:
                 self.message_queue.put(('log', "Sound enabled"))
-                self.sound_check.config(text="🔊 Sound")
+                self.sound_check.config(text="Sound")
                 # Test sound
                 self._play_sound('complete')
             else:
                 self.message_queue.put(('log', "Sound disabled"))
-                self.sound_check.config(text="🔇 Sound")
-            
+                self.sound_check.config(text="Sound")
+
             # Save setting
             self.save_settings()
-            
+
         except Exception as e:
             print(f"DEBUG: Sound toggle error: {e}")
 
