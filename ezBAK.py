@@ -183,6 +183,151 @@ class Translator:
         return trans.get(key, default or key)
 
 
+# ============================================================
+# Windows 11 Style Dialog System
+# ============================================================
+
+class Win11Dialog:
+    """Windows 11 style modern dialogs to replace default messageboxes"""
+
+    @staticmethod
+    def _create_dialog_button(parent, text, command, theme, is_primary=False):
+        """Create a Windows 11 style dialog button"""
+        if is_primary:
+            # Primary button with accent color
+            btn_bg = theme.get('bg_elevated')
+            btn_fg = theme.get('fg')
+            hover_bg = theme.get('accent_hover')
+            hover_fg = 'white'
+        else:
+            # Secondary button
+            btn_bg = theme.get('bg_elevated')
+            btn_fg = theme.get('fg')
+            hover_bg = theme.get('hover')
+            hover_fg = theme.get('fg')
+
+        btn = tk.Button(parent, text=text,
+                       bg=btn_bg,
+                       fg=btn_fg,
+                       font=("Segoe UI", 10),
+                       relief="solid",
+                       bd=1,
+                       highlightthickness=0,
+                       borderwidth=1,
+                       width=12,
+                       height=1,
+                       command=command,
+                       cursor="hand2")
+
+        # Hover effects
+        btn.bind("<Enter>", lambda e: e.widget.config(bg=hover_bg, fg=hover_fg))
+        btn.bind("<Leave>", lambda e: e.widget.config(bg=btn_bg, fg=btn_fg))
+
+        return btn
+
+    @staticmethod
+    def showinfo(title, message, parent=None, theme=None):
+        """Show information dialog"""
+        if theme is None:
+            theme = Win11Theme('dark')
+
+        dlg = tk.Toplevel(parent)
+        dlg.title(title)
+        dlg.configure(bg=theme.get('bg_elevated'))
+        dlg.resizable(False, False)
+        dlg.transient(parent)
+        dlg.grab_set()
+
+        # Center the dialog
+        dlg.update_idletasks()
+        width = 400
+        height = 200
+        x = (dlg.winfo_screenwidth() // 2) - (width // 2)
+        y = (dlg.winfo_screenheight() // 2) - (height // 2)
+        dlg.geometry(f'{width}x{height}+{x}+{y}')
+
+        # Message area
+        msg_frame = tk.Frame(dlg, bg=theme.get('bg_elevated'))
+        msg_frame.pack(fill='both', expand=True, padx=24, pady=20)
+
+        tk.Label(msg_frame, text=message,
+                bg=theme.get('bg_elevated'),
+                fg=theme.get('fg'),
+                font=("Segoe UI", 10),
+                wraplength=350,
+                justify='left').pack()
+
+        # Button area
+        btn_frame = tk.Frame(dlg, bg=theme.get('bg_elevated'))
+        btn_frame.pack(fill='x', padx=24, pady=(0, 20))
+
+        Win11Dialog._create_dialog_button(btn_frame, "OK", dlg.destroy, theme, is_primary=True).pack(side='right')
+
+        dlg.wait_window()
+
+    @staticmethod
+    def showwarning(title, message, parent=None, theme=None):
+        """Show warning dialog"""
+        Win11Dialog.showinfo(title, f"⚠ {message}", parent, theme)
+
+    @staticmethod
+    def showerror(title, message, parent=None, theme=None):
+        """Show error dialog"""
+        Win11Dialog.showinfo(title, f"❌ {message}", parent, theme)
+
+    @staticmethod
+    def askyesno(title, message, parent=None, theme=None):
+        """Show yes/no dialog"""
+        if theme is None:
+            theme = Win11Theme('dark')
+
+        result = [False]
+
+        dlg = tk.Toplevel(parent)
+        dlg.title(title)
+        dlg.configure(bg=theme.get('bg_elevated'))
+        dlg.resizable(False, False)
+        dlg.transient(parent)
+        dlg.grab_set()
+
+        # Center the dialog
+        dlg.update_idletasks()
+        width = 400
+        height = 200
+        x = (dlg.winfo_screenwidth() // 2) - (width // 2)
+        y = (dlg.winfo_screenheight() // 2) - (height // 2)
+        dlg.geometry(f'{width}x{height}+{x}+{y}')
+
+        # Message area
+        msg_frame = tk.Frame(dlg, bg=theme.get('bg_elevated'))
+        msg_frame.pack(fill='both', expand=True, padx=24, pady=20)
+
+        tk.Label(msg_frame, text=message,
+                bg=theme.get('bg_elevated'),
+                fg=theme.get('fg'),
+                font=("Segoe UI", 10),
+                wraplength=350,
+                justify='left').pack()
+
+        # Button area
+        btn_frame = tk.Frame(dlg, bg=theme.get('bg_elevated'))
+        btn_frame.pack(fill='x', padx=24, pady=(0, 20))
+
+        def on_yes():
+            result[0] = True
+            dlg.destroy()
+
+        def on_no():
+            result[0] = False
+            dlg.destroy()
+
+        Win11Dialog._create_dialog_button(btn_frame, "No", on_no, theme, is_primary=False).pack(side='right', padx=(8, 0))
+        Win11Dialog._create_dialog_button(btn_frame, "Yes", on_yes, theme, is_primary=True).pack(side='right')
+
+        dlg.wait_window()
+        return result[0]
+
+
         #     # always run finalization steps
         # finally:
         #     try:
@@ -908,6 +1053,20 @@ class App(tk.Tk):
 
         menubar.add_cascade(label=self.translator.get('menu_language'), menu=lang_menu)
 
+        # Help Menu
+        help_menu = tk.Menu(menubar, tearoff=0,
+                           bg=self.theme.get('bg_elevated'),
+                           fg=self.theme.get('fg'),
+                           activebackground=self.theme.get('accent'),
+                           activeforeground='white',
+                           bd=0,
+                           relief='flat')
+        help_menu.add_command(label="Keyboard Shortcuts (F1)", command=self.show_keyboard_shortcuts_help)
+        help_menu.add_separator()
+        help_menu.add_command(label="GitHub Releases", command=lambda: self.open_github_link(None))
+
+        menubar.add_cascade(label="Help", menu=help_menu)
+
         self.config(menu=menubar)
 
     def switch_theme(self, mode):
@@ -916,17 +1075,17 @@ class App(tk.Tk):
             self.theme.current_mode = mode
             self.theme.colors = self.theme.DARK if mode == 'dark' else self.theme.LIGHT
             self.apply_theme_to_all_widgets()
-            messagebox.showinfo("Theme Changed",
+            Win11Dialog.showinfo("Theme Changed",
                               f"Theme switched to {mode.capitalize()} mode.\nRestart the application for full effect.",
-                              parent=self)
+                              parent=self, theme=self.theme)
 
     def switch_language(self, lang_code):
         """Switch application language"""
         if self.translator.set_language(lang_code):
             self.update_ui_texts()
-            messagebox.showinfo("Language Changed",
+            Win11Dialog.showinfo("Language Changed",
                               "Language changed successfully.\nRestart the application for full effect.",
-                              parent=self)
+                              parent=self, theme=self.theme)
 
     def apply_theme_to_all_widgets(self):
         """Apply current theme to all widgets (requires app restart for full effect)"""
@@ -940,44 +1099,75 @@ class App(tk.Tk):
     def update_ui_texts(self):
         """Update all UI text labels with current language"""
         try:
+            # Update window title
             self.title(self.translator.get('app_title'))
-            # Update other labels as needed
-            # This is simplified - full implementation would update all text
-        except Exception:
-            pass
+
+            # Update button texts
+            if hasattr(self, 'backup_btn'):
+                self.backup_btn.config(text=f"📦 {self.translator.get('backup_data')}")
+            if hasattr(self, 'restore_btn'):
+                self.restore_btn.config(text=f"♻️ {self.translator.get('restore_data')}")
+            if hasattr(self, 'filters_btn'):
+                self.filters_btn.config(text=f"🔍 {self.translator.get('filters')}")
+            if hasattr(self, 'driver_backup_btn'):
+                self.driver_backup_btn.config(text=f"🔧 {self.translator.get('backup_drivers')}")
+            if hasattr(self, 'driver_restore_btn'):
+                self.driver_restore_btn.config(text=f"🔧 {self.translator.get('restore_drivers')}")
+
+            # Update tools buttons
+            if hasattr(self, 'browser_profiles_btn'):
+                self.browser_profiles_btn.config(text=f"🌐 {self.translator.get('browser')}")
+            if hasattr(self, 'check_space_btn'):
+                self.check_space_btn.config(text=f"💾 {self.translator.get('check_space')}")
+            if hasattr(self, 'save_log_btn'):
+                self.save_log_btn.config(text=f"💾 {self.translator.get('save_log')}")
+            if hasattr(self, 'copy_btn'):
+                self.copy_btn.config(text=f"📋 {self.translator.get('copy_data')}")
+            if hasattr(self, 'devmgr_btn'):
+                self.devmgr_btn.config(text=f"⚙️ {self.translator.get('device_mgr')}")
+            if hasattr(self, 'schedule_btn'):
+                self.schedule_btn.config(text=f"⏰ {self.translator.get('schedule')}")
+            if hasattr(self, 'winget_export_btn'):
+                self.winget_export_btn.config(text=f"📦 {self.translator.get('export_apps')}")
+            if hasattr(self, 'file_explorer_btn'):
+                self.file_explorer_btn.config(text=f"📂 {self.translator.get('explorer')}")
+            if hasattr(self, 'nas_connect_btn'):
+                self.nas_connect_btn.config(text=f"🌐 {self.translator.get('connect_nas')}")
+            if hasattr(self, 'nas_disconnect_btn'):
+                self.nas_disconnect_btn.config(text=f"🔌 {self.translator.get('disconnect')}")
+
+            # Update status label
+            if hasattr(self, 'status_label'):
+                current_status = self.status_label.cget('text')
+                if 'Select User' in current_status or '사용자 선택' in current_status:
+                    self.status_label.config(text=self.translator.get('select_user_begin'))
+
+            # Update sound checkbox
+            if hasattr(self, 'sound_check'):
+                is_enabled = self.sound_enabled_var.get()
+                self.sound_check.config(text=f"{'🔊' if is_enabled else '🔇'} {self.translator.get('sound')}")
+
+        except Exception as e:
+            print(f"DEBUG: Error updating UI texts: {e}")
 
     def create_widgets(self):
         # Create menu bar first
         self.create_menu_bar()
 
-        # Modern Windows 11 Header with theme colors
-        header_frame = tk.Frame(self, bg=self.theme.get('bg_secondary'), height=65)
+        # Modern Windows 11 Header with theme colors - Minimal design with time only
+        header_frame = tk.Frame(self, bg=self.theme.get('bg_secondary'), height=40)
         header_frame.pack(fill="x", pady=0)
         header_frame.pack_propagate(False)
 
-        title_container = tk.Frame(header_frame, bg=self.theme.get('bg_secondary'))
-        title_container.pack(side="left", padx=24, pady=12)
+        # Center the time in the header
+        header_center = tk.Frame(header_frame, bg=self.theme.get('bg_secondary'))
+        header_center.pack(expand=True, fill='both')
 
-        title_label = tk.Label(title_container, text="ezBAK",
-                              font=("Segoe UI", 22, "bold"),
-                              bg=self.theme.get('bg_secondary'),
-                              fg=self.theme.get('accent'))
-        title_label.pack(side="left")
-
-        version_label = tk.Label(title_container, text="v0.7.9",
-                                font=("Segoe UI", 9),
-                                bg=self.theme.get('bg_secondary'),
-                                fg=self.theme.get('fg_secondary'))
-        version_label.pack(side="left", padx=(10, 0), pady=(10, 0))
-
-        header_right = tk.Frame(header_frame, bg=self.theme.get('bg_secondary'))
-        header_right.pack(side="right", padx=24, pady=12)
-
-        self.header_time_label = tk.Label(header_right, text="",
-                                         font=("Segoe UI", 9),
+        self.header_time_label = tk.Label(header_center, text="",
+                                         font=("Segoe UI", 11),
                                          bg=self.theme.get('bg_secondary'),
-                                         fg=self.theme.get('fg_secondary'))
-        self.header_time_label.pack()
+                                         fg=self.theme.get('fg'))
+        self.header_time_label.pack(expand=True)
         self._update_header_time()
 
         # Main content frame with theme background
@@ -1170,15 +1360,41 @@ class App(tk.Tk):
         btn_font = ("Segoe UI", 9, "bold")
         btn_height = 2
 
-        # Create button helper function
+        # Create button helper function - Windows 11 style
         def create_button(parent, text, bg_color, hover_color, command, row, col):
-            btn = tk.Button(parent, text=text, bg=bg_color, fg="white",
-                          font=btn_font, relief="flat", bd=0,
-                          height=btn_height, command=command,
+            """Windows 11 style minimal button with subtle hover effect"""
+            # Use theme colors for consistent styling
+            btn_bg = self.theme.get('bg_elevated')
+            btn_fg = self.theme.get('fg')
+            btn_hover_bg = self.theme.get('accent_hover')  # Dark blue hover
+            btn_hover_fg = 'white'
+            btn_border = self.theme.get('border')
+
+            btn = tk.Button(parent, text=text,
+                          bg=btn_bg,
+                          fg=btn_fg,
+                          font=btn_font,
+                          relief="solid",
+                          bd=1,
+                          highlightthickness=0,
+                          borderwidth=1,
+                          height=btn_height,
+                          command=command,
                           cursor="hand2")
+            btn.config(highlightbackground=btn_border, highlightcolor=btn_border)
             btn.grid(row=row, column=col, padx=4, pady=4, sticky="ew")
-            btn.bind("<Enter>", lambda e: e.widget.config(bg=hover_color))
-            btn.bind("<Leave>", lambda e: e.widget.config(bg=bg_color))
+
+            # Windows 11 style hover: dark blue background
+            btn.bind("<Enter>", lambda e: e.widget.config(
+                bg=btn_hover_bg,
+                fg=btn_hover_fg,
+                relief="solid"
+            ))
+            btn.bind("<Leave>", lambda e: e.widget.config(
+                bg=btn_bg,
+                fg=btn_fg,
+                relief="solid"
+            ))
             return btn
 
         # Main operation buttons with Windows 11 accent colors
@@ -1315,17 +1531,9 @@ class App(tk.Tk):
 
         scrollbar.config(command=self.log_text.yview)
 
-        # Footer with theme colors
+        # Footer with theme colors - Minimal design
         footer_frame = tk.Frame(main_frame, bg=self.theme.get('bg'))
         footer_frame.pack(fill="x", pady=(8, 0))
-
-        self.github_label = tk.Label(footer_frame, text="🔗 gloriouslegacy",
-                                     font=("Segoe UI", 9, "underline"),
-                                     fg=self.theme.get('accent'),
-                                     bg=self.theme.get('bg'),
-                                     cursor="hand2")
-        self.github_label.pack(side="left")
-        self.github_label.bind("<Button-1>", self.open_github_link)
 
         shortcut_hint = tk.Label(footer_frame, text="Press F1 for keyboard shortcuts",
                                 font=("Segoe UI", 8),
@@ -3353,9 +3561,11 @@ class App(tk.Tk):
             dlg.destroy()
         def on_cancel():
             dlg.destroy()
-        ok_btn = tk.Button(btns, text="OK", command=on_ok, bg="#4CAF50", fg="white", relief="flat", width=10)
+
+        # Windows 11 style buttons
+        ok_btn = Win11Dialog._create_dialog_button(btns, "OK", on_ok, self.theme, is_primary=True)
         ok_btn.pack(side='right', padx=8)
-        cancel_btn = tk.Button(btns, text="Cancel", command=on_cancel, bg="#7D98A1", fg="white", relief="flat", width=10)
+        cancel_btn = Win11Dialog._create_dialog_button(btns, "Cancel", on_cancel, self.theme, is_primary=False)
         cancel_btn.pack(side='right', padx=8)
 
         dlg.bind('<Return>', lambda e: on_ok())
@@ -3554,9 +3764,11 @@ class App(tk.Tk):
             dlg.destroy()
         def on_cancel():
             dlg.destroy()
-        ok_btn = tk.Button(btns, text="OK", command=on_ok, bg="#4CAF50", fg="white", relief="flat", width=10)
+
+        # Windows 11 style buttons
+        ok_btn = Win11Dialog._create_dialog_button(btns, "OK", on_ok, self.theme, is_primary=True)
         ok_btn.pack(side='right', padx=8)
-        cancel_btn = tk.Button(btns, text="Cancel", command=on_cancel, bg="#7D98A1", fg="white", relief="flat", width=10)
+        cancel_btn = Win11Dialog._create_dialog_button(btns, "Cancel", on_cancel, self.theme, is_primary=False)
         cancel_btn.pack(side='right', padx=8)
 
         dlg.bind('<Return>', lambda e: on_ok())
