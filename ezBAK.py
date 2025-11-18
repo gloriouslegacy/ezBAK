@@ -1132,7 +1132,7 @@ class App(tk.Tk):
                 self.iconbitmap(resource_path('./icon/ezbak.ico'))
             except tk.TclError:
                 pass
-        self.geometry("1026x650")  # Slightly taller for menu bar
+        self.geometry("1026x935")  # Slightly taller for menu bar
         self.configure(bg=self.theme.get('bg'))
 
         # UI elements setup
@@ -1368,26 +1368,8 @@ class App(tk.Tk):
                 sound_text = self.translator.get('sound')
                 self.sound_check.config(text=sound_text)
 
-            # Update Activity Log notice text
-            if hasattr(self, 'log_text'):
-                try:
-                    self.log_text.config(state="normal")
-                    self.log_text.delete('1.0', tk.END)
-
-                    # Re-insert translated notice text
-                    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    notice_text = f"[{timestamp}] \n{self.translator.get('notice_title')}\n"
-                    notice_text += f"- {self.translator.get('notice_select_user')}\n"
-                    notice_text += f"- {self.translator.get('notice_filters')}\n"
-                    notice_text += f"- {self.translator.get('notice_hidden_system')}\n"
-                    notice_text += f"- {self.translator.get('notice_appdata')}\n"
-                    notice_text += f"- {self.translator.get('notice_detailed_log')}\n- "
-                    self.log_text.insert(tk.END, notice_text)
-                    self.log_text.insert(tk.END, self.translator.get('notice_responsibility') + "\n", 'bold')
-                    self.log_text.see(tk.END)
-                    self.log_text.config(state="disabled")
-                except Exception as log_error:
-                    print(f"DEBUG: Error updating log text: {log_error}")
+            # Note: Activity Log notice is only set once during initialization (lines 1183-1196)
+            # and should not be updated when language changes to preserve existing log history
 
         except Exception as e:
             print(f"DEBUG: Error updating UI texts: {e}")
