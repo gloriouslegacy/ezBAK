@@ -49,28 +49,28 @@ class Win11Theme:
         'pressed': '#EBEBEB',         # Pressed state
     }
 
-    # Dark Theme Colors (Windows 11 Dark)
+    # Dark Theme Colors (GitHub Dark Style)
     DARK = {
-        'bg': '#1e1e2e',              # Main background - deep purple-gray
-        'bg_secondary': '#2a2a40',     # Secondary background - lighter purple-gray
-        'bg_elevated': '#3a3f58',      # Elevated surfaces - elevated purple-gray
-        'fg': '#F5F5F5',              # Text color - slightly softer white
-        'fg_secondary': '#B0B0B0',    # Secondary text
-        'accent': '#0078D4',          # Accent color - Windows blue
-        'accent_hover': '#1A86D9',    # Accent hover - lighter blue
-        'accent_light': '#003D5C',    # Dark accent background
-        'success': '#107C10',         # Success/green - Windows green
-        'success_hover': '#0E6B0E',
-        'danger': '#C42B1C',          # Danger/red - Windows red
-        'danger_hover': '#D13438',
-        'warning': '#F7630C',         # Warning/orange - Windows orange
-        'info': '#0078D4',            # Info/blue
-        'border': '#2A2A2A',          # Border color - subtle gray
-        'divider': '#1F1F1F',         # Divider - very dark
-        'shadow': '#00000060',        # Shadow - stronger
-        'disabled': '#6D6D6D',        # Disabled state
-        'hover': '#252525',           # Hover state - slightly lighter
-        'pressed': '#303030',         # Pressed state
+        'bg': '#0d1117',              # Main background - GitHub dark
+        'bg_secondary': '#161b22',     # Secondary background - GitHub darker
+        'bg_elevated': '#21262d',      # Elevated surfaces - GitHub elevated
+        'fg': '#c9d1d9',              # Text color - GitHub text
+        'fg_secondary': '#8b949e',    # Secondary text - GitHub muted
+        'accent': '#58a6ff',          # Accent color - GitHub blue
+        'accent_hover': '#1f6feb',    # Accent hover - GitHub blue hover
+        'accent_light': '#0d419d',    # Dark accent background
+        'success': '#3fb950',         # Success/green - GitHub green
+        'success_hover': '#2ea043',
+        'danger': '#f85149',          # Danger/red - GitHub red
+        'danger_hover': '#da3633',
+        'warning': '#d29922',         # Warning/orange - GitHub orange
+        'info': '#58a6ff',            # Info/blue
+        'border': '#30363d',          # Border color - GitHub border
+        'divider': '#21262d',         # Divider
+        'shadow': '#00000060',        # Shadow
+        'disabled': '#484f58',        # Disabled state - GitHub disabled
+        'hover': '#1c2128',           # Hover state - GitHub hover
+        'pressed': '#262c36',         # Pressed state
     }
 
     def __init__(self, initial_mode='dark'):
@@ -4789,6 +4789,11 @@ class App(tk.Tk):
                 if 'language' in data:
                     lang_code = data.get('language', 'en')
                     self.translator.current_lang = lang_code
+                    # Apply language to UI after loading
+                    try:
+                        self.update_ui_texts()
+                    except Exception as lang_error:
+                        print(f"DEBUG: Failed to update UI texts after loading language: {lang_error}")
 
             except Exception as e:
                 print(f"DEBUG: Settings load error: {e}")
@@ -5034,22 +5039,22 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
             btn_frame = tk.Frame(self, bg=self.theme.get('bg'))
             btn_frame.grid(row=row, column=0, columnspan=3, sticky="e", padx=15, pady=20)
 
-            # Modern button styling
+            # Modern button styling - match FilterManagerDialog button sizes
             tk.Button(btn_frame, text=self.add_shortcut_text("Create", "Ctrl+C"),
                      command=self.on_create,
                      bg=self.theme.get('accent'), fg="white",
                      font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
-                     width=12, cursor="hand2", padx=15, pady=8).pack(side="right", padx=5)
+                     width=12, cursor="hand2").pack(side="right", padx=5)
             tk.Button(btn_frame, text=self.add_shortcut_text("Delete", "Ctrl+D"),
                      command=self.on_delete,
                      bg=self.theme.get('danger'), fg="white",
                      font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
-                     width=12, cursor="hand2", padx=15, pady=8).pack(side="right", padx=5)
+                     width=12, cursor="hand2").pack(side="right", padx=5)
             tk.Button(btn_frame, text=self.add_shortcut_text("Close", "Esc"),
                      command=self.on_close,
                      bg=self.theme.get('fg_secondary'), fg="white",
                      font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
-                     width=12, cursor="hand2", padx=15, pady=8).pack(side="right", padx=5)
+                     width=12, cursor="hand2").pack(side="right", padx=5)
 
             # Configure grid weights
             self.columnconfigure(1, weight=1)
