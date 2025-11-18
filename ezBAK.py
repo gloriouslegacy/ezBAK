@@ -387,10 +387,10 @@ class Win11Dialog:
                        padx=8,
                        pady=4)
 
-        btn.config(highlightbackground=btn_border, highlightcolor=btn_border)
+        btn.config(highlightbackground=border_color, highlightcolor=border_color)
 
         # Hover effects matching main screen buttons
-        btn.bind("<Enter>", lambda e: e.widget.config(bg=btn_hover_bg, fg=btn_hover_fg, relief="flat"))
+        btn.bind("<Enter>", lambda e: e.widget.config(bg=hover_bg, fg=hover_fg, relief="flat"))
         btn.bind("<Leave>", lambda e: e.widget.config(bg=btn_bg, fg=btn_fg, relief="flat"))
 
         return btn
@@ -1305,54 +1305,54 @@ class App(tk.Tk):
             # Check if Korean language (no emojis for Korean)
             is_korean = self.translator.current_lang == 'ko'
 
-            # Update button texts
+            # Update button texts (no emojis for all languages)
             if hasattr(self, 'backup_btn'):
                 text = self.translator.get('backup_data')
-                self.backup_btn.config(text=text if is_korean else f"📦 {text}")
+                self.backup_btn.config(text=text)
             if hasattr(self, 'restore_btn'):
                 text = self.translator.get('restore_data')
-                self.restore_btn.config(text=text if is_korean else f"♻️ {text}")
+                self.restore_btn.config(text=text)
             if hasattr(self, 'filters_btn'):
                 text = self.translator.get('filters')
-                self.filters_btn.config(text=text if is_korean else f"🔍 {text}")
+                self.filters_btn.config(text=text)
             if hasattr(self, 'driver_backup_btn'):
                 text = self.translator.get('backup_drivers')
-                self.driver_backup_btn.config(text=text if is_korean else f"🔧 {text}")
+                self.driver_backup_btn.config(text=text)
             if hasattr(self, 'driver_restore_btn'):
                 text = self.translator.get('restore_drivers')
-                self.driver_restore_btn.config(text=text if is_korean else f"🔧 {text}")
+                self.driver_restore_btn.config(text=text)
 
-            # Update tools buttons
+            # Update tools buttons (no emojis for all languages)
             if hasattr(self, 'browser_profiles_btn'):
                 text = self.translator.get('browser')
-                self.browser_profiles_btn.config(text=text if is_korean else f"🌐 {text}")
+                self.browser_profiles_btn.config(text=text)
             if hasattr(self, 'check_space_btn'):
                 text = self.translator.get('check_space')
-                self.check_space_btn.config(text=text if is_korean else f"💾 {text}")
+                self.check_space_btn.config(text=text)
             if hasattr(self, 'save_log_btn'):
                 text = self.translator.get('save_log')
-                self.save_log_btn.config(text=text if is_korean else f"💾 {text}")
+                self.save_log_btn.config(text=text)
             if hasattr(self, 'copy_btn'):
                 text = self.translator.get('copy_data')
-                self.copy_btn.config(text=text if is_korean else f"📋 {text}")
+                self.copy_btn.config(text=text)
             if hasattr(self, 'devmgr_btn'):
                 text = self.translator.get('device_mgr')
-                self.devmgr_btn.config(text=text if is_korean else f"⚙️ {text}")
+                self.devmgr_btn.config(text=text)
             if hasattr(self, 'schedule_btn'):
                 text = self.translator.get('schedule')
-                self.schedule_btn.config(text=text if is_korean else f"⏰ {text}")
+                self.schedule_btn.config(text=text)
             if hasattr(self, 'winget_export_btn'):
                 text = self.translator.get('export_apps')
-                self.winget_export_btn.config(text=text if is_korean else f"📦 {text}")
+                self.winget_export_btn.config(text=text)
             if hasattr(self, 'file_explorer_btn'):
                 text = self.translator.get('explorer')
-                self.file_explorer_btn.config(text=text if is_korean else f"📂 {text}")
+                self.file_explorer_btn.config(text=text)
             if hasattr(self, 'nas_connect_btn'):
                 text = self.translator.get('connect_nas')
-                self.nas_connect_btn.config(text=text if is_korean else f"🌐 {text}")
+                self.nas_connect_btn.config(text=text)
             if hasattr(self, 'nas_disconnect_btn'):
                 text = self.translator.get('disconnect')
-                self.nas_disconnect_btn.config(text=text if is_korean else f"🔌 {text}")
+                self.nas_disconnect_btn.config(text=text)
 
             # Update status label
             if hasattr(self, 'status_label'):
@@ -1360,11 +1360,10 @@ class App(tk.Tk):
                 if 'Select User' in current_status or '사용자 선택' in current_status:
                     self.status_label.config(text=self.translator.get('select_user_begin'))
 
-            # Update sound checkbox
+            # Update sound checkbox (no emojis for all languages)
             if hasattr(self, 'sound_check'):
-                is_enabled = self.sound_enabled_var.get()
                 sound_text = self.translator.get('sound')
-                self.sound_check.config(text=sound_text if is_korean else f"{'🔊' if is_enabled else '🔇'} {sound_text}")
+                self.sound_check.config(text=sound_text)
 
             # Update Activity Log notice text
             if hasattr(self, 'log_text'):
@@ -1783,11 +1782,9 @@ class App(tk.Tk):
                                 bg=self.theme.get('bg'))
         shortcut_hint.pack(side="right")
 
-        # Apply language settings after all widgets are created
-        try:
-            self.update_ui_texts()
-        except Exception as e:
-            print(f"DEBUG: Failed to update UI texts after widget creation: {e}")
+        # Note: update_ui_texts() is not called here to prevent duplicate Notice in Activity Log
+        # The initial UI texts are already set during widget creation and in __init__
+        # update_ui_texts() will be called when language is changed via switch_language()
 
     def _on_sound_toggle(self):
         """Callback Called When Sound Toggle"""
