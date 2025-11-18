@@ -27,9 +27,9 @@ class Win11Theme:
 
     # Light Theme Colors (Windows 11 Light)
     LIGHT = {
-        'bg': '#F3F3F3',              # Main background
-        'bg_secondary': '#FAFAFA',     # Secondary background
-        'bg_elevated': '#FFFFFF',      # Elevated surfaces
+        'bg': '#f5f5f5',              # Main background
+        'bg_secondary': '#efefef',     # Secondary background
+        'bg_elevated': '#e8e8e8',      # Elevated surfaces
         'fg': '#000000',              # Text color
         'fg_secondary': '#605E5C',    # Secondary text
         'accent': '#0078D4',          # Accent color (blue)
@@ -51,9 +51,9 @@ class Win11Theme:
 
     # Dark Theme Colors (Windows 11 Dark)
     DARK = {
-        'bg': '#0A0A0A',              # Main background - pure black-based
-        'bg_secondary': '#121212',     # Secondary background - very dark
-        'bg_elevated': '#1A1A1A',      # Elevated surfaces - dark black
+        'bg': '#1e1e2e',              # Main background - deep purple-gray
+        'bg_secondary': '#2a2a40',     # Secondary background - lighter purple-gray
+        'bg_elevated': '#3a3f58',      # Elevated surfaces - elevated purple-gray
         'fg': '#F5F5F5',              # Text color - slightly softer white
         'fg_secondary': '#B0B0B0',    # Secondary text
         'accent': '#0078D4',          # Accent color - Windows blue
@@ -1120,7 +1120,7 @@ class App(tk.Tk):
             self.theme.current_mode = mode
             self.theme.colors = self.theme.DARK if mode == 'dark' else self.theme.LIGHT
             self.apply_theme_to_all_widgets()
-            Win11Dialog.showinfo("Theme Changed",
+            Win11Dialog.showinfo("🎨 Theme Changed",
                               f"Theme switched to {mode.capitalize()} mode.\nRestart the application for full effect.",
                               parent=self, theme=self.theme, translator=self.translator)
 
@@ -1132,7 +1132,7 @@ class App(tk.Tk):
                 self.save_settings()  # Save the language preference
             except Exception:
                 pass
-            Win11Dialog.showinfo("Language Changed",
+            Win11Dialog.showinfo("🌐 Language Changed",
                               "Language changed successfully.\nRestart the application for full effect.",
                               parent=self, theme=self.theme, translator=self.translator)
 
@@ -1214,6 +1214,27 @@ class App(tk.Tk):
                 is_enabled = self.sound_enabled_var.get()
                 sound_text = self.translator.get('sound')
                 self.sound_check.config(text=sound_text if is_korean else f"{'🔊' if is_enabled else '🔇'} {sound_text}")
+
+            # Update Activity Log notice text
+            if hasattr(self, 'log_text'):
+                try:
+                    self.log_text.config(state="normal")
+                    self.log_text.delete('1.0', tk.END)
+
+                    # Re-insert translated notice text
+                    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    notice_text = f"[{timestamp}] \n{self.translator.get('notice_title')}\n"
+                    notice_text += f"- {self.translator.get('notice_select_user')}\n"
+                    notice_text += f"- {self.translator.get('notice_filters')}\n"
+                    notice_text += f"- {self.translator.get('notice_hidden_system')}\n"
+                    notice_text += f"- {self.translator.get('notice_appdata')}\n"
+                    notice_text += f"- {self.translator.get('notice_detailed_log')}\n- "
+                    self.log_text.insert(tk.END, notice_text)
+                    self.log_text.insert(tk.END, self.translator.get('notice_responsibility') + "\n", 'bold')
+                    self.log_text.see(tk.END)
+                    self.log_text.config(state="disabled")
+                except Exception as log_error:
+                    print(f"DEBUG: Error updating log text: {log_error}")
 
         except Exception as e:
             print(f"DEBUG: Error updating UI texts: {e}")
@@ -4821,7 +4842,7 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
                 pass
                 
             # Set window size and position
-            w, h = 546, 290
+            w, h = 546, 380
             self.geometry(f"{w}x{h}")
             
             try:
