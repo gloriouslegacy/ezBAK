@@ -5039,21 +5039,24 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
             btn_frame = tk.Frame(self, bg=self.theme.get('bg'))
             btn_frame.grid(row=row, column=0, columnspan=3, sticky="e", padx=15, pady=20)
 
-            # Modern button styling - match FilterManagerDialog button sizes
+            # Modern button styling with borders - match FilterManagerDialog button sizes
             tk.Button(btn_frame, text=self.add_shortcut_text("Create", "Ctrl+C"),
                      command=self.on_create,
                      bg=self.theme.get('accent'), fg="white",
-                     font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
+                     font=("Segoe UI", 10, "bold"), relief="solid", bd=1,
+                     highlightthickness=1, highlightbackground=self.theme.get('border'),
                      width=12, cursor="hand2").pack(side="right", padx=5)
             tk.Button(btn_frame, text=self.add_shortcut_text("Delete", "Ctrl+D"),
                      command=self.on_delete,
                      bg=self.theme.get('danger'), fg="white",
-                     font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
+                     font=("Segoe UI", 10, "bold"), relief="solid", bd=1,
+                     highlightthickness=1, highlightbackground=self.theme.get('border'),
                      width=12, cursor="hand2").pack(side="right", padx=5)
             tk.Button(btn_frame, text=self.add_shortcut_text("Close", "Esc"),
                      command=self.on_close,
                      bg=self.theme.get('fg_secondary'), fg="white",
-                     font=("Segoe UI", 10, "bold"), relief="flat", bd=0,
+                     font=("Segoe UI", 10, "bold"), relief="solid", bd=1,
+                     highlightthickness=1, highlightbackground=self.theme.get('border'),
                      width=12, cursor="hand2").pack(side="right", padx=5)
 
             # Configure grid weights
@@ -5370,12 +5373,15 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         actions.pack(fill='x', padx=12, pady=12)
 
         tk.Button(actions, text=self.add_shortcut_text("Help", "F1"), width=10,
-                 command=self._show_filter_help, bg=self.theme.get('warning'), fg="white", relief="flat").pack(side='left')
+                 command=self._show_filter_help, bg=self.theme.get('warning'), fg="white",
+                 relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='left')
 
         tk.Button(actions, text=self.add_shortcut_text("Save", "Ctrl+S"), width=12,
-                 command=self._save, bg=self.theme.get('success'), fg="white", relief="flat").pack(side='right')
+                 command=self._save, bg=self.theme.get('success'), fg="white",
+                 relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='right')
         tk.Button(actions, text=self.add_shortcut_text("Cancel", "Esc"), width=12,
-                 command=self._cancel, bg=self.theme.get('fg_secondary'), fg="white", relief="flat").pack(side='right', padx=(0,8))
+                 command=self._cancel, bg=self.theme.get('fg_secondary'), fg="white",
+                 relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='right', padx=(0,8))
 
     def _rule_to_text(self, r):
         """Convert rule to display text"""
