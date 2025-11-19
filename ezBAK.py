@@ -53,32 +53,32 @@ class Win11Theme:
         'scrollbar_bg': '#C8C6C4',    # Scrollbar background
     }
 
-    # Dark Theme Colors (GitHub Dark Style)
+    # Dark Theme Colors (Windows 11 Style)
     DARK = {
-        'bg': '#2d3250',              # Main background - GitHub dark
-        'bg_secondary': '#1a1f35',     # Secondary background - GitHub darker
-        'bg_elevated': '#21262d',      # Elevated surfaces - GitHub elevated
-        'fg': '#c9d1d9',              # Text color - GitHub text
-        'fg_secondary': '#8b949e',    # Secondary text - GitHub muted
-        'accent': '#58a6ff',          # Accent color - GitHub blue
-        'accent_hover': '#1f6feb',    # Accent hover - GitHub blue hover
-        'accent_light': '#0d419d',    # Dark accent background
-        'success': '#3fb950',         # Success/green - GitHub green
-        'success_hover': '#2ea043',
-        'danger': '#f85149',          # Danger/red - GitHub red
-        'danger_hover': '#da3633',
-        'warning': '#d29922',         # Warning/orange - GitHub orange
-        'info': '#58a6ff',            # Info/blue
-        'border': '#30363d',          # Border color - GitHub border
-        'divider': '#21262d',         # Divider
-        'shadow': '#00000060',        # Shadow
-        'disabled': '#484f58',        # Disabled state - GitHub disabled
-        'hover': '#1c2128',           # Hover state - GitHub hover
-        'pressed': '#262c36',         # Pressed state
-        'text_bg': '#1a1f35',         # Text area background
-        'btn_bg': '#58a6ff',          # Button background
-        'btn_fg': '#0d1117',          # Button text
-        'scrollbar_bg': '#484f58',    # Scrollbar background
+        'bg': '#202020',              # Main background - Windows 11 dark
+        'bg_secondary': '#2b2b2b',     # Secondary background - Windows 11 elevated
+        'bg_elevated': '#252525',      # Elevated surfaces
+        'fg': '#ffffff',              # Text color - Pure white
+        'fg_secondary': '#b3b3b3',    # Secondary text - Light gray
+        'accent': '#0067C0',          # Accent color - Windows 11 blue
+        'accent_hover': '#005A9E',    # Accent hover - Darker blue
+        'accent_light': '#003D71',    # Dark accent background
+        'success': '#0F7B0F',         # Success/green - Windows 11 green
+        'success_hover': '#0D6B0D',
+        'danger': '#C42B1C',          # Danger/red - Windows 11 red
+        'danger_hover': '#A82315',
+        'warning': '#F7630C',         # Warning/orange - Windows 11 orange
+        'info': '#0078D4',            # Info/blue - Windows 11 info
+        'border': '#3d3d3d',          # Border color - Subtle gray
+        'divider': '#333333',         # Divider
+        'shadow': '#00000040',        # Shadow
+        'disabled': '#6d6d6d',        # Disabled state
+        'hover': '#2d2d2d',           # Hover state
+        'pressed': '#1a1a1a',         # Pressed state
+        'text_bg': '#2b2b2b',         # Text area background
+        'btn_bg': '#0067C0',          # Button background
+        'btn_fg': '#ffffff',          # Button text
+        'scrollbar_bg': '#5d5d5d',    # Scrollbar background
     }
 
     def __init__(self, initial_mode='dark'):
@@ -1474,11 +1474,11 @@ def create_tooltip(self, widget, text):
         try:
             tooltip = tk.Toplevel()
             tooltip.wm_overrideredirect(True)
-            tooltip.configure(bg="#2D3250", relief="solid", borderwidth=1)
-            
-            label = tk.Label(tooltip, text=text, 
-                           bg="#2D3250", fg="white", 
-                           font=("Arial", 9))
+            tooltip.configure(bg="#2b2b2b", relief="solid", borderwidth=1)
+
+            label = tk.Label(tooltip, text=text,
+                           bg="#2b2b2b", fg="#ffffff",
+                           font=("Segoe UI", 9))
             label.pack()
             
             x = event.x_root + 10
