@@ -696,7 +696,7 @@ class Win11Dialog:
         return btn
 
     @staticmethod
-    def showinfo(title, message, parent=None, theme=None, translator=None):
+    def showinfo(title, message, parent=None, theme=None, translator=None, show_icon=True):
         """Show information dialog"""
         if theme is None:
             theme = Win11Theme('dark')
@@ -731,12 +731,13 @@ class Win11Dialog:
         content_frame = tk.Frame(msg_frame, bg=theme.get('bg_elevated'))
         content_frame.pack(fill='both', expand=True)
 
-        # Add info icon
-        icon_label = tk.Label(content_frame, text="ℹ️",
-                             bg=theme.get('bg_elevated'),
-                             fg=theme.get('accent'),
-                             font=("Segoe UI", 24))
-        icon_label.pack(side='left', padx=(0, 12))
+        # Add info icon (optional)
+        if show_icon:
+            icon_label = tk.Label(content_frame, text="ℹ️",
+                                 bg=theme.get('bg_elevated'),
+                                 fg=theme.get('accent'),
+                                 font=("Segoe UI", 24))
+            icon_label.pack(side='left', padx=(0, 12))
 
         tk.Label(content_frame, text=message,
                 bg=theme.get('bg_elevated'),
@@ -1541,7 +1542,7 @@ class App(tk.Tk):
             mode_text = self.translator.get('theme_dark') if mode == 'dark' else self.translator.get('theme_light')
             Win11Dialog.showinfo(self.translator.get('theme_changed'),
                               self.translator.get('theme_changed_msg').format(mode_text),
-                              parent=self, theme=self.theme, translator=self.translator)
+                              parent=self, theme=self.theme, translator=self.translator, show_icon=False)
 
     def switch_language(self, lang_code):
         """Switch application language"""
@@ -1553,7 +1554,7 @@ class App(tk.Tk):
                 pass
             Win11Dialog.showinfo(self.translator.get('language_changed'),
                               self.translator.get('language_changed_msg'),
-                              parent=self, theme=self.theme, translator=self.translator)
+                              parent=self, theme=self.theme, translator=self.translator, show_icon=False)
 
     def _configure_progressbar_style(self):
         """Configure professional progress bar style based on current theme"""
