@@ -51,8 +51,8 @@ class Win11Theme:
 
     # Dark Theme Colors (GitHub Dark Style)
     DARK = {
-        'bg': '#0d1117',              # Main background - GitHub dark
-        'bg_secondary': '#161b22',     # Secondary background - GitHub darker
+        'bg': '#2d3250',              # Main background - GitHub dark
+        'bg_secondary': '#1a1f35',     # Secondary background - GitHub darker
         'bg_elevated': '#21262d',      # Elevated surfaces - GitHub elevated
         'fg': '#c9d1d9',              # Text color - GitHub text
         'fg_secondary': '#8b949e',    # Secondary text - GitHub muted
