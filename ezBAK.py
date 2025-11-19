@@ -265,6 +265,93 @@ class Translator:
             'examples_path': 'Examples: */Temp/*, *\\AppData\\Local\\*, */cache/*',
             'filter_info_include': 'Include: Files must match at least one rule to be included',
             'filter_info_exclude': 'Exclude: Files matching any rule will be skipped (takes priority)',
+
+            # Filter Manager Help Dialog
+            'filter_manager_help_title': 'Filter Manager Help',
+            'filter_manager_help_content': """Filter Manager Help
+
+KEYBOARD SHORTCUTS:
+┌─────────────────────────────────────────────────────────────┐
+│ Ctrl + N         Add Include Rule                           │
+│ Ctrl + E         Add Exclude Rule                           │
+│ Ctrl + S         Save Filters                               │
+│ Ctrl + R         Clear Active List                          │
+│ Delete           Remove Selected Item                       │
+│ Tab              Switch Between Lists                       │
+│ Esc              Cancel                                     │
+│ Enter            Save                                       │
+│ F1               Show This Help                             │
+└─────────────────────────────────────────────────────────────┘
+
+FILTER TYPES:
+┌─────────────────────────────────────────────────────────────┐
+│ 📄 Extension     File extensions (e.g., tmp, log, bak)      │
+│ 📁 Name          File/folder names with wildcards           │
+│                  Examples: Thumbs.db, *.tmp, *cache*        │
+│ 🗂️ Path          Full paths with wildcards                  │
+│                  Examples: */temp/*, *\\AppData\\*          │
+└─────────────────────────────────────────────────────────────┘
+
+HOW FILTERS WORK:
+• Include Rules: Files must match at least one rule to be included
+• Exclude Rules: Files matching any rule will be skipped
+• Exclude rules take priority over include rules
+• Use wildcards (*) for pattern matching
+• Paths use forward slashes (/) or backslashes (\\)
+
+EXAMPLES:
+• Exclude temp files: [EXT] tmp
+• Exclude cache folders: [NAME] *cache*
+• Include only documents: [EXT] pdf, [EXT] docx
+• Exclude system paths: [PATH] */Windows/System32/*""",
+            'help_close_esc': 'Close (Esc)',
+
+            # Keyboard Shortcuts Help Dialog
+            'keyboard_shortcuts_title': 'Help - Keyboard Shortcuts',
+            'keyboard_shortcuts_content': """ezBAK Keyboard Shortcuts
+
+┌─────────────────────────────────────────┐
+│           Main Features                 │
+├─────────────────────────────────────────┤
+│ Ctrl + B        Backup Data             │
+│ Ctrl + R        Restore Data            │
+│ Ctrl + D        Backup Drivers          │
+│ Ctrl + Shift + D Restore Drivers        │
+├─────────────────────────────────────────┤
+│           File management               │
+├─────────────────────────────────────────┤
+│ Ctrl + C        Copy Data               │
+│ Ctrl + O        Explorer                │
+│ Ctrl + S        Save Log                │
+├─────────────────────────────────────────┤
+│           Tools and Utilities           │
+├─────────────────────────────────────────┤
+│ Ctrl + M        Device Mgr              │
+│ Ctrl + K        Check Space             │
+│ Ctrl + F        Filters                 │
+│ Ctrl + T        Schedule                │
+├─────────────────────────────────────────┤
+│           Browser and App               │
+├─────────────────────────────────────────┤
+│ Ctrl + P        Browser                 │
+│ Ctrl + W        Export Apps             │
+├─────────────────────────────────────────┤
+│           Network                       │
+├─────────────────────────────────────────┤
+│ Ctrl + N        Connect NAS             │
+│ Ctrl + Shift + N Disconnect             │
+├─────────────────────────────────────────┤
+│           General                       │
+├─────────────────────────────────────────┤
+│ F1              help                    │
+│ F5              (Not Working) Refresh User List       │
+│ Ctrl + 1~9      (Not Working) Quick Select User │
+│ Escape          (Not Working) Cancel Current Operation│
+│ Ctrl + Q        Exit Program            │
+└─────────────────────────────────────────┘
+
+Tips :  Shortcuts are not case-sensitive.""",
+            'help_exit_esc': 'Exit (Esc)',
         },
         'ko': {
             'app_title': 'ezBAK',
@@ -390,6 +477,93 @@ class Translator:
             'examples_path': '예: */Temp/*, *\\AppData\\Local\\*, */cache/*',
             'filter_info_include': '포함: 파일이 포함되려면 최소 하나의 규칙과 일치해야 합니다',
             'filter_info_exclude': '제외: 규칙과 일치하는 파일은 건너뜁니다 (우선순위)',
+
+            # Filter Manager Help Dialog
+            'filter_manager_help_title': '필터 매니저 도움말',
+            'filter_manager_help_content': """필터 매니저 도움말
+
+키보드 단축키:
+┌─────────────────────────────────────────────────────────────┐
+│ Ctrl + N         포함 규칙 추가                              │
+│ Ctrl + E         제외 규칙 추가                              │
+│ Ctrl + S         필터 저장                                   │
+│ Ctrl + R         활성 목록 지우기                            │
+│ Delete           선택한 항목 제거                            │
+│ Tab              목록 간 전환                                │
+│ Esc              취소                                       │
+│ Enter            저장                                       │
+│ F1               도움말 표시                                 │
+└─────────────────────────────────────────────────────────────┘
+
+필터 유형:
+┌─────────────────────────────────────────────────────────────┐
+│ 📄 확장자        파일 확장자 (예: tmp, log, bak)             │
+│ 📁 이름          와일드카드를 사용한 파일/폴더 이름           │
+│                  예: Thumbs.db, *.tmp, *cache*              │
+│ 🗂️ 경로          와일드카드를 사용한 전체 경로               │
+│                  예: */temp/*, *\\AppData\\*                │
+└─────────────────────────────────────────────────────────────┘
+
+필터 작동 방식:
+• 포함 규칙: 파일이 포함되려면 최소 하나의 규칙과 일치해야 합니다
+• 제외 규칙: 규칙과 일치하는 파일은 건너뜁니다
+• 제외 규칙이 포함 규칙보다 우선 적용됩니다
+• 패턴 매칭에 와일드카드(*)를 사용하세요
+• 경로는 슬래시(/) 또는 백슬래시(\\)를 사용합니다
+
+예제:
+• 임시 파일 제외: [확장자] tmp
+• 캐시 폴더 제외: [이름] *cache*
+• 문서만 포함: [확장자] pdf, [확장자] docx
+• 시스템 경로 제외: [경로] */Windows/System32/*""",
+            'help_close_esc': '닫기 (Esc)',
+
+            # Keyboard Shortcuts Help Dialog
+            'keyboard_shortcuts_title': '도움말 - 키보드 단축키',
+            'keyboard_shortcuts_content': """ezBAK 키보드 단축키
+
+┌─────────────────────────────────────────┐
+│           주요 기능                      │
+├─────────────────────────────────────────┤
+│ Ctrl + B        데이터 백업              │
+│ Ctrl + R        데이터 복원              │
+│ Ctrl + D        드라이버 백업            │
+│ Ctrl + Shift + D 드라이버 복원           │
+├─────────────────────────────────────────┤
+│           파일 관리                      │
+├─────────────────────────────────────────┤
+│ Ctrl + C        데이터 복사              │
+│ Ctrl + O        탐색기                   │
+│ Ctrl + S        로그 저장                │
+├─────────────────────────────────────────┤
+│           도구 및 유틸리티               │
+├─────────────────────────────────────────┤
+│ Ctrl + M        장치 관리자              │
+│ Ctrl + K        공간 확인                │
+│ Ctrl + F        필터                     │
+│ Ctrl + T        예약                     │
+├─────────────────────────────────────────┤
+│           브라우저 및 앱                 │
+├─────────────────────────────────────────┤
+│ Ctrl + P        브라우저                 │
+│ Ctrl + W        앱 내보내기              │
+├─────────────────────────────────────────┤
+│           네트워크                       │
+├─────────────────────────────────────────┤
+│ Ctrl + N        NAS 연결                 │
+│ Ctrl + Shift + N 연결 해제               │
+├─────────────────────────────────────────┤
+│           일반                           │
+├─────────────────────────────────────────┤
+│ F1              도움말                   │
+│ F5              (작동 안 함) 사용자 목록 새로고침    │
+│ Ctrl + 1~9      (작동 안 함) 사용자 빠른 선택      │
+│ Escape          (작동 안 함) 현재 작업 취소        │
+│ Ctrl + Q        프로그램 종료            │
+└─────────────────────────────────────────┘
+
+팁 : 단축키는 대소문자를 구분하지 않습니다.""",
+            'help_exit_esc': '종료 (Esc)',
         }
     }
 
@@ -981,102 +1155,58 @@ class KeyboardShortcuts:
     
     def show_help(self):
         """Show shortcuts help (F1)"""
-        help_text = """
-ezBAK Keyboard Shortcuts
+        help_text = self.app.translator.get('keyboard_shortcuts_content')
 
-┌─────────────────────────────────────────┐
-│           Main Features                 │
-├─────────────────────────────────────────┤
-│ Ctrl + B        Backup Data             │
-│ Ctrl + R        Restore Data            │
-│ Ctrl + D        Backup Drivers          │
-│ Ctrl + Shift + D Restore Drivers        │
-├─────────────────────────────────────────┤
-│           File management               │
-├─────────────────────────────────────────┤
-│ Ctrl + C        Copy Data               │
-│ Ctrl + O        Explorer                │
-│ Ctrl + S        Save Log                │
-├─────────────────────────────────────────┤
-│           Tools and Utilities           │
-├─────────────────────────────────────────┤
-│ Ctrl + M        Device Mgr              │
-│ Ctrl + K        Check Space             │
-│ Ctrl + F        Filters                 │
-│ Ctrl + T        Schedule                │
-├─────────────────────────────────────────┤
-│           Browser and App               │
-├─────────────────────────────────────────┤
-│ Ctrl + P        Browser                 │
-│ Ctrl + W        Export Apps             │
-├─────────────────────────────────────────┤
-│           Network                       │
-├─────────────────────────────────────────┤
-│ Ctrl + N        Connect NAS             │
-│ Ctrl + Shift + N Disconnect             │
-├─────────────────────────────────────────┤
-│           General                       │
-├─────────────────────────────────────────┤
-│ F1              help                    │
-│ F5              (Not Working) Refresh User List       │
-│ Ctrl + 1~9      (Not Working) Quick Select User │
-│ Escape          (Not Working) Cancel Current Operation│
-│ Ctrl + Q        Exit Program            │
-└─────────────────────────────────────────┘
-
-Tips :  Shortcuts are not case-sensitive.
-"""
-        
         # Custom help dialog
         help_dialog = tk.Toplevel(self.app)
-        help_dialog.title("Help - Keyboard Shortcuts")
-        help_dialog.configure(bg="#2D3250")
+        help_dialog.title(self.app.translator.get('keyboard_shortcuts_title'))
+        help_dialog.configure(bg=self.app.theme.get('bg'))
         help_dialog.geometry("449x748")
         help_dialog.transient(self.app)
         help_dialog.grab_set()
-        
+
         try:
             help_dialog.iconbitmap(resource_path('./icon/ezbak.ico'))
         except:
             pass
-        
+
         # Text area
-        text_frame = tk.Frame(help_dialog, bg="#2D3250")
+        text_frame = tk.Frame(help_dialog, bg=self.app.theme.get('bg'))
         text_frame.pack(fill="both", expand=True, padx=10, pady=10)
-        
+
         # Create the scrollbar first
-        scrollbar = tk.Scrollbar(text_frame, 
-                                width=20,  
-                                bg="#424769",
-                                troughcolor="#2D3250",
-                                activebackground="#6EC571",
+        scrollbar = tk.Scrollbar(text_frame,
+                                width=20,
+                                bg=self.app.theme.get('scrollbar_bg'),
+                                troughcolor=self.app.theme.get('bg'),
+                                activebackground=self.app.theme.get('accent'),
                                 relief="flat")
         scrollbar.pack(side="right", fill="y")
-        
-        text_widget = tk.Text(text_frame, 
-                             font=("Consolas", 10),  
-                             bg="#424769", 
-                             fg="white",
+
+        text_widget = tk.Text(text_frame,
+                             font=("Consolas", 10),
+                             bg=self.app.theme.get('text_bg'),
+                             fg=self.app.theme.get('fg'),
                              relief="flat",
                              wrap="word",
                              yscrollcommand=scrollbar.set)
         text_widget.pack(side="left", fill="both", expand=True)
-        
+
         # Connect the scrollbar and the text widget
         scrollbar.configure(command=text_widget.yview)
-        
+
         text_widget.insert("1.0", help_text)
         text_widget.configure(state="disabled")
-        
+
         # Close button
-        close_btn = tk.Button(help_dialog, 
-                             text="Exit (Esc)", 
+        close_btn = tk.Button(help_dialog,
+                             text=self.app.translator.get('help_exit_esc'),
                              command=help_dialog.destroy,
-                             bg="#4CAF50", 
-                             fg="white", 
+                             bg=self.app.theme.get('btn_bg'),
+                             fg=self.app.theme.get('btn_fg'),
                              relief="flat")
         close_btn.pack(pady=10)
-        
+
         # Close with ESC
         help_dialog.bind('<Escape>', lambda e: help_dialog.destroy())
         help_dialog.focus_set()
@@ -5821,87 +5951,56 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
 
     def _show_filter_help(self):
         """Show filter help"""
-        help_text = """
-Filter Manager Help
+        help_text = self.translator.get('filter_manager_help_content')
 
-KEYBOARD SHORTCUTS:
-┌─────────────────────────────────────────────────────────────┐
-│ Ctrl + N         Add Include Rule                           │
-│ Ctrl + E         Add Exclude Rule                           │
-│ Ctrl + S         Save Filters                               │
-│ Ctrl + R         Clear Active List                          │
-│ Delete           Remove Selected Item                       │
-│ Tab              Switch Between Lists                       │
-│ Esc              Cancel                                     │
-│ Enter            Save                                       │
-│ F1               Show This Help                             │
-└─────────────────────────────────────────────────────────────┘
-
-FILTER TYPES:
-┌─────────────────────────────────────────────────────────────┐
-│ 📄 Extension     File extensions (e.g., tmp, log, bak)      │
-│ 📁 Name          File/folder names with wildcards           │
-│                  Examples: Thumbs.db, *.tmp, *cache*        │
-│ 🗂️ Path          Full paths with wildcards                  │
-│                  Examples: */temp/*, *\\AppData\\*          │
-└─────────────────────────────────────────────────────────────┘
-
-HOW FILTERS WORK:
-• Include Rules: Files must match at least one rule to be included
-• Exclude Rules: Files matching any rule will be skipped
-• Exclude rules take priority over include rules
-• Use wildcards (*) for pattern matching
-• Paths use forward slashes (/) or backslashes (\\)
-
-EXAMPLES:
-• Exclude temp files: [EXT] tmp
-• Exclude cache folders: [NAME] *cache*
-• Include only documents: [EXT] pdf, [EXT] docx
-• Exclude system paths: [PATH] */Windows/System32/*
-        """
-        
         help_dlg = tk.Toplevel(self)
-        help_dlg.title("Filter Manager Help")
-        help_dlg.configure(bg="#2D3250")
+        help_dlg.title(self.translator.get('filter_manager_help_title'))
+        help_dlg.configure(bg=self.theme.get('bg'))
         help_dlg.geometry("600x610")
         help_dlg.transient(self)
+        try:
+            help_dlg.iconbitmap(resource_path('./icon/ezbak.ico'))
+        except Exception:
+            pass
         try:
             help_dlg.grab_set()
         except Exception:
             pass
-        
+
         # Scrollable text area
-        text_frame = tk.Frame(help_dlg, bg="#2D3250")
+        text_frame = tk.Frame(help_dlg, bg=self.theme.get('bg'))
         text_frame.pack(fill="both", expand=True, padx=15, pady=15)
-        
-        scrollbar = tk.Scrollbar(text_frame, width=20, bg="#424769", 
-                               troughcolor="#2D3250", activebackground="#6EC571")
+
+        scrollbar = tk.Scrollbar(text_frame, width=20,
+                               bg=self.theme.get('scrollbar_bg'),
+                               troughcolor=self.theme.get('bg'),
+                               activebackground=self.theme.get('accent'))
         scrollbar.pack(side="right", fill="y")
-        
-        text_widget = tk.Text(text_frame, 
-                             font=("Consolas", 9),  
-                             bg="#424769", 
-                             fg="white",
+
+        text_widget = tk.Text(text_frame,
+                             font=("Consolas", 9),
+                             bg=self.theme.get('text_bg'),
+                             fg=self.theme.get('fg'),
                              relief="flat",
                              wrap="word",
                              yscrollcommand=scrollbar.set)
         text_widget.pack(side="left", fill="both", expand=True)
-        
+
         scrollbar.configure(command=text_widget.yview)
-        
+
         text_widget.insert("1.0", help_text)
         text_widget.configure(state="disabled")
-        
+
         # Close Button
-        close_btn = tk.Button(help_dlg, 
-                             text="Close (Esc)", 
+        close_btn = tk.Button(help_dlg,
+                             text=self.translator.get('help_close_esc'),
                              command=help_dlg.destroy,
-                             bg="#4CAF50", 
-                             fg="white", 
+                             bg=self.theme.get('btn_bg'),
+                             fg=self.theme.get('btn_fg'),
                              relief="flat",
                              width=15)
         close_btn.pack(pady=(0,15))
-        
+
         help_dlg.bind('<Escape>', lambda e: help_dlg.destroy())
         help_dlg.focus_set()
 
