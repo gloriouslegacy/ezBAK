@@ -4153,7 +4153,7 @@ class App(tk.Tk):
         except Exception:
             pass
         dlg.configure(bg=self.theme.get('bg_elevated'))
-        dlg.geometry("680x279")
+        dlg.geometry("680x399")
         dlg.transient(self)
         try:
             dlg.grab_set()
