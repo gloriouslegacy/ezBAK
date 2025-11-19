@@ -427,6 +427,8 @@ Tips :  Shortcuts are not case-sensitive.""",
             'notice_detailed_log': '작업 중 자세한 로그가 파일로 저장됩니다',
             'notice_responsibility': '이 프로그램의 사용에 대한 책임은 전적으로 사용자에게 있습니다',
             # Dialog titles and messages
+            'language_changed': '언어 변경',
+            'language_changed_msg': '한국어로 변경합니다. 프로그램 재시작 후 적용됩니다.',
             'theme_changed': '테마 변경됨',
             'theme_changed_msg': '테마가 {0} 모드로 변경되었습니다.\n완전한 적용을 위해 애플리케이션을 다시 시작하세요.',
             'confirm_exit': '종료 확인',
