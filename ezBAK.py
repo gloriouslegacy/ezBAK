@@ -422,7 +422,7 @@ Tips :  Shortcuts are not case-sensitive.""",
             'notice_title': '안내:',
             'notice_select_user': '시작하려면 사용자를 선택하세요',
             'notice_filters': '필터:제외 규칙:이름->ondrive*',
-            'notice_hidden_system': '숨김 및 시스템 속성 제외됨',
+            'notice_hidden_system': '숨김 및 시스템 속성 제외됩니다',
             'notice_appdata': '%AppData% 폴더는 백업되지 않습니다',
             'notice_detailed_log': '작업 중 자세한 로그가 파일로 저장됩니다',
             'notice_responsibility': '이 프로그램의 사용에 대한 책임은 전적으로 사용자에게 있습니다',
@@ -4153,7 +4153,7 @@ class App(tk.Tk):
         except Exception:
             pass
         dlg.configure(bg=self.theme.get('bg_elevated'))
-        dlg.geometry("680x399")
+        dlg.geometry("680x301")
         dlg.transient(self)
         try:
             dlg.grab_set()
