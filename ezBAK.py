@@ -2010,12 +2010,12 @@ class App(tk.Tk):
 
             if is_enabled:
                 self.message_queue.put(('log', "Sound enabled"))
-                self.sound_check.config(text="Sound")
+                self.sound_check.config(text="🔊 Sound")
                 # Test sound
                 self._play_sound('complete')
             else:
                 self.message_queue.put(('log', "Sound disabled"))
-                self.sound_check.config(text="Sound")
+                self.sound_check.config(text="🔇 Sound")
 
             # Save setting
             self.save_settings()
@@ -3290,22 +3290,25 @@ class App(tk.Tk):
                 self.close_log_file()
             except Exception:
                 pass
-            
+
             try:
                 max_val = self.progress_bar['maximum'] if self.progress_bar['maximum'] > 0 else 1
                 self.message_queue.put(('update_progress', max_val))
             except Exception:
                 pass
-            
+
+            # Reset progress bar
+            self.message_queue.put(('reset_progress', None))
+
             self.message_queue.put(('enable_buttons', None))
-            
+
             if restore_success:
                 self.message_queue.put(('update_status', "Restore complete!"))
                 self.message_queue.put(('play_sound', 'complete'))
             else:
                 self.message_queue.put(('update_status', "Operation finished"))
                 self.message_queue.put(('play_sound', 'error'))
-            
+
             if hasattr(self, '_restore_completed') and self._restore_completed:
                 self.message_queue.put(('update_status', "Restore complete!"))
             else:
@@ -4888,16 +4891,19 @@ class App(tk.Tk):
                 self.close_log_file()
             except Exception:
                 pass
-            
+
             try:
                 max_val = self.progress_bar['maximum'] if self.progress_bar['maximum'] > 0 else 1
                 self.message_queue.put(('update_progress', max_val))
             except Exception:
                 pass
-            
+
+            # Reset progress bar
+            self.message_queue.put(('reset_progress', None))
+
             self.message_queue.put(('enable_buttons', None))
             self.message_queue.put(('update_status', "Driver backup complete!"))
-            
+
             if driver_backup_success:
                 self.message_queue.put(('play_sound', 'complete'))
             else:
