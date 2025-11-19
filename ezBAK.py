@@ -146,6 +146,8 @@ class Translator:
             # Dialog messages
             'language_changed': 'Language Changed',
             'language_changed_msg': 'Language changed successfully.\nRestart the application for full effect.',
+            'theme_changed': 'Theme Changed',
+            'theme_changed_msg': 'Theme switched to {0} mode.\nRestart the application for full effect.',
 
             'confirm_exit': 'Confirm Exit',
             'confirm_exit_msg': 'Are you sure you want to exit ezBAK?',
@@ -310,6 +312,8 @@ class Translator:
             'notice_detailed_log': '작업 중 자세한 로그가 파일로 저장됩니다',
             'notice_responsibility': '이 프로그램의 사용에 대한 책임은 전적으로 사용자에게 있습니다',
             # Dialog titles and messages
+            'theme_changed': '테마 변경됨',
+            'theme_changed_msg': '테마가 {0} 모드로 변경되었습니다.\n완전한 적용을 위해 애플리케이션을 다시 시작하세요.',
             'confirm_exit': '종료 확인',
             'confirm_exit_msg': 'ezBAK을 종료하시겠습니까?',
             'error': '오류',
@@ -457,9 +461,9 @@ class Win11Dialog:
 
         dlg = tk.Toplevel(parent)
         dlg.title(title)
-        # Remove titlebar icon
+        # Set titlebar icon
         try:
-            dlg.wm_iconbitmap()
+            dlg.iconbitmap(resource_path('./icon/ezbak.ico'))
         except Exception:
             pass
         dlg.configure(bg=theme.get('bg_elevated'))
@@ -527,9 +531,9 @@ class Win11Dialog:
 
         dlg = tk.Toplevel(parent)
         dlg.title(title)
-        # Remove titlebar icon
+        # Set titlebar icon
         try:
-            dlg.wm_iconbitmap()
+            dlg.iconbitmap(resource_path('./icon/ezbak.ico'))
         except Exception:
             pass
         dlg.configure(bg=theme.get('bg_elevated'))
@@ -1333,8 +1337,9 @@ class App(tk.Tk):
             self.theme.current_mode = mode
             self.theme.colors = self.theme.DARK if mode == 'dark' else self.theme.LIGHT
             self.apply_theme_to_all_widgets()
-            Win11Dialog.showinfo("🎨 Theme Changed",
-                              f"Theme switched to {mode.capitalize()} mode.\nRestart the application for full effect.",
+            mode_text = self.translator.get('theme_dark') if mode == 'dark' else self.translator.get('theme_light')
+            Win11Dialog.showinfo(self.translator.get('theme_changed'),
+                              self.translator.get('theme_changed_msg').format(mode_text),
                               parent=self, theme=self.theme, translator=self.translator)
 
     def switch_language(self, lang_code):
@@ -3780,7 +3785,7 @@ class App(tk.Tk):
         except Exception:
             pass
         dlg.configure(bg=self.theme.get('bg_elevated'))
-        dlg.geometry("680x380")
+        dlg.geometry("680x365")
         dlg.transient(self)
         try:
             dlg.grab_set()
@@ -4051,7 +4056,7 @@ class App(tk.Tk):
         except Exception:
             pass
         dlg.configure(bg=self.theme.get('bg_elevated'))
-        dlg.geometry("680x260")
+        dlg.geometry("680x220")
         dlg.transient(self)
         try:
             dlg.grab_set()
@@ -5070,7 +5075,7 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
                 pass
                 
             # Set window size and position
-            w, h = 546, 420
+            w, h = 546, 450
             self.geometry(f"{w}x{h}")
             
             try:
