@@ -1883,12 +1883,12 @@ class App(tk.Tk):
         # Create button helper function - Windows 11 style
         def create_button(parent, text, bg_color, hover_color, command, row, col):
             """Windows 11 style modern button with smooth transitions"""
-            # Use theme colors for consistent styling
-            btn_bg = self.theme.get('bg_elevated')
-            btn_fg = self.theme.get('fg')
-            btn_hover_bg = self.theme.get('accent')
+            # Use custom colors if provided, otherwise use theme colors
+            btn_bg = bg_color if bg_color else self.theme.get('bg_elevated')
+            btn_fg = '#FFFFFF'  # White text for colored buttons
+            btn_hover_bg = hover_color if hover_color else self.theme.get('accent')
             btn_hover_fg = '#FFFFFF'
-            btn_pressed_bg = self.theme.get('accent_hover')
+            btn_pressed_bg = hover_color if hover_color else self.theme.get('accent_hover')
             btn_border = self.theme.get('border')
 
             btn = tk.Button(parent, text=text,
@@ -1927,25 +1927,25 @@ class App(tk.Tk):
 
             return btn
 
-        # Main operation buttons with Windows 11 accent colors
+        # Main operation buttons with custom colors
         self.backup_btn = create_button(main_buttons_frame, "Backup Data",
-                                        self.theme.get('danger'), self.theme.get('danger_hover'),
+                                        '#DC3545', '#C82333',  # Red background with white text
                                         self.start_backup_thread, 0, 0)
 
         self.restore_btn = create_button(main_buttons_frame, "Restore Data",
-                                         self.theme.get('accent'), self.theme.get('accent_hover'),
+                                         '#007BFF', '#0056B3',  # Blue background with white text
                                          self.start_restore_thread, 0, 1)
 
         self.filters_btn = create_button(main_buttons_frame, "Filters",
-                                         self.theme.get('fg_secondary'), self.theme.get('disabled'),
+                                         '#28A745', '#218838',  # Green background with white text
                                          self.open_filter_manager, 0, 2)
 
         self.driver_backup_btn = create_button(main_buttons_frame, "Backup Drivers",
-                                              self.theme.get('danger'), self.theme.get('danger_hover'),
+                                              '#DC3545', '#C82333',  # Red background with white text
                                               self.start_driver_backup_thread, 0, 3)
 
         self.driver_restore_btn = create_button(main_buttons_frame, "Restore Drivers",
-                                               self.theme.get('accent'), self.theme.get('accent_hover'),
+                                               '#007BFF', '#0056B3',  # Blue background with white text
                                                self.start_driver_restore_thread, 0, 4)
 
         # Tools & Utilities Card
