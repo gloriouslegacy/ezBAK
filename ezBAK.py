@@ -3785,7 +3785,7 @@ class App(tk.Tk):
         except Exception:
             pass
         dlg.configure(bg=self.theme.get('bg_elevated'))
-        dlg.geometry("680x365")
+        dlg.geometry("680x279")
         dlg.transient(self)
         try:
             dlg.grab_set()
@@ -4056,7 +4056,7 @@ class App(tk.Tk):
         except Exception:
             pass
         dlg.configure(bg=self.theme.get('bg_elevated'))
-        dlg.geometry("680x220")
+        dlg.geometry("680x178")
         dlg.transient(self)
         try:
             dlg.grab_set()
@@ -5075,7 +5075,7 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
                 pass
                 
             # Set window size and position
-            w, h = 546, 450
+            w, h = 546, 340
             self.geometry(f"{w}x{h}")
             
             try:
