@@ -47,6 +47,10 @@ class Win11Theme:
         'disabled': '#A19F9D',        # Disabled state
         'hover': '#F5F5F5',           # Hover state
         'pressed': '#EBEBEB',         # Pressed state
+        'text_bg': '#ffffff',         # Text area background
+        'btn_bg': '#0078D4',          # Button background
+        'btn_fg': '#ffffff',          # Button text
+        'scrollbar_bg': '#C8C6C4',    # Scrollbar background
     }
 
     # Dark Theme Colors (GitHub Dark Style)
@@ -71,6 +75,10 @@ class Win11Theme:
         'disabled': '#484f58',        # Disabled state - GitHub disabled
         'hover': '#1c2128',           # Hover state - GitHub hover
         'pressed': '#262c36',         # Pressed state
+        'text_bg': '#1a1f35',         # Text area background
+        'btn_bg': '#58a6ff',          # Button background
+        'btn_fg': '#0d1117',          # Button text
+        'scrollbar_bg': '#484f58',    # Scrollbar background
     }
 
     def __init__(self, initial_mode='dark'):
@@ -1335,8 +1343,8 @@ class App(tk.Tk):
         self.style = ttk.Style(self)
         self.style.theme_use("clam")
 
-        # Configure a new style for a green progress bar
-        self.style.configure("green.Horizontal.TProgressbar", background="#4CAF50")
+        # Configure professional progress bar styles
+        self._configure_progressbar_style()
 
         # Queue for thread-safe UI updates
         self.message_queue = queue.Queue()
@@ -1484,10 +1492,37 @@ class App(tk.Tk):
                               self.translator.get('language_changed_msg'),
                               parent=self, theme=self.theme, translator=self.translator)
 
+    def _configure_progressbar_style(self):
+        """Configure professional progress bar style based on current theme"""
+        if self.theme.current_mode == 'dark':
+            # Dark theme: vibrant accent with subtle glow effect
+            self.style.configure("green.Horizontal.TProgressbar",
+                               troughcolor=self.theme.get('bg_elevated'),
+                               background=self.theme.get('accent'),
+                               bordercolor=self.theme.get('border'),
+                               lightcolor=self.theme.get('accent_hover'),
+                               darkcolor=self.theme.get('accent'),
+                               borderwidth=0,
+                               thickness=20)
+        else:
+            # Light theme: clean modern look
+            self.style.configure("green.Horizontal.TProgressbar",
+                               troughcolor=self.theme.get('bg_elevated'),
+                               background=self.theme.get('accent'),
+                               bordercolor=self.theme.get('border'),
+                               lightcolor=self.theme.get('accent_light'),
+                               darkcolor=self.theme.get('accent'),
+                               borderwidth=0,
+                               thickness=20)
+
     def apply_theme_to_all_widgets(self):
         """Apply current theme to all widgets (requires app restart for full effect)"""
         # This is a simplified version - full theme switching would require rebuilding the UI
         self.configure(bg=self.theme.get('bg'))
+
+        # Update progress bar style
+        self._configure_progressbar_style()
+
         try:
             self.save_settings()  # Save the theme preference
         except Exception:
