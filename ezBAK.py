@@ -633,6 +633,128 @@ Tips :  Shortcuts are not case-sensitive.""",
 
 
 # ============================================================
+# Toggle Switch Widget
+# ============================================================
+
+class ToggleSwitch(tk.Canvas):
+    """Modern toggle switch widget with Windows 11 style"""
+
+    def __init__(self, parent, width=50, height=24, variable=None, command=None, theme=None, **kwargs):
+        """
+        Initialize toggle switch
+
+        Args:
+            parent: Parent widget
+            width: Switch width (default 50)
+            height: Switch height (default 24)
+            variable: BooleanVar to bind to
+            command: Callback function when toggled
+            theme: Win11Theme instance for colors
+        """
+        super().__init__(parent, width=width, height=height,
+                        bg=theme.get('bg_elevated') if theme else '#f5f5f5',
+                        highlightthickness=0, **kwargs)
+
+        self.width = width
+        self.height = height
+        self.variable = variable
+        self.command = command
+        self.theme = theme
+
+        # Track initial state
+        self.is_on = variable.get() if variable else False
+
+        # Colors
+        self.update_colors()
+
+        # Draw switch
+        self.draw_switch()
+
+        # Bind click event
+        self.bind("<Button-1>", self.toggle)
+
+        # Bind variable trace if provided
+        if self.variable:
+            self.variable.trace_add('write', self._on_variable_change)
+
+    def update_colors(self):
+        """Update colors based on theme"""
+        if self.theme:
+            if self.theme.current_mode == 'dark':
+                self.color_on = self.theme.get('accent')  # Blue when on
+                self.color_off = '#484f58'  # Gray when off
+                self.knob_color = '#ffffff'  # White knob
+            else:
+                self.color_on = self.theme.get('accent')  # Blue when on
+                self.color_off = '#c8c6c4'  # Gray when off
+                self.knob_color = '#ffffff'  # White knob
+        else:
+            self.color_on = '#0078D4'
+            self.color_off = '#c8c6c4'
+            self.knob_color = '#ffffff'
+
+    def draw_switch(self):
+        """Draw the toggle switch"""
+        self.delete("all")
+
+        # Calculate positions
+        radius = self.height / 2
+        knob_radius = radius - 3
+
+        # Draw background track
+        bg_color = self.color_on if self.is_on else self.color_off
+
+        # Draw rounded rectangle for track
+        self.create_oval(0, 0, self.height, self.height,
+                        fill=bg_color, outline="")
+        self.create_oval(self.width - self.height, 0,
+                        self.width, self.height,
+                        fill=bg_color, outline="")
+        self.create_rectangle(radius, 0, self.width - radius, self.height,
+                             fill=bg_color, outline="")
+
+        # Draw knob
+        if self.is_on:
+            knob_x = self.width - radius
+        else:
+            knob_x = radius
+
+        self.create_oval(knob_x - knob_radius, radius - knob_radius,
+                        knob_x + knob_radius, radius + knob_radius,
+                        fill=self.knob_color, outline="")
+
+    def toggle(self, event=None):
+        """Toggle the switch"""
+        self.is_on = not self.is_on
+
+        # Update variable if provided
+        if self.variable:
+            self.variable.set(self.is_on)
+
+        # Redraw
+        self.draw_switch()
+
+        # Call command if provided
+        if self.command:
+            self.command()
+
+    def _on_variable_change(self, *args):
+        """Called when the bound variable changes"""
+        if self.variable:
+            new_state = self.variable.get()
+            if new_state != self.is_on:
+                self.is_on = new_state
+                self.draw_switch()
+
+    def update_theme(self, theme):
+        """Update theme colors"""
+        self.theme = theme
+        self.update_colors()
+        self.config(bg=theme.get('bg_elevated'))
+        self.draw_switch()
+
+
+# ============================================================
 # Windows 11 Style Dialog System
 # ============================================================
 
@@ -1587,6 +1709,10 @@ class App(tk.Tk):
         # Update progress bar style
         self._configure_progressbar_style()
 
+        # Update sound toggle theme
+        if hasattr(self, 'sound_toggle'):
+            self.sound_toggle.update_theme(self.theme)
+
         try:
             self.save_settings()  # Save the theme preference
         except Exception:
@@ -1659,10 +1785,10 @@ class App(tk.Tk):
                 if 'Select User' in current_status or '사용자 선택' in current_status:
                     self.status_label.config(text=self.translator.get('select_user_begin'))
 
-            # Update sound checkbox (no emojis for all languages)
-            if hasattr(self, 'sound_check'):
+            # Update sound label (no emojis for all languages)
+            if hasattr(self, 'sound_label'):
                 sound_text = self.translator.get('sound')
-                self.sound_check.config(text=sound_text)
+                self.sound_label.config(text=sound_text)
 
             # Note: Activity Log notice is only set once during initialization (lines 1183-1196)
             # and should not be updated when language changes to preserve existing log history
@@ -1854,22 +1980,26 @@ class App(tk.Tk):
         sound_frame = tk.Frame(main_header, bg=self.theme.get('bg_elevated'))
         sound_frame.pack(side="right")
 
-        self.sound_check = tk.Checkbutton(
+        # Sound label
+        self.sound_label = tk.Label(
             sound_frame,
-            text="Sound",
-            variable=self.sound_enabled_var,
-            command=self._on_sound_toggle,
+            text=self.translator.get('sound'),
             bg=self.theme.get('bg_elevated'),
             fg=self.theme.get('fg'),
-            selectcolor=self.theme.get('bg_elevated'),
-            activebackground=self.theme.get('bg_elevated'),
-            activeforeground=self.theme.get('accent'),
-            font=("Segoe UI", 10),
-            relief="flat",
-            bd=0,
-            highlightthickness=0
+            font=("Segoe UI", 10)
         )
-        self.sound_check.pack()
+        self.sound_label.pack(side="left", padx=(0, 8))
+
+        # Sound toggle switch
+        self.sound_toggle = ToggleSwitch(
+            sound_frame,
+            width=50,
+            height=24,
+            variable=self.sound_enabled_var,
+            command=self._on_sound_toggle,
+            theme=self.theme
+        )
+        self.sound_toggle.pack(side="left")
 
         main_buttons_frame = tk.Frame(main_card, bg=self.theme.get('bg_elevated'))
         main_buttons_frame.pack(fill="x", padx=16, pady=(0, 12))
@@ -2082,12 +2212,10 @@ class App(tk.Tk):
 
             if is_enabled:
                 self.message_queue.put(('log', "Sound enabled"))
-                self.sound_check.config(text="🔊 Sound")
                 # Test sound
                 self._play_sound('complete')
             else:
                 self.message_queue.put(('log', "Sound disabled"))
-                self.sound_check.config(text="🔇 Sound")
 
             # Save setting
             self.save_settings()
@@ -5231,12 +5359,6 @@ class App(tk.Tk):
                 if 'sound_enabled' in data:
                     sound_enabled = data.get('sound_enabled', True)
                     self.sound_enabled_var.set(sound_enabled)
-                    # Update Checkbox-icon
-                    if hasattr(self, 'sound_check'):
-                        if sound_enabled:
-                            self.sound_check.config(text="🔊 Sound")
-                        else:
-                            self.sound_check.config(text="🔇 Sound")
                 # new filter structure
                 fobj = data.get('filters', {}) if isinstance(data, dict) else {}
                 inc = fobj.get('include', []) if isinstance(fobj, dict) else []
