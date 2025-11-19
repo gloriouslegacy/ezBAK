@@ -237,6 +237,32 @@ class Translator:
             'invalid_drive_or_unc': 'Invalid drive letter or UNC path.',
             'system_mismatch_warning': 'System Mismatch Warning',
             'unable_to_open_device_manager': 'Unable to open Device Manager:',
+
+            # Filter Manager
+            'filter_manager': 'Filter Manager',
+            'include_rules': 'Include Rules',
+            'exclude_rules': 'Exclude Rules',
+            'add': 'Add',
+            'remove': 'Remove',
+            'clear_all': 'Clear All',
+            'help': 'Help',
+            'save': 'Save',
+            'add_include_rule': 'Add Include Rule',
+            'add_exclude_rule': 'Add Exclude Rule',
+            'rule_type': 'Rule Type:',
+            'pattern': 'Pattern:',
+            'extension': 'Extension',
+            'file_folder_name': 'Name',
+            'full_path': 'Path',
+            'extension_desc': 'File extensions (e.g., tmp, log, bak)',
+            'name_desc': 'File/folder names with wildcards (e.g., Thumbs.db, *cache*)',
+            'path_desc': 'Full paths with wildcards (e.g., */temp/*, *\\AppData\\*)',
+            'add_rule': 'Add Rule',
+            'examples_ext': 'Examples: tmp, log, bak, cache (without dots)',
+            'examples_name': 'Examples: Thumbs.db, *.tmp, desktop.ini, *cache*',
+            'examples_path': 'Examples: */Temp/*, *\\AppData\\Local\\*, */cache/*',
+            'filter_info_include': 'Include: Files must match at least one rule to be included',
+            'filter_info_exclude': 'Exclude: Files matching any rule will be skipped (takes priority)',
         },
         'ko': {
             'app_title': 'ezBAK',
@@ -334,6 +360,32 @@ class Translator:
             'failed_to_delete_schedule': '예약 삭제 실패: {0}',
             'please_enter_pattern': '패턴을 입력하세요.',
             'continue_anyway': '계속하시겠습니까?',
+
+            # Filter Manager
+            'filter_manager': '필터 관리자',
+            'include_rules': '포함 규칙',
+            'exclude_rules': '제외 규칙',
+            'add': '추가',
+            'remove': '제거',
+            'clear_all': '모두 지우기',
+            'help': '도움말',
+            'save': '저장',
+            'add_include_rule': '포함 규칙 추가',
+            'add_exclude_rule': '제외 규칙 추가',
+            'rule_type': '규칙 유형:',
+            'pattern': '패턴:',
+            'extension': '확장자',
+            'file_folder_name': '이름',
+            'full_path': '경로',
+            'extension_desc': '파일 확장자 (예: tmp, log, bak)',
+            'name_desc': '와일드카드를 사용한 파일/폴더 이름 (예: Thumbs.db, *cache*)',
+            'path_desc': '와일드카드를 사용한 전체 경로 (예: */temp/*, *\\AppData\\*)',
+            'add_rule': '규칙 추가',
+            'examples_ext': '예: tmp, log, bak, cache (점 없이)',
+            'examples_name': '예: Thumbs.db, *.tmp, desktop.ini, *cache*',
+            'examples_path': '예: */Temp/*, *\\AppData\\Local\\*, */cache/*',
+            'filter_info_include': '포함: 파일이 포함되려면 최소 하나의 규칙과 일치해야 합니다',
+            'filter_info_exclude': '제외: 규칙과 일치하는 파일은 건너뜁니다 (우선순위)',
         }
     }
 
@@ -405,6 +457,11 @@ class Win11Dialog:
 
         dlg = tk.Toplevel(parent)
         dlg.title(title)
+        # Remove titlebar icon
+        try:
+            dlg.wm_iconbitmap()
+        except Exception:
+            pass
         dlg.configure(bg=theme.get('bg_elevated'))
         dlg.resizable(False, False)
         dlg.transient(parent)
@@ -470,6 +527,11 @@ class Win11Dialog:
 
         dlg = tk.Toplevel(parent)
         dlg.title(title)
+        # Remove titlebar icon
+        try:
+            dlg.wm_iconbitmap()
+        except Exception:
+            pass
         dlg.configure(bg=theme.get('bg_elevated'))
         dlg.resizable(False, False)
         dlg.transient(parent)
@@ -5422,8 +5484,10 @@ Shift + Tab  Move to Previous Field
 class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
     def __init__(self, master, current_filters=None):
         tk.Toplevel.__init__(self, master)
+        self.parent = master
         self.theme = master.theme  # Use parent's theme
-        self.title("Filter Manager")
+        self.translator = master.translator  # Use parent's translator
+        self.title(self.translator.get('filter_manager'))
         try:
             self.iconbitmap(resource_path('./icon/ezbak.ico'))
         except Exception:
@@ -5479,7 +5543,7 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         info_frame = tk.Frame(self, bg=self.theme.get('bg_elevated'))
         info_frame.pack(fill='x', padx=12, pady=(12,6))
 
-        info_text = "Include: Files must match at least one rule to be included\nExclude: Files matching any rule will be skipped (takes priority)"
+        info_text = f"{self.translator.get('filter_info_include')}\n{self.translator.get('filter_info_exclude')}"
         tk.Label(info_frame, text=info_text, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg_secondary'),
                 font=("Arial", 9), justify='left').pack(anchor='w')
 
@@ -5488,7 +5552,7 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         top.pack(fill='both', expand=True, padx=12, pady=6)
 
         # Include panel (add shortcut notation)
-        inc_frame = tk.LabelFrame(top, text=self.add_shortcut_text("Include Rules", "Ctrl+N"),
+        inc_frame = tk.LabelFrame(top, text=self.add_shortcut_text(self.translator.get('include_rules'), "Ctrl+N"),
                                  bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), font=("Arial", 10, "bold"))
         inc_frame.pack(side='left', fill='both', expand=True, padx=(0,6))
 
@@ -5499,16 +5563,16 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         btn_row_inc = tk.Frame(inc_frame, bg=self.theme.get('bg_elevated'))
         btn_row_inc.pack(fill='x', padx=6, pady=(0,6))
 
-        tk.Button(btn_row_inc, text="Add", width=8, command=lambda: self._add_rule('include'),
+        tk.Button(btn_row_inc, text=self.translator.get('add'), width=8, command=lambda: self._add_rule('include'),
                  bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left')
-        tk.Button(btn_row_inc, text=self.add_shortcut_text("Remove", "Del"), width=12,
+        tk.Button(btn_row_inc, text=self.add_shortcut_text(self.translator.get('remove'), "Del"), width=12,
                  command=lambda: self._remove_selected('include'),
                  bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left', padx=(6,0))
-        tk.Button(btn_row_inc, text="Clear All", width=10, command=lambda: self._clear('include'),
+        tk.Button(btn_row_inc, text=self.translator.get('clear_all'), width=10, command=lambda: self._clear('include'),
                  bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left', padx=(6,0))
 
         # Exclude panel (add shortcut notation)
-        exc_frame = tk.LabelFrame(top, text=self.add_shortcut_text("Exclude Rules", "Ctrl+E"),
+        exc_frame = tk.LabelFrame(top, text=self.add_shortcut_text(self.translator.get('exclude_rules'), "Ctrl+E"),
                                  bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), font=("Arial", 10, "bold"))
         exc_frame.pack(side='left', fill='both', expand=True, padx=(6,0))
 
@@ -5519,12 +5583,12 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         btn_row_exc = tk.Frame(exc_frame, bg=self.theme.get('bg_elevated'))
         btn_row_exc.pack(fill='x', padx=6, pady=(0,6))
 
-        tk.Button(btn_row_exc, text="Add", width=8, command=lambda: self._add_rule('exclude'),
+        tk.Button(btn_row_exc, text=self.translator.get('add'), width=8, command=lambda: self._add_rule('exclude'),
                  bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left')
-        tk.Button(btn_row_exc, text=self.add_shortcut_text("Remove", "Del"), width=12,
+        tk.Button(btn_row_exc, text=self.add_shortcut_text(self.translator.get('remove'), "Del"), width=12,
                  command=lambda: self._remove_selected('exclude'),
                  bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left', padx=(6,0))
-        tk.Button(btn_row_exc, text="Clear All", width=10, command=lambda: self._clear('exclude'),
+        tk.Button(btn_row_exc, text=self.translator.get('clear_all'), width=10, command=lambda: self._clear('exclude'),
                  bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left', padx=(6,0))
 
         # Bottom shortcut guide
@@ -5539,14 +5603,14 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         actions = tk.Frame(self, bg=self.theme.get('bg_elevated'))
         actions.pack(fill='x', padx=12, pady=12)
 
-        tk.Button(actions, text=self.add_shortcut_text("Help", "F1"), width=10,
+        tk.Button(actions, text=self.add_shortcut_text(self.translator.get('help'), "F1"), width=10,
                  command=self._show_filter_help, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
                  relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='left')
 
-        tk.Button(actions, text=self.add_shortcut_text("Save", "Ctrl+S"), width=12,
+        tk.Button(actions, text=self.add_shortcut_text(self.translator.get('save'), "Ctrl+S"), width=12,
                  command=self._save, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
                  relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='right')
-        tk.Button(actions, text=self.add_shortcut_text("Cancel", "Esc"), width=12,
+        tk.Button(actions, text=self.add_shortcut_text(self.translator.get('dialog_cancel'), "Esc"), width=12,
                  command=self._cancel, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
                  relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='right', padx=(0,8))
 
@@ -5628,12 +5692,12 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
     def _add_rule(self, kind):
         """Add rule dialog"""
         dlg = tk.Toplevel(self)
-        dlg.title(f"Add {'Include' if kind == 'include' else 'Exclude'} Rule")
+        dlg.title(self.translator.get('add_include_rule' if kind == 'include' else 'add_exclude_rule'))
         try:
             dlg.iconbitmap(resource_path('./icon/ezbak.ico'))
         except Exception:
             pass
-        dlg.configure(bg="#2D3250")
+        dlg.configure(bg=self.theme.get('bg_elevated'))
         dlg.geometry("480x320")
         dlg.transient(self)
         try:
@@ -5642,101 +5706,104 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
             pass
 
         # Select rule type
-        tk.Label(dlg, text="Rule Type:", bg="#2D3250", fg="white", 
+        tk.Label(dlg, text=self.translator.get('rule_type'), bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
                 font=("Arial", 10, "bold")).pack(anchor='w', padx=15, pady=(15,5))
-        
+
         vtype = tk.StringVar(value='ext')
-        tframe = tk.Frame(dlg, bg="#2D3250")
+        tframe = tk.Frame(dlg, bg=self.theme.get('bg_elevated'))
         tframe.pack(anchor='w', padx=15, fill='x')
-        
+
         type_options = [
-            ('ext', '📄 Extension', 'File extensions (e.g., tmp, log, bak)'),
-            ('name', '📁 Name', 'File/folder names with wildcards (e.g., Thumbs.db, *cache*)'),
-            ('path', '🗂️ Path', 'Full paths with wildcards (e.g., */temp/*, *\\AppData\\*)')
+            ('ext', f'📄 {self.translator.get("extension")}', self.translator.get('extension_desc')),
+            ('name', f'📁 {self.translator.get("file_folder_name")}', self.translator.get('name_desc')),
+            ('path', f'🗂️ {self.translator.get("full_path")}', self.translator.get('path_desc'))
         ]
-        
+
         for value, label, desc in type_options:
-            rb_frame = tk.Frame(tframe, bg="#2D3250")
+            rb_frame = tk.Frame(tframe, bg=self.theme.get('bg_elevated'))
             rb_frame.pack(anchor='w', pady=2)
-            
-            tk.Radiobutton(rb_frame, text=label, variable=vtype, value=value, 
-                          bg="#2D3250", fg="white", selectcolor="#2D3250",
+
+            tk.Radiobutton(rb_frame, text=label, variable=vtype, value=value,
+                          bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), selectcolor=self.theme.get('bg_elevated'),
                           font=("Arial", 9, "bold")).pack(side='left')
-            tk.Label(rb_frame, text=f"  {desc}", bg="#2D3250", fg="#CCCCCC", 
+            tk.Label(rb_frame, text=f"  {desc}", bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg_secondary'),
                     font=("Arial", 8)).pack(side='left')
 
         # Pattern input
-        tk.Label(dlg, text="Pattern:", bg="#2D3250", fg="white", 
+        tk.Label(dlg, text=self.translator.get('pattern'), bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
                 font=("Arial", 10, "bold")).pack(anchor='w', padx=15, pady=(15,5))
-        
+
         vpat = tk.StringVar()
-        pat_frame = tk.Frame(dlg, bg="#2D3250")
+        pat_frame = tk.Frame(dlg, bg=self.theme.get('bg_elevated'))
         pat_frame.pack(fill='x', padx=15)
-        
-        ent = tk.Entry(pat_frame, textvariable=vpat, width=50, font=("Arial", 10))
+
+        ent = tk.Entry(pat_frame, textvariable=vpat, width=50, font=("Arial", 10),
+                      bg=self.theme.get('bg_secondary'), fg=self.theme.get('fg'), insertbackground=self.theme.get('fg'))
         ent.pack(fill='x')
-        
+
         # Example text
-        example_frame = tk.Frame(dlg, bg="#2D3250")
+        example_frame = tk.Frame(dlg, bg=self.theme.get('bg_elevated'))
         example_frame.pack(fill='x', padx=15, pady=(5,0))
-        
+
         def update_example(*args):
             try:
                 rule_type = vtype.get()
                 examples = {
-                    'ext': 'Examples: tmp, log, bak, cache (without dots)',
-                    'name': 'Examples: Thumbs.db, *.tmp, desktop.ini, *cache*',
-                    'path': 'Examples: */Temp/*, *\\AppData\\Local\\*, */cache/*'
+                    'ext': self.translator.get('examples_ext'),
+                    'name': self.translator.get('examples_name'),
+                    'path': self.translator.get('examples_path')
                 }
                 example_label.config(text=examples.get(rule_type, ''))
             except Exception:
                 pass
-        
-        example_label = tk.Label(example_frame, text="", bg="#2D3250", fg="#888888", 
+
+        example_label = tk.Label(example_frame, text="", bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg_secondary'),
                                font=("Arial", 8))
         example_label.pack(anchor='w')
-        
+
         vtype.trace('w', update_example)
         update_example()  # Initial display
 
         # Buttons
-        btns = tk.Frame(dlg, bg="#2D3250")
+        btns = tk.Frame(dlg, bg=self.theme.get('bg_elevated'))
         btns.pack(fill='x', padx=15, pady=15)
-        
+
         def _ok():
             p = vpat.get().strip()
             if not p:
-                Win11Dialog.showwarning(self.parent.translator.get('warning'), self.parent.translator.get('please_enter_pattern'),
-                                      parent=dlg, theme=self.parent.theme, translator=self.parent.translator)
+                Win11Dialog.showwarning(self.translator.get('warning'), self.translator.get('please_enter_pattern'),
+                                      parent=dlg, theme=self.theme, translator=self.translator)
                 return
-            
+
             rule_type = vtype.get().strip().lower()
             rule = {'type': rule_type, 'pattern': p}
-            
+
             if kind == 'include':
                 self.inc.append(rule)
             else:
                 self.exc.append(rule)
-            
+
             self._refresh()
-            
+
             try:
                 dlg.grab_release()
             except Exception:
                 pass
             dlg.destroy()
-        
+
         def _cancel():
             try:
                 dlg.grab_release()
             except Exception:
                 pass
             dlg.destroy()
-        
-        tk.Button(btns, text="Add Rule", width=12, command=_ok, 
-                 bg="#336BFF", fg="white", relief="flat").pack(side='right')
-        tk.Button(btns, text="Cancel", width=10, command=_cancel, 
-                 bg="#7D98A1", fg="white", relief="flat").pack(side='right', padx=(0,8))
+
+        tk.Button(btns, text=self.translator.get('add_rule'), width=12, command=_ok,
+                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
+                 relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='right')
+        tk.Button(btns, text=self.translator.get('dialog_cancel'), width=10, command=_cancel,
+                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
+                 relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='right', padx=(0,8))
 
         # Shortcuts setting
         dlg.bind('<Return>', lambda e: _ok())
