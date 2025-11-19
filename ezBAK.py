@@ -208,6 +208,26 @@ class Translator:
             'failed_to_delete_schedule': 'Failed to delete schedule: {0}',
             'please_enter_pattern': 'Please enter a pattern.',
             'continue_anyway': 'Continue anyway?',
+
+            # Dialog titles
+            'select_sources': 'Select Sources',
+            'select_destination_folder': 'Select Destination Folder',
+            'check_required_space': 'Check Required Space',
+            'schedule_backup': 'Schedule Backup',
+            'network_share_connect': 'Network Share - Connect',
+            'network_share_disconnect': 'Network Share - Disconnect',
+
+            # NAS Connect dialog labels
+            'unc_path_label': 'UNC Path (ex: \\\\NAS\\share)',
+            'map_as_drive_letter': 'Map as drive letter',
+            'letter': 'Letter:',
+            'username_optional': 'Username (Optional)',
+            'password_required_if_username': 'Password (Required if Username is provided)',
+            'reconnect_at_logon_persistent': 'Reconnect at logon (Persistent)',
+
+            # NAS Disconnect dialog labels
+            'target_drive_or_unc': 'Target (Driver Letter ex: Z: or UNC ex: \\\\Server\\Share)',
+
             'space_sufficient': '✓ Sufficient space available.',
             'space_insufficient': '⚠ Insufficient space available.',
             'no_log_content': 'No log content to save.',
@@ -459,6 +479,25 @@ Tips :  Shortcuts are not case-sensitive.""",
             'failed_to_delete_schedule': '예약 삭제 실패: {0}',
             'please_enter_pattern': '패턴을 입력하세요.',
             'continue_anyway': '계속하시겠습니까?',
+
+            # Dialog titles
+            'select_sources': '소스 선택',
+            'select_destination_folder': '대상 폴더 선택',
+            'check_required_space': '필요한 공간 확인',
+            'schedule_backup': '예약 백업',
+            'network_share_connect': '네트워크 공유 - 연결',
+            'network_share_disconnect': '네트워크 공유 - 연결 해제',
+
+            # NAS Connect dialog labels
+            'unc_path_label': 'UNC 경로 (예: \\\\NAS\\share)',
+            'map_as_drive_letter': '드라이브 문자로 매핑',
+            'letter': '문자:',
+            'username_optional': '사용자 이름 (선택사항)',
+            'password_required_if_username': '비밀번호 (사용자 이름 제공 시 필수)',
+            'reconnect_at_logon_persistent': '로그인 시 다시 연결 (영구)',
+
+            # NAS Disconnect dialog labels
+            'target_drive_or_unc': '대상 (드라이브 문자 예: Z: 또는 UNC 예: \\\\Server\\Share)',
 
             # Filter Manager
             'filter_manager': '필터 관리자',
@@ -3379,7 +3418,7 @@ class App(tk.Tk):
             # 1) Open a checkbox tree dialog to select files/folders
             try:
                 print("DEBUG: Creating SelectSourcesDialog...")
-                dlg = SelectSourcesDialog(self, is_hidden_fn=self.is_hidden)
+                dlg = SelectSourcesDialog(self, is_hidden_fn=self.is_hidden, title=self.translator.get('select_sources'))
                 print("DEBUG: SelectSourcesDialog created, waiting for window...")
                 self.wait_window(dlg)
                 print("DEBUG: Dialog closed")
@@ -3403,7 +3442,7 @@ class App(tk.Tk):
 
             # 2) Ask for destination folder
             print("DEBUG: Asking for destination folder...")
-            destination_dir = filedialog.askdirectory(title="Select Destination Folder")
+            destination_dir = filedialog.askdirectory(title=self.translator.get('select_destination_folder'))
             print(f"DEBUG: Destination selected: {destination_dir}")
             
             if not destination_dir:
@@ -3825,7 +3864,7 @@ class App(tk.Tk):
         """
         # 1) Select sources via checkbox tree
         try:
-            dlg = SelectSourcesDialog(self, is_hidden_fn=self.is_hidden, title="Check Required Space")
+            dlg = SelectSourcesDialog(self, is_hidden_fn=self.is_hidden, title=self.translator.get('check_required_space'))
             self.wait_window(dlg)
             sources = dlg.selected_paths if getattr(dlg, 'selected_paths', None) else []
         except Exception as e:
@@ -3838,7 +3877,7 @@ class App(tk.Tk):
             return
 
         # 2) Select destination folder
-        dest = filedialog.askdirectory(title="Select Destination Folder to Check")
+        dest = filedialog.askdirectory(title=self.translator.get('select_destination_folder'))
         if not dest:
             self.message_queue.put(('log', "Space check cancelled (no destination)."))
             return
@@ -3977,7 +4016,7 @@ class App(tk.Tk):
         """Open a large dialog for NAS connect with full command examples, then run 'net use'."""
         # Build dialog UI
         dlg = tk.Toplevel(self)
-        dlg.title("Network Share - Connect")
+        dlg.title(self.translator.get('network_share_connect'))
         try:
             dlg.iconbitmap(resource_path('./icon/ezbak.ico'))
         except Exception:
@@ -4012,7 +4051,7 @@ class App(tk.Tk):
             return e
 
         # UNC Path
-        add_label("UNC Path (ex: \\NAS\\share)")
+        add_label(self.translator.get('unc_path_label'))
         unc_var = tk.StringVar()
         add_entry(unc_var)
 
@@ -4022,8 +4061,8 @@ class App(tk.Tk):
         drive_var = tk.StringVar(value=def_drive)
 
         map_frame = tk.Frame(form, bg=self.theme.get('bg_elevated'))
-        tk.Checkbutton(map_frame, text="Map as drive letter", variable=map_var, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), selectcolor=self.theme.get('bg_elevated'), activebackground=self.theme.get('bg_elevated'), activeforeground=self.theme.get('fg')).pack(side='left')
-        tk.Label(map_frame, text="Letter:", bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg')).pack(side='left', padx=(12,4))
+        tk.Checkbutton(map_frame, text=self.translator.get('map_as_drive_letter'), variable=map_var, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), selectcolor=self.theme.get('bg_elevated'), activebackground=self.theme.get('bg_elevated'), activeforeground=self.theme.get('fg')).pack(side='left')
+        tk.Label(map_frame, text=self.translator.get('letter'), bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg')).pack(side='left', padx=(12,4))
         drive_entry = tk.Entry(map_frame, textvariable=drive_var, width=6, bg=self.theme.get('bg'), fg=self.theme.get('fg'), insertbackground=self.theme.get('fg'))
         drive_entry.pack(side='left')
         map_frame.grid(row=row, column=0, columnspan=2, sticky='w', pady=6)
@@ -4045,17 +4084,17 @@ class App(tk.Tk):
         tk.Checkbutton(map_frame, variable=map_var).destroy()  # no-op cleanup (ensures lint calm)
 
         # Credentials
-        add_label("Username (Optional)")
+        add_label(self.translator.get('username_optional'))
         user_var = tk.StringVar()
         add_entry(user_var)
 
-        add_label("Password (Required if Username is provided)")
+        add_label(self.translator.get('password_required_if_username'))
         pwd_var = tk.StringVar()
         add_entry(pwd_var, show='*')
 
         # Persistent
         persist_var = tk.BooleanVar(value=True)
-        persist_chk = tk.Checkbutton(form, text="Reconnect at logon (Persistent)", variable=persist_var, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), selectcolor=self.theme.get('bg_elevated'), activebackground=self.theme.get('bg_elevated'), activeforeground=self.theme.get('fg'))
+        persist_chk = tk.Checkbutton(form, text=self.translator.get('reconnect_at_logon_persistent'), variable=persist_var, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), selectcolor=self.theme.get('bg_elevated'), activebackground=self.theme.get('bg_elevated'), activeforeground=self.theme.get('fg'))
         persist_chk.grid(row=row, column=0, columnspan=2, sticky='w', pady=8)
         row += 1
 
@@ -4087,9 +4126,9 @@ class App(tk.Tk):
             dlg.destroy()
 
         # Windows 11 style buttons
-        ok_btn = Win11Dialog._create_dialog_button(btns, "OK", on_ok, self.theme, is_primary=True)
+        ok_btn = Win11Dialog._create_dialog_button(btns, self.translator.get('dialog_ok'), on_ok, self.theme, is_primary=True)
         ok_btn.pack(side='right', padx=8)
-        cancel_btn = Win11Dialog._create_dialog_button(btns, "Cancel", on_cancel, self.theme, is_primary=False)
+        cancel_btn = Win11Dialog._create_dialog_button(btns, self.translator.get('dialog_cancel'), on_cancel, self.theme, is_primary=False)
         cancel_btn.pack(side='right', padx=8)
 
         dlg.bind('<Return>', lambda e: on_ok())
@@ -4248,7 +4287,7 @@ class App(tk.Tk):
         """Open a large dialog for NAS disconnect with full command examples, then run 'net use ... /delete'."""
         # Build dialog UI
         dlg = tk.Toplevel(self)
-        dlg.title("Network Share - Disconnect")
+        dlg.title(self.translator.get('network_share_disconnect'))
         try:
             dlg.iconbitmap(resource_path('./icon/ezbak.ico'))
         except Exception:
@@ -4271,7 +4310,7 @@ class App(tk.Tk):
         form = tk.Frame(dlg, bg=self.theme.get('bg_elevated'))
         form.pack(fill='both', expand=True, padx=16)
 
-        tk.Label(form, text="Target (Driver Letter ex: Z: or UNC ex: \\Server\\Share)", bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg')).grid(row=0, column=0, sticky='w', pady=6)
+        tk.Label(form, text=self.translator.get('target_drive_or_unc'), bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg')).grid(row=0, column=0, sticky='w', pady=6)
         target_var = tk.StringVar()
         tk.Entry(form, textvariable=target_var, width=42, bg=self.theme.get('bg'), fg=self.theme.get('fg'), insertbackground=self.theme.get('fg')).grid(row=0, column=1, sticky='w', pady=6)
 
@@ -4290,9 +4329,9 @@ class App(tk.Tk):
             dlg.destroy()
 
         # Windows 11 style buttons
-        ok_btn = Win11Dialog._create_dialog_button(btns, "OK", on_ok, self.theme, is_primary=True)
+        ok_btn = Win11Dialog._create_dialog_button(btns, self.translator.get('dialog_ok'), on_ok, self.theme, is_primary=True)
         ok_btn.pack(side='right', padx=8)
-        cancel_btn = Win11Dialog._create_dialog_button(btns, "Cancel", on_cancel, self.theme, is_primary=False)
+        cancel_btn = Win11Dialog._create_dialog_button(btns, self.translator.get('dialog_cancel'), on_cancel, self.theme, is_primary=False)
         cancel_btn.pack(side='right', padx=8)
 
         dlg.bind('<Return>', lambda e: on_ok())
@@ -5261,7 +5300,7 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
             tk.Toplevel.__init__(self, parent)  # Explicitly initialize Toplevel
             print("DEBUG: Toplevel initialized")
 
-            self.title("Schedule Backup")
+            self.title(parent.translator.get('schedule_backup'))
             self.configure(bg=self.theme.get('bg'))
             
             # Handle window close safely - set first
