@@ -600,12 +600,21 @@ class Win11Dialog:
 
     @staticmethod
     def _create_dialog_button(parent, text, command, theme, is_primary=False):
-        """Create a Windows 11 style dialog button"""
-        # All buttons have no background color, only border
-        btn_bg = theme.get('bg_elevated')
-        btn_fg = theme.get('fg')
-        hover_bg = theme.get('hover')
-        hover_fg = theme.get('fg')
+        """Create a Windows 11 style dialog button with modern design"""
+        # Windows 11 style: Primary buttons have accent color, secondary have subtle background
+        if is_primary:
+            btn_bg = theme.get('accent')
+            btn_fg = '#FFFFFF' if theme.current_mode == 'dark' else '#FFFFFF'
+            hover_bg = theme.get('accent_hover')
+            hover_fg = '#FFFFFF'
+            pressed_bg = theme.get('accent_hover')
+        else:
+            btn_bg = theme.get('bg_elevated')
+            btn_fg = theme.get('fg')
+            hover_bg = theme.get('hover')
+            hover_fg = theme.get('fg')
+            pressed_bg = theme.get('pressed')
+
         border_color = theme.get('border')
 
         btn = tk.Button(parent, text=text,
@@ -613,23 +622,35 @@ class Win11Dialog:
                        fg=btn_fg,
                        font=("Segoe UI", 9),
                        relief="flat",
-                       bd=1,
+                       bd=0,
                        highlightthickness=1,
                        highlightbackground=border_color,
                        highlightcolor=border_color,
-                       borderwidth=0,
+                       borderwidth=1,
                        width=10,
                        height=1,
                        command=command,
                        cursor="hand2",
-                       padx=8,
-                       pady=4)
+                       padx=12,
+                       pady=6)
 
-        btn.config(highlightbackground=border_color, highlightcolor=border_color)
+        # Windows 11 style hover and press effects
+        def on_enter(e):
+            e.widget.config(bg=hover_bg, fg=hover_fg, relief="flat")
 
-        # Hover effects matching main screen buttons
-        btn.bind("<Enter>", lambda e: e.widget.config(bg=hover_bg, fg=hover_fg, relief="flat"))
-        btn.bind("<Leave>", lambda e: e.widget.config(bg=btn_bg, fg=btn_fg, relief="flat"))
+        def on_leave(e):
+            e.widget.config(bg=btn_bg, fg=btn_fg, relief="flat")
+
+        def on_press(e):
+            e.widget.config(bg=pressed_bg, relief="flat")
+
+        def on_release(e):
+            e.widget.config(bg=hover_bg, relief="flat")
+
+        btn.bind("<Enter>", on_enter)
+        btn.bind("<Leave>", on_leave)
+        btn.bind("<ButtonPress-1>", on_press)
+        btn.bind("<ButtonRelease-1>", on_release)
 
         return btn
 
@@ -1207,13 +1228,14 @@ class KeyboardShortcuts:
         text_widget.configure(state="disabled")
 
         # Close button
-        close_btn = tk.Button(help_dialog,
-                             text=self.app.translator.get('help_exit_esc'),
-                             command=help_dialog.destroy,
-                             bg=self.app.theme.get('btn_bg'),
-                             fg=self.app.theme.get('btn_fg'),
-                             relief="flat")
-        close_btn.pack(pady=10)
+        btn_frame = tk.Frame(help_dialog, bg=self.app.theme.get('bg'))
+        btn_frame.pack(pady=10)
+        close_btn = Win11Dialog._create_dialog_button(btn_frame,
+                                                      self.app.translator.get('help_exit_esc'),
+                                                      help_dialog.destroy,
+                                                      self.app.theme,
+                                                      is_primary=True)
+        close_btn.pack()
 
         # Close with ESC
         help_dialog.bind('<Escape>', lambda e: help_dialog.destroy())
@@ -1818,12 +1840,13 @@ class App(tk.Tk):
 
         # Create button helper function - Windows 11 style
         def create_button(parent, text, bg_color, hover_color, command, row, col):
-            """Windows 11 style minimal button with subtle hover effect"""
+            """Windows 11 style modern button with smooth transitions"""
             # Use theme colors for consistent styling
             btn_bg = self.theme.get('bg_elevated')
             btn_fg = self.theme.get('fg')
             btn_hover_bg = self.theme.get('accent')
             btn_hover_fg = '#FFFFFF'
+            btn_pressed_bg = self.theme.get('accent_hover')
             btn_border = self.theme.get('border')
 
             btn = tk.Button(parent, text=text,
@@ -1831,28 +1854,35 @@ class App(tk.Tk):
                           fg=btn_fg,
                           font=btn_font,
                           relief="flat",
-                          bd=1,
+                          bd=0,
                           highlightthickness=1,
                           borderwidth=1,
                           height=btn_height,
                           command=command,
                           cursor="hand2",
-                          padx=6,
-                          pady=3)
+                          padx=12,
+                          pady=6)
             btn.config(highlightbackground=btn_border, highlightcolor=btn_border)
             btn.grid(row=row, column=col, padx=4, pady=4, sticky="ew")
 
-            # Windows 11 style hover effect
-            btn.bind("<Enter>", lambda e: e.widget.config(
-                bg=btn_hover_bg,
-                fg=btn_hover_fg,
-                relief="flat"
-            ))
-            btn.bind("<Leave>", lambda e: e.widget.config(
-                bg=btn_bg,
-                fg=btn_fg,
-                relief="flat"
-            ))
+            # Windows 11 style hover, press and release effects
+            def on_enter(e):
+                e.widget.config(bg=btn_hover_bg, fg=btn_hover_fg, relief="flat")
+
+            def on_leave(e):
+                e.widget.config(bg=btn_bg, fg=btn_fg, relief="flat")
+
+            def on_press(e):
+                e.widget.config(bg=btn_pressed_bg, relief="flat")
+
+            def on_release(e):
+                e.widget.config(bg=btn_hover_bg, relief="flat")
+
+            btn.bind("<Enter>", on_enter)
+            btn.bind("<Leave>", on_leave)
+            btn.bind("<ButtonPress-1>", on_press)
+            btn.bind("<ButtonRelease-1>", on_release)
+
             return btn
 
         # Main operation buttons with Windows 11 accent colors
@@ -5288,17 +5318,70 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
                 pass
             raise init_error
 
+    def _create_win11_button(self, parent, text, command, is_primary=False, width=12):
+        """Create a Windows 11 style button for dialogs"""
+        if is_primary:
+            btn_bg = self.theme.get('accent')
+            btn_fg = '#FFFFFF'
+            hover_bg = self.theme.get('accent_hover')
+            hover_fg = '#FFFFFF'
+            pressed_bg = self.theme.get('accent_hover')
+        else:
+            btn_bg = self.theme.get('bg_elevated')
+            btn_fg = self.theme.get('fg')
+            hover_bg = self.theme.get('hover')
+            hover_fg = self.theme.get('fg')
+            pressed_bg = self.theme.get('pressed')
+
+        border_color = self.theme.get('border')
+
+        btn = tk.Button(parent, text=text,
+                       command=command,
+                       bg=btn_bg,
+                       fg=btn_fg,
+                       font=("Segoe UI", 9),
+                       relief="flat",
+                       bd=0,
+                       highlightthickness=1,
+                       highlightbackground=border_color,
+                       highlightcolor=border_color,
+                       borderwidth=1,
+                       width=width,
+                       cursor="hand2",
+                       padx=12,
+                       pady=6)
+
+        # Windows 11 style hover and press effects
+        def on_enter(e):
+            e.widget.config(bg=hover_bg, fg=hover_fg, relief="flat")
+
+        def on_leave(e):
+            e.widget.config(bg=btn_bg, fg=btn_fg, relief="flat")
+
+        def on_press(e):
+            e.widget.config(bg=pressed_bg, relief="flat")
+
+        def on_release(e):
+            e.widget.config(bg=hover_bg, relief="flat")
+
+        btn.bind("<Enter>", on_enter)
+        btn.bind("<Leave>", on_leave)
+        btn.bind("<ButtonPress-1>", on_press)
+        btn.bind("<ButtonRelease-1>", on_release)
+
+        return btn
+
     def _setup_schedule_shortcuts(self):
         """Setup shortcuts specific to schedule dialog"""
         # Apply basic dialog shortcuts
         self.setup_dialog_shortcuts()
-        
+
         # Shortcuts specific to schedule dialog
         self.bind('<Control-c>', lambda e: self.on_create())
         self.bind('<Control-d>', lambda e: self.on_delete())
         self.bind('<Control-b>', lambda e: self._browse_destination())
         self.bind('<F1>', lambda e: self._show_schedule_help())
-        
+
         # Select schedule type with number keys
         self.bind('<Alt-1>', lambda e: self._set_schedule("Daily"))
         self.bind('<Alt-2>', lambda e: self._set_schedule("Weekly"))
@@ -5438,25 +5521,13 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
             btn_frame = tk.Frame(self, bg=self.theme.get('bg'))
             btn_frame.grid(row=row, column=0, columnspan=3, sticky="e", padx=15, pady=20)
 
-            # Modern button styling with borders - match FilterManagerDialog button sizes
-            tk.Button(btn_frame, text=self.add_shortcut_text("Create", "Ctrl+C"),
-                     command=self.on_create,
-                     bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
-                     font=("Segoe UI", 10), relief="solid", bd=1,
-                     highlightthickness=1, highlightbackground=self.theme.get('border'),
-                     width=12, cursor="hand2").pack(side="right", padx=5)
-            tk.Button(btn_frame, text=self.add_shortcut_text("Delete", "Ctrl+D"),
-                     command=self.on_delete,
-                     bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
-                     font=("Segoe UI", 10), relief="solid", bd=1,
-                     highlightthickness=1, highlightbackground=self.theme.get('border'),
-                     width=12, cursor="hand2").pack(side="right", padx=5)
-            tk.Button(btn_frame, text=self.add_shortcut_text("Close", "Esc"),
-                     command=self.on_close,
-                     bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
-                     font=("Segoe UI", 10), relief="solid", bd=1,
-                     highlightthickness=1, highlightbackground=self.theme.get('border'),
-                     width=12, cursor="hand2").pack(side="right", padx=5)
+            # Windows 11 style buttons
+            self._create_win11_button(btn_frame, self.add_shortcut_text("Create", "Ctrl+C"),
+                                     self.on_create, is_primary=True).pack(side="right", padx=5)
+            self._create_win11_button(btn_frame, self.add_shortcut_text("Delete", "Ctrl+D"),
+                                     self.on_delete).pack(side="right", padx=5)
+            self._create_win11_button(btn_frame, self.add_shortcut_text("Close", "Esc"),
+                                     self.on_close).pack(side="right", padx=5)
 
             # Configure grid weights
             self.columnconfigure(1, weight=1)
@@ -5516,16 +5587,14 @@ Shift + Tab  Move to Previous Field
         text_widget.insert("1.0", help_text)
         text_widget.configure(state="disabled")
 
-        close_btn = tk.Button(help_dlg,
-                             text="Close (Esc)",
-                             command=help_dlg.destroy,
-                             bg=self.theme.get('accent'),
-                             fg="white",
-                             font=("Segoe UI", 10, "bold"),
-                             relief="flat", bd=0,
-                             cursor="hand2",
-                             padx=20, pady=8)
-        close_btn.pack(pady=15)
+        btn_frame = tk.Frame(help_dlg, bg=self.theme.get('bg'))
+        btn_frame.pack(pady=15)
+        close_btn = Win11Dialog._create_dialog_button(btn_frame,
+                                                      "Close (Esc)",
+                                                      help_dlg.destroy,
+                                                      self.theme,
+                                                      is_primary=True)
+        close_btn.pack()
         
         help_dlg.bind('<Escape>', lambda e: help_dlg.destroy())
         help_dlg.focus_set()
@@ -5686,11 +5755,64 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         self._setup_filter_shortcuts()
         self._refresh()
 
+    def _create_win11_button(self, parent, text, command, is_primary=False, width=12):
+        """Create a Windows 11 style button for dialogs"""
+        if is_primary:
+            btn_bg = self.theme.get('accent')
+            btn_fg = '#FFFFFF'
+            hover_bg = self.theme.get('accent_hover')
+            hover_fg = '#FFFFFF'
+            pressed_bg = self.theme.get('accent_hover')
+        else:
+            btn_bg = self.theme.get('bg_elevated')
+            btn_fg = self.theme.get('fg')
+            hover_bg = self.theme.get('hover')
+            hover_fg = self.theme.get('fg')
+            pressed_bg = self.theme.get('pressed')
+
+        border_color = self.theme.get('border')
+
+        btn = tk.Button(parent, text=text,
+                       command=command,
+                       bg=btn_bg,
+                       fg=btn_fg,
+                       font=("Segoe UI", 9),
+                       relief="flat",
+                       bd=0,
+                       highlightthickness=1,
+                       highlightbackground=border_color,
+                       highlightcolor=border_color,
+                       borderwidth=1,
+                       width=width,
+                       cursor="hand2",
+                       padx=12,
+                       pady=6)
+
+        # Windows 11 style hover and press effects
+        def on_enter(e):
+            e.widget.config(bg=hover_bg, fg=hover_fg, relief="flat")
+
+        def on_leave(e):
+            e.widget.config(bg=btn_bg, fg=btn_fg, relief="flat")
+
+        def on_press(e):
+            e.widget.config(bg=pressed_bg, relief="flat")
+
+        def on_release(e):
+            e.widget.config(bg=hover_bg, relief="flat")
+
+        btn.bind("<Enter>", on_enter)
+        btn.bind("<Leave>", on_leave)
+        btn.bind("<ButtonPress-1>", on_press)
+        btn.bind("<ButtonRelease-1>", on_release)
+
+        return btn
+
     def _setup_filter_shortcuts(self):
         """Setup shortcuts specific to filter dialog"""
         # Apply basic dialog shortcuts
         self.setup_dialog_shortcuts()
-        
+
         # Filter-related shortcuts
         self.bind('<Control-n>', lambda e: self._add_rule('include'))  # New include rule
         self.bind('<Control-e>', lambda e: self._add_rule('exclude'))  # New exclude rule
@@ -5698,7 +5820,7 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         self.bind('<Control-s>', lambda e: self._save())
         self.bind('<Control-r>', lambda e: self._clear_active())  # Remove all from active list
         self.bind('<F1>', lambda e: self._show_filter_help())
-        
+
         # Manage list focus
         self.bind('<Tab>', lambda e: self._cycle_focus())
         
@@ -5739,13 +5861,12 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         btn_row_inc = tk.Frame(inc_frame, bg=self.theme.get('bg_elevated'))
         btn_row_inc.pack(fill='x', padx=6, pady=(0,6))
 
-        tk.Button(btn_row_inc, text=self.translator.get('add'), width=8, command=lambda: self._add_rule('include'),
-                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left')
-        tk.Button(btn_row_inc, text=self.add_shortcut_text(self.translator.get('remove'), "Del"), width=12,
-                 command=lambda: self._remove_selected('include'),
-                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left', padx=(6,0))
-        tk.Button(btn_row_inc, text=self.translator.get('clear_all'), width=10, command=lambda: self._clear('include'),
-                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left', padx=(6,0))
+        self._create_win11_button(btn_row_inc, self.translator.get('add'),
+                                 lambda: self._add_rule('include'), width=8).pack(side='left', padx=2)
+        self._create_win11_button(btn_row_inc, self.add_shortcut_text(self.translator.get('remove'), "Del"),
+                                 lambda: self._remove_selected('include'), width=12).pack(side='left', padx=2)
+        self._create_win11_button(btn_row_inc, self.translator.get('clear_all'),
+                                 lambda: self._clear('include'), width=10).pack(side='left', padx=2)
 
         # Exclude panel (add shortcut notation)
         exc_frame = tk.LabelFrame(top, text=self.add_shortcut_text(self.translator.get('exclude_rules'), "Ctrl+E"),
@@ -5759,13 +5880,12 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         btn_row_exc = tk.Frame(exc_frame, bg=self.theme.get('bg_elevated'))
         btn_row_exc.pack(fill='x', padx=6, pady=(0,6))
 
-        tk.Button(btn_row_exc, text=self.translator.get('add'), width=8, command=lambda: self._add_rule('exclude'),
-                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left')
-        tk.Button(btn_row_exc, text=self.add_shortcut_text(self.translator.get('remove'), "Del"), width=12,
-                 command=lambda: self._remove_selected('exclude'),
-                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left', padx=(6,0))
-        tk.Button(btn_row_exc, text=self.translator.get('clear_all'), width=10, command=lambda: self._clear('exclude'),
-                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'), relief="flat").pack(side='left', padx=(6,0))
+        self._create_win11_button(btn_row_exc, self.translator.get('add'),
+                                 lambda: self._add_rule('exclude'), width=8).pack(side='left', padx=2)
+        self._create_win11_button(btn_row_exc, self.add_shortcut_text(self.translator.get('remove'), "Del"),
+                                 lambda: self._remove_selected('exclude'), width=12).pack(side='left', padx=2)
+        self._create_win11_button(btn_row_exc, self.translator.get('clear_all'),
+                                 lambda: self._clear('exclude'), width=10).pack(side='left', padx=2)
 
         # Bottom shortcut guide
         shortcut_frame = tk.Frame(self, bg=self.theme.get('bg_elevated'))
@@ -5779,16 +5899,13 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         actions = tk.Frame(self, bg=self.theme.get('bg_elevated'))
         actions.pack(fill='x', padx=12, pady=12)
 
-        tk.Button(actions, text=self.add_shortcut_text(self.translator.get('help'), "F1"), width=10,
-                 command=self._show_filter_help, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
-                 relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='left')
+        self._create_win11_button(actions, self.add_shortcut_text(self.translator.get('help'), "F1"),
+                                 self._show_filter_help, width=10).pack(side='left')
 
-        tk.Button(actions, text=self.add_shortcut_text(self.translator.get('save'), "Ctrl+S"), width=12,
-                 command=self._save, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
-                 relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='right')
-        tk.Button(actions, text=self.add_shortcut_text(self.translator.get('dialog_cancel'), "Esc"), width=12,
-                 command=self._cancel, bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
-                 relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='right', padx=(0,8))
+        self._create_win11_button(actions, self.add_shortcut_text(self.translator.get('save'), "Ctrl+S"),
+                                 self._save, is_primary=True, width=12).pack(side='right')
+        self._create_win11_button(actions, self.add_shortcut_text(self.translator.get('dialog_cancel'), "Esc"),
+                                 self._cancel, width=12).pack(side='right', padx=(0,8))
 
     def _rule_to_text(self, r):
         """Convert rule to display text"""
@@ -5974,12 +6091,10 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
                 pass
             dlg.destroy()
 
-        tk.Button(btns, text=self.translator.get('add_rule'), width=12, command=_ok,
-                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
-                 relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='right')
-        tk.Button(btns, text=self.translator.get('dialog_cancel'), width=10, command=_cancel,
-                 bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
-                 relief="solid", bd=1, highlightthickness=1, highlightbackground=self.theme.get('border')).pack(side='right', padx=(0,8))
+        Win11Dialog._create_dialog_button(btns, self.translator.get('add_rule'),
+                                          _ok, self.theme, is_primary=True).pack(side='right')
+        Win11Dialog._create_dialog_button(btns, self.translator.get('dialog_cancel'),
+                                          _cancel, self.theme).pack(side='right', padx=(0,8))
 
         # Shortcuts setting
         dlg.bind('<Return>', lambda e: _ok())
@@ -6033,14 +6148,10 @@ class FilterManagerDialog(tk.Toplevel, DialogShortcuts):
         text_widget.configure(state="disabled")
 
         # Close Button
-        close_btn = tk.Button(help_dlg,
-                             text=self.translator.get('help_close_esc'),
-                             command=help_dlg.destroy,
-                             bg=self.theme.get('btn_bg'),
-                             fg=self.theme.get('btn_fg'),
-                             relief="flat",
-                             width=15)
-        close_btn.pack(pady=(0,15))
+        btn_frame = tk.Frame(help_dlg, bg=self.theme.get('bg'))
+        btn_frame.pack(pady=(0,15))
+        Win11Dialog._create_dialog_button(btn_frame, self.translator.get('help_close_esc'),
+                                          help_dlg.destroy, self.theme, is_primary=True).pack()
 
         help_dlg.bind('<Escape>', lambda e: help_dlg.destroy())
         help_dlg.focus_set()
@@ -6151,6 +6262,59 @@ class SelectSourcesDialog(tk.Toplevel):
         """Add shortcut notation to text"""
         return f"{text} ({shortcut})"
 
+    def _create_win11_button(self, parent, text, command, is_primary=False, width=12):
+        """Create a Windows 11 style button for dialogs"""
+        if is_primary:
+            btn_bg = self.theme.get('accent')
+            btn_fg = '#FFFFFF'
+            hover_bg = self.theme.get('accent_hover')
+            hover_fg = '#FFFFFF'
+            pressed_bg = self.theme.get('accent_hover')
+        else:
+            btn_bg = self.theme.get('bg_elevated')
+            btn_fg = self.theme.get('fg')
+            hover_bg = self.theme.get('hover')
+            hover_fg = self.theme.get('fg')
+            pressed_bg = self.theme.get('pressed')
+
+        border_color = self.theme.get('border')
+
+        btn = tk.Button(parent, text=text,
+                       command=command,
+                       bg=btn_bg,
+                       fg=btn_fg,
+                       font=("Segoe UI", 9),
+                       relief="flat",
+                       bd=0,
+                       highlightthickness=1,
+                       highlightbackground=border_color,
+                       highlightcolor=border_color,
+                       borderwidth=1,
+                       width=width,
+                       cursor="hand2",
+                       padx=12,
+                       pady=6)
+
+        # Windows 11 style hover and press effects
+        def on_enter(e):
+            e.widget.config(bg=hover_bg, fg=hover_fg, relief="flat")
+
+        def on_leave(e):
+            e.widget.config(bg=btn_bg, fg=btn_fg, relief="flat")
+
+        def on_press(e):
+            e.widget.config(bg=pressed_bg, relief="flat")
+
+        def on_release(e):
+            e.widget.config(bg=hover_bg, relief="flat")
+
+        btn.bind("<Enter>", on_enter)
+        btn.bind("<Leave>", on_leave)
+        btn.bind("<ButtonPress-1>", on_press)
+        btn.bind("<ButtonRelease-1>", on_release)
+
+        return btn
+
     def _create_source_widgets(self):
         """Create source selection widgets"""
         try:
@@ -6170,20 +6334,20 @@ class SelectSourcesDialog(tk.Toplevel):
             top_controls = tk.Frame(self, bg=self.theme.get('bg_elevated'))
             top_controls.pack(fill="x", padx=15, pady=(0, 10))
 
-            self.add_root_btn = tk.Button(top_controls, text=self.add_shortcut_text("Add Root Folder...", "Ctrl+R"),
-                                          command=self._choose_root,
-                                          bg=self.theme.get('fg_secondary'), fg="white", relief="flat", width=20)
-            self.add_root_btn.pack(side="left")
+            self.add_root_btn = self._create_win11_button(top_controls,
+                                                         self.add_shortcut_text("Add Root Folder...", "Ctrl+R"),
+                                                         self._choose_root, width=20)
+            self.add_root_btn.pack(side="left", padx=2)
 
-            self.sel_all_btn = tk.Button(top_controls, text=self.add_shortcut_text("Select All", "Ctrl+A"),
-                                         command=self._select_all,
-                                         bg=self.theme.get('success'), fg="white", relief="flat", width=15)
-            self.sel_all_btn.pack(side="left", padx=(8, 0))
+            self.sel_all_btn = self._create_win11_button(top_controls,
+                                                         self.add_shortcut_text("Select All", "Ctrl+A"),
+                                                         self._select_all, width=15)
+            self.sel_all_btn.pack(side="left", padx=2)
 
-            self.clear_all_btn = tk.Button(top_controls, text=self.add_shortcut_text("Clear All", "Ctrl+N"),
-                                           command=self._clear_all,
-                                           bg=self.theme.get('danger'), fg="white", relief="flat", width=15)
-            self.clear_all_btn.pack(side="left", padx=(8, 0))
+            self.clear_all_btn = self._create_win11_button(top_controls,
+                                                           self.add_shortcut_text("Clear All", "Ctrl+N"),
+                                                           self._clear_all, width=15)
+            self.clear_all_btn.pack(side="left", padx=2)
 
             print("DEBUG: Creating tree area...")
             # Tree area
@@ -6213,14 +6377,14 @@ class SelectSourcesDialog(tk.Toplevel):
             action_frame = tk.Frame(self, bg=self.theme.get('bg_elevated'))
             action_frame.pack(fill="x", padx=15, pady=15)
 
-            ok_btn = tk.Button(action_frame, text=self.add_shortcut_text("OK", "Enter"),
-                              width=12, command=self._on_ok,
-                              bg=self.theme.get('accent'), fg="white", relief="flat")
+            ok_btn = self._create_win11_button(action_frame,
+                                              self.add_shortcut_text("OK", "Enter"),
+                                              self._on_ok, is_primary=True, width=12)
             ok_btn.pack(side="right")
 
-            cancel_btn = tk.Button(action_frame, text=self.add_shortcut_text("Cancel", "Esc"),
-                                  width=12, command=self._on_cancel,
-                                  bg=self.theme.get('danger'), fg="white", relief="flat")
+            cancel_btn = self._create_win11_button(action_frame,
+                                                   self.add_shortcut_text("Cancel", "Esc"),
+                                                   self._on_cancel, width=12)
             cancel_btn.pack(side="right", padx=(0, 8))
             
             print("DEBUG: Widget creation complete")
@@ -6351,13 +6515,14 @@ TIPS:
             text_widget.insert("1.0", help_text)
             text_widget.configure(state="disabled")
 
-            close_btn = tk.Button(help_dlg,
-                                 text="Close (Esc)",
-                                 command=help_dlg.destroy,
-                                 bg=self.theme.get('success'),
-                                 fg="white",
-                                 relief="flat")
-            close_btn.pack(pady=(0,15))
+            btn_frame = tk.Frame(help_dlg, bg=self.theme.get('bg'))
+            btn_frame.pack(pady=(0,15))
+            close_btn = Win11Dialog._create_dialog_button(btn_frame,
+                                                          "Close (Esc)",
+                                                          help_dlg.destroy,
+                                                          self.theme,
+                                                          is_primary=True)
+            close_btn.pack()
             
             help_dlg.bind('<Escape>', lambda e: help_dlg.destroy())
             help_dlg.focus_set()
