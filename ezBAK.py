@@ -145,7 +145,7 @@ class Translator:
             'notice_select_user': 'Select User to begin',
             'notice_filters': 'Filters:Exclude Rules:Name->ondrive*',
             'notice_hidden_system': 'Hidden and System attributes excluded',
-            'notice_appdata': '%AppData% folder is not backed up',
+            'notice_appdata': 'AppData folder is not backed up',
             'notice_detailed_log': 'Detailed log will be saved to a file during operations',
             'notice_responsibility': 'Use of this program is the sole responsibility of the user',
 
@@ -423,7 +423,7 @@ Tips :  Shortcuts are not case-sensitive.""",
             'notice_select_user': '시작하려면 사용자를 선택하세요',
             'notice_filters': '필터:제외 규칙:이름->ondrive*',
             'notice_hidden_system': '숨김 및 시스템 속성 제외됩니다',
-            'notice_appdata': '%AppData% 폴더는 백업되지 않습니다',
+            'notice_appdata': 'AppData 폴더는 백업되지 않습니다',
             'notice_detailed_log': '작업 중 상세 로그 파일로 저장됩니다',
             'notice_responsibility': '이 프로그램의 사용에 대한 책임은 전적으로 사용자에게 있습니다',
             # Dialog titles and messages
