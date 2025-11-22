@@ -839,8 +839,8 @@ class Win11Dialog:
 
         # Center the dialog
         dlg.update_idletasks()
-        width = 450
-        height = 350  # Increased to accommodate longer messages like schedule creation confirmation
+        width = 490
+        height = 380  # Increased to accommodate longer messages like schedule creation confirmation
         x = (dlg.winfo_screenwidth() // 2) - (width // 2)
         y = (dlg.winfo_screenheight() // 2) - (height // 2)
         dlg.geometry(f'{width}x{height}+{x}+{y}')
