@@ -3720,7 +3720,8 @@ class App(tk.Tk):
                                 include_system=data.get('include_system', False),
                                 retention_count=int(data.get('retention_count', 2)),
                                 log_retention_days=int(data.get('log_retention_days', 30)),
-                                user=data.get('user')
+                                user=data.get('user'),
+                                filters=data.get('filters', {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]})
                             )
                             print("DEBUG: Scheduled task created successfully")
                             # The success message is handled within the create_scheduled_task function
@@ -3793,10 +3794,11 @@ class App(tk.Tk):
         except Exception:
             return ''
 
-    def create_scheduled_task(self, task_name, schedule, time_str, user, dest, include_hidden=False, include_system=False, retention_count=2, log_retention_days=30):
+    def create_scheduled_task(self, task_name, schedule, time_str, user, dest, include_hidden=False, include_system=False, retention_count=2, log_retention_days=30, filters=None):
         """
         Create a scheduled task (set to run with administrator privileges)
         """
+        import json
         try:
             # Time format validation and normalization
             from datetime import datetime
@@ -3826,7 +3828,7 @@ class App(tk.Tk):
                 exe_path = sys.executable
                 script_path = f'"{os.path.abspath(__file__)}"'
 
-            # Configure command (including retention option)
+            # Configure command (including retention option and filters)
             if script_path:
                 base_cmd = f'"{exe_path}" {script_path} --user "{user}" --dest "{dest}" --retention {retention_count} --log-retention {log_retention_days}'
             else:
@@ -3836,6 +3838,16 @@ class App(tk.Tk):
                 base_cmd += " --include-hidden"
             if include_system:
                 base_cmd += " --include-system"
+
+            # Add filters if provided
+            if filters is None:
+                filters = {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]}
+
+            # Encode filters as JSON and add to command
+            filters_json = json.dumps(filters)
+            # Escape quotes for command line
+            filters_json_escaped = filters_json.replace('"', '\\"')
+            base_cmd += f' --filters "{filters_json_escaped}"'
                 
             self.write_detailed_log(f"Task command: {base_cmd}")
             self.write_detailed_log(f"Creating scheduled task with retention_count={retention_count}, log_retention_days={log_retention_days}")
@@ -5460,6 +5472,9 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
         self.task_name = None
         self.parent = parent
         self.theme = parent.theme  # Use parent's theme
+        self.translator = parent.translator  # Use parent's translator
+        # Initialize filters with default onedrive* exclude filter
+        self.filters = {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]}
 
         try:
             tk.Toplevel.__init__(self, parent)  # Explicitly initialize Toplevel
@@ -5480,7 +5495,7 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
                 pass
                 
             # Set window size and position
-            w, h = 546, 340
+            w, h = 546, 380
             self.geometry(f"{w}x{h}")
             
             try:
@@ -5584,6 +5599,7 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
         self.bind('<Control-c>', lambda e: self.on_create())
         self.bind('<Control-d>', lambda e: self.on_delete())
         self.bind('<Control-b>', lambda e: self._browse_destination())
+        self.bind('<Control-f>', lambda e: self.open_filter_manager())
         self.bind('<F1>', lambda e: self._show_schedule_help())
 
         # Select schedule type with number keys
@@ -5720,6 +5736,20 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
                 row=row, column=1, sticky="w", padx=15, pady=8
             )
 
+            # Filters
+            row += 1
+            tk.Label(self, text="Filters:", bg=self.theme.get('bg'),
+                    fg=self.theme.get('fg'), font=label_font).grid(
+                row=row, column=0, sticky="w", padx=15, pady=8
+            )
+            tk.Button(
+                self, text=self.add_shortcut_text("Manage Filters...", "Ctrl+F"),
+                command=self.open_filter_manager,
+                bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
+                font=("Segoe UI", 9), relief="flat", bd=0,
+                cursor="hand2"
+            ).grid(row=row, column=1, sticky="w", padx=15, pady=8)
+
             # Button area with modern styling
             row += 1
             btn_frame = tk.Frame(self, bg=self.theme.get('bg'))
@@ -5754,14 +5784,15 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
 Schedule Backup Shortcuts:
 
 Ctrl + C     Create Task
-Ctrl + D     Delete Task  
+Ctrl + D     Delete Task
 Ctrl + B     Browse Destination
+Ctrl + F     Manage Filters
 Esc          Close Dialog
 Enter        Create Task
 F1           Show This Help
 
 Alt + 1      Set to Daily
-Alt + 2      Set to Weekly  
+Alt + 2      Set to Weekly
 Alt + 3      Set to Monthly
 
 Navigation:
@@ -5812,6 +5843,22 @@ Shift + Tab  Move to Previous Field
                 print(f"DEBUG: Destination set to: {folder}")
         except Exception as browse_error:
             print(f"DEBUG: Browse failed: {browse_error}")
+
+    def open_filter_manager(self):
+        """Open filter manager dialog"""
+        try:
+            dlg = FilterManagerDialog(self, current_filters=self.filters)
+            self.wait_window(dlg)
+            if getattr(dlg, 'result', None):
+                self.filters = dlg.result
+                print(f"DEBUG: Filters updated: {self.filters}")
+        except Exception as e:
+            print(f"DEBUG: Filter manager error: {e}")
+            try:
+                Win11Dialog.showerror(self.translator.get('error'), f"{self.translator.get('filter_manager_error')}: {e}",
+                                    parent=self, theme=self.theme, translator=self.translator)
+            except Exception:
+                pass
 
     def on_create(self):
         """Create button handler"""
@@ -5866,7 +5913,8 @@ Shift + Tab  Move to Previous Field
                 "include_system": self.system_var.get(),
                 "retention_count": int(self.retention_count_var.get()),
                 "log_retention_days": int(self.log_retention_days_var.get()),
-                "user": user_name
+                "user": user_name,
+                "filters": self.filters
             }
             print(f"DEBUG: Result set: {self.result}")
             self._safe_destroy()
@@ -6992,7 +7040,7 @@ TIPS:
         """OK handler for Enter key"""
         self._on_ok()
 
-def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=False, log_folder=None, retention_count=2, log_retention_days=30):
+def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=False, log_folder=None, retention_count=2, log_retention_days=30, filters=None):
     """
     ommon backup logic for GUI and scheduler (detailed log + cleanup added)
     ame logic as run_backup() but executes without UI updates
@@ -7067,8 +7115,11 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
 
         return False
 
-    # Default filters for scheduled backup (same as GUI default)
-    default_filters = {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]}
+    # Use provided filters or default filters for scheduled backup (same as GUI default)
+    if filters is None:
+        filters = {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]}
+
+    default_filters = filters
 
     def matches_filter(filepath, is_dir=False):
         """Check if filepath matches any filter rules"""
@@ -7463,6 +7514,7 @@ if __name__ == "__main__":
         parser.add_argument("--retention", type=int, default=2, help="Number of backups to keep")
         parser.add_argument("--log-retention", type=int, default=30, help="Number of days to keep logs")
         parser.add_argument("--log-folder", default="logs")
+        parser.add_argument("--filters", type=str, help="JSON-encoded filter configuration")
         
         # Use parse_known_args to ignore other arguments
         args, unknown = parser.parse_known_args()
@@ -7470,10 +7522,21 @@ if __name__ == "__main__":
         if args.user and args.dest:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             print(f"[{timestamp}] Headless backup start for user '{args.user}'")
-            
+
             # Modification: Display actual delivered retention values ​​in log
             print(f"[{timestamp}] Command line args: retention={args.retention}, log_retention={args.log_retention}")
-            
+
+            # Parse filters from JSON if provided
+            import json
+            filters = None
+            if args.filters:
+                try:
+                    filters = json.loads(args.filters)
+                    print(f"[{timestamp}] Filters loaded: {filters}")
+                except Exception as e:
+                    print(f"[{timestamp}] WARNING: Failed to parse filters JSON: {e}")
+                    filters = None
+
             try:
                 backup_path, log_path = core_run_backup(
                     args.user,
@@ -7482,7 +7545,8 @@ if __name__ == "__main__":
                     include_system=args.include_system,
                     log_folder=args.log_folder,
                     retention_count=args.retention,  # Using values ​​passed from the command line
-                    log_retention_days=args.log_retention  # Using values ​​passed from the command line
+                    log_retention_days=args.log_retention,  # Using values ​​passed from the command line
+                    filters=filters
                 )
                 print(f"[{timestamp}] Backup finished → {backup_path}")
                 print(f"[{timestamp}] Log saved at {log_path}")
