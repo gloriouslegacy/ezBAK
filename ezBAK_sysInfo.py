@@ -5856,12 +5856,12 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
         """is_hidden function for headless mode"""
         if not os.path.exists(filepath):
             return False
-        
+
         # Basic checks
         base = os.path.basename(filepath).lower()
         if base.startswith('.') or base in ('thumbs.db', 'desktop.ini', '$recycle.bin'):
             return True
-            
+
         if base in ('appdata', 'application data', 'local settings'):
             if not (include_hidden and include_system):
                 return True
@@ -5887,6 +5887,73 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
             if is_hidden_attr and not include_hidden:
                 return True
             if is_system_attr and not include_system:
+                return True
+        except Exception:
+            pass
+
+        return False
+
+    # Default filters for scheduled backup (same as GUI default)
+    default_filters = {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]}
+
+    def matches_filter(filepath, is_dir=False):
+        """Check if filepath matches any filter rules"""
+        import fnmatch
+
+        try:
+            name = os.path.basename(filepath)
+            name_l = name.lower()
+            ext_l = os.path.splitext(name_l)[1].lstrip('.')
+            filepath_lower = filepath.lower()
+
+            def _matches(rule):
+                try:
+                    rtype = (rule.get('type') or '').lower()
+                    patt = (rule.get('pattern') or '').strip()
+                    if not patt:
+                        return False
+                    patt_lower = patt.lower()
+
+                    if rtype == 'ext':
+                        if is_dir:
+                            return False
+                        patt_clean = patt_lower.lstrip('*.')
+                        return ext_l == patt_clean
+
+                    elif rtype == 'name':
+                        if '*' in patt_lower or '?' in patt_lower:
+                            return fnmatch.fnmatch(name_l, patt_lower)
+                        else:
+                            return name_l == patt_lower
+
+                    elif rtype == 'path':
+                        # Simple contains check
+                        if patt_lower in filepath_lower:
+                            return True
+                        # Normalized path matching
+                        path_normalized = filepath_lower.replace('\\', '/')
+                        patt_normalized = patt_lower.replace('\\', '/')
+                        if patt_normalized in path_normalized:
+                            return True
+                        # Wildcard matching
+                        if '*' in patt_normalized or '?' in patt_normalized:
+                            return fnmatch.fnmatch(path_normalized, patt_normalized)
+                    return False
+                except Exception:
+                    return False
+
+            # Excludes take precedence
+            for rule in default_filters.get('exclude', []) or []:
+                if _matches(rule):
+                    return True
+
+            # Includes: if any include rules exist, only allow matching files
+            inc_rules = default_filters.get('include', []) or []
+            if inc_rules and not is_dir:
+                for rule in inc_rules:
+                    if _matches(rule):
+                        return False
+                # no include matched -> exclude
                 return True
         except Exception:
             pass
@@ -5934,14 +6001,16 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
                     # Safe directory filtering
                     original_dirnames = dirnames.copy()
                     dirnames.clear()
-                    
+
                     for d in original_dirnames:
                         full_dir_path = os.path.join(dirpath, d)
                         try:
-                            if not is_hidden_headless(full_dir_path):
-                                dirnames.append(d)
-                            else:
+                            if is_hidden_headless(full_dir_path):
                                 log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Skipping hidden directory: {full_dir_path}\n")
+                            elif matches_filter(full_dir_path, is_dir=True):
+                                log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Skipping filtered directory: {full_dir_path}\n")
+                            else:
+                                dirnames.append(d)
                         except Exception as e:
                             log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Error checking directory {full_dir_path}: {e}\n")
                             dirnames.append(d)  # Include directory on error
@@ -5963,12 +6032,17 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
                         try:
                             src_file = os.path.join(dirpath, f)
                             dest_file = os.path.join(dest_dir_path, f)
-                            
+
                             # Check hidden files
                             if is_hidden_headless(src_file):
                                 log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Skipping hidden file: {src_file}\n")
                                 continue
-                            
+
+                            # Check filter rules (e.g., onedrive*)
+                            if matches_filter(src_file, is_dir=False):
+                                log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Skipping filtered file: {src_file}\n")
+                                continue
+
                             # Copy file
                             log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Copying file: {src_file} -> {dest_file}\n")
                             copied_bytes = copy_file_safe_headless(src_file, dest_file)
