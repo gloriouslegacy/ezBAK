@@ -1048,6 +1048,8 @@ def get_system_info():
     Get baseboard model name or product name via WMI
     priority: Baseboard Product → Computer System Model  Computer System Manufacturer → Fallback "Unknown"
     """
+    import locale
+
     def clean_name(name):
         """ Remove and clean up unusable characters in file names"""
         if not name or name.lower() in ('to be filled by o.e.m.', 'system product name', 'system version'):
@@ -1058,6 +1060,8 @@ def get_system_info():
         return cleaned if cleaned else None
 
     system_name = "Unknown"
+    # Use system default encoding (e.g., cp949 on Korean Windows)
+    system_encoding = locale.getpreferredencoding()
 
     # 1. Try to read from Windows Registry first
     try:
@@ -1081,9 +1085,9 @@ def get_system_info():
         print(f"DEBUG: Registry query failed: {e}")
     
     try:
-        # 2. Try WMI Baseboard product name 
+        # 2. Try WMI Baseboard product name
         cmd = ['wmic', 'baseboard', 'get', 'product', '/value']
-        result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+        result = subprocess.run(cmd, capture_output=True, text=True, encoding=system_encoding, errors='replace')
         if result.returncode == 0:
             for line in result.stdout.splitlines():
                 if line.startswith('Product='):
@@ -1099,7 +1103,7 @@ def get_system_info():
     try:
         # 3. Try WMI Computer system model name
         cmd = ['wmic', 'computersystem', 'get', 'model', '/value']
-        result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+        result = subprocess.run(cmd, capture_output=True, text=True, encoding=system_encoding, errors='replace')
         if result.returncode == 0:
             for line in result.stdout.splitlines():
                 if line.startswith('Model='):
@@ -1115,7 +1119,7 @@ def get_system_info():
     try:
         # 4. Try WMI Manufacturer's name (last resort)
         cmd = ['wmic', 'computersystem', 'get', 'manufacturer', '/value']
-        result = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='ignore')
+        result = subprocess.run(cmd, capture_output=True, text=True, encoding=system_encoding, errors='replace')
         if result.returncode == 0:
             for line in result.stdout.splitlines():
                 if line.startswith('Manufacturer='):
@@ -3886,15 +3890,20 @@ class App(tk.Tk):
             self.write_detailed_log(f"Task will run as: {run_as_user} with HIGHEST privileges")
             
             # Execute command
+            # On Windows, use system default encoding (e.g., cp949 on Korean Windows)
+            # to avoid encoding errors with special characters
+            import locale
+            system_encoding = locale.getpreferredencoding()
+
             try:
                 result = subprocess.run(
-                    cmd_args, 
+                    cmd_args,
                     check=False,
-                    shell=False, 
-                    capture_output=True, 
-                    text=True, 
-                    encoding='utf-8',
-                    errors='ignore',
+                    shell=False,
+                    capture_output=True,
+                    text=True,
+                    encoding=system_encoding,
+                    errors='replace',  # Replace problematic characters instead of ignoring
                     timeout=30
                 )
                 
