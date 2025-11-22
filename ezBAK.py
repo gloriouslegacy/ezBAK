@@ -2294,7 +2294,47 @@ class App(tk.Tk):
                 self._log_file = open(path, "a", encoding="utf-8", errors="ignore")
                 self.log_file_path = path
                 try:
-                    self._log_file.write(f"[POLICY] Hidden={self.hidden_mode_var.get()} System={self.system_mode_var.get()}\n")
+                    # Get retention values
+                    try:
+                        backup_keep = self.retention_count_var.get()
+                    except:
+                        backup_keep = '2'
+                    try:
+                        log_keep = self.log_retention_days_var.get()
+                    except:
+                        log_keep = '30'
+
+                    # Format timestamp for log
+                    log_timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+                    # Write Policy line
+                    self._log_file.write(f"[{log_timestamp}] Policy: Hidden={self.hidden_mode_var.get()}, System={self.system_mode_var.get()}, BackupKeep={backup_keep}, LogKeep={log_keep}\n")
+
+                    # Format filters
+                    filters = getattr(self, 'filters', {'include': [], 'exclude': []}) or {'include': [], 'exclude': []}
+
+                    # Format include filters
+                    include_list = filters.get('include', []) or []
+                    if include_list:
+                        include_str = ', '.join([f"{f.get('type', '').lower()}:{f.get('pattern', '')}" for f in include_list])
+                    else:
+                        include_str = 'None'
+
+                    # Format exclude filters - add default hidden files pattern
+                    exclude_list = filters.get('exclude', []) or []
+                    exclude_patterns = ['name:^\\\\...*']  # Default: exclude hidden files starting with dot
+                    for f in exclude_list:
+                        pattern_type = f.get('type', '').lower()
+                        pattern_val = f.get('pattern', '')
+                        exclude_patterns.append(f"{pattern_type}:{pattern_val}")
+                    exclude_str = ', '.join(exclude_patterns)
+
+                    # Write Filters line
+                    self._log_file.write(f"[{log_timestamp}] Filters: Include=[{include_str}], Exclude=[{exclude_str}]\n")
+
+                    # Write separator
+                    self._log_file.write(f"[{log_timestamp}] --------------------------------------------------\n")
+
                     self._log_file.flush()
                 except Exception:
                     pass
@@ -2906,7 +2946,7 @@ class App(tk.Tk):
             self.message_queue.put(('update_status', "Calculating total size..."))
             total_bytes = self.compute_total_bytes_safe(user_profile_path)
             self.message_queue.put(('update_progress_max', total_bytes))
-            self.write_detailed_log(f"Total bytes to copy: {total_bytes}")
+            self.write_detailed_log(f"Calculating total size... {self.format_bytes(total_bytes)}")
 
             # Check available space
             self.message_queue.put(('update_status', "Checking available space..."))
@@ -7057,9 +7097,51 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
             print(f"ERROR copying file {src} -> {dst}: {e}")
             return 0
 
+    # Pre-calculate total size
+    def calculate_total_size(root_path):
+        """Calculate total size of files to backup"""
+        total = 0
+        for dirpath, dirnames, filenames in os.walk(root_path, topdown=True, onerror=None):
+            try:
+                original_dirnames = dirnames.copy()
+                dirnames.clear()
+                for d in original_dirnames:
+                    full_dir_path = os.path.join(dirpath, d)
+                    try:
+                        if not is_hidden_headless(full_dir_path):
+                            dirnames.append(d)
+                    except:
+                        dirnames.append(d)
+
+                for f in filenames:
+                    try:
+                        src_file = os.path.join(dirpath, f)
+                        if not is_hidden_headless(src_file):
+                            total += os.path.getsize(src_file)
+                    except:
+                        pass
+            except:
+                pass
+        return total
+
     with open(log_path, "w", encoding="utf-8") as log:
         log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Backup start for '{user_name}' → {backup_path}\n")
-        log.write(f"[POLICY] Hidden={'include' if include_hidden else 'exclude'} System={'include' if include_system else 'exclude'}\n")
+
+        # Write Policy line
+        log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Policy: Hidden={'include' if include_hidden else 'exclude'}, System={'include' if include_system else 'exclude'}, BackupKeep={retention_count}, LogKeep={log_retention_days}\n")
+
+        # Write Filters line (default filters for scheduled backup)
+        log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Filters: Include=[None], Exclude=[name:^\\\\...*]\n")
+
+        # Write separator
+        log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] --------------------------------------------------\n")
+
+        # Calculate and log total size
+        try:
+            precalc_total = calculate_total_size(user_home)
+            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Calculating total size... {format_bytes(precalc_total)}\n")
+        except Exception as e:
+            log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Note: Could not pre-calculate total size: {e}\n")
 
         try:
             # Same logic as run_backup()
