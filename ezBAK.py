@@ -839,8 +839,8 @@ class Win11Dialog:
 
         # Center the dialog
         dlg.update_idletasks()
-        width = 420
-        height = 280  # Increased from 200 to 280 to accommodate longer messages
+        width = 450
+        height = 350  # Increased to accommodate longer messages like schedule creation confirmation
         x = (dlg.winfo_screenwidth() // 2) - (width // 2)
         y = (dlg.winfo_screenheight() // 2) - (height // 2)
         dlg.geometry(f'{width}x{height}+{x}+{y}')
@@ -865,7 +865,7 @@ class Win11Dialog:
                 bg=theme.get('bg_elevated'),
                 fg=theme.get('fg'),
                 font=("Segoe UI", 10),
-                wraplength=320,
+                wraplength=360,
                 justify='left').pack(side='left', fill='both', expand=True)
 
         # Button area
@@ -3720,6 +3720,7 @@ class App(tk.Tk):
                                 dest=data.get('dest'),
                                 schedule=data.get('schedule'),
                                 time_str=data.get('time_str'),
+                                monthly_day=data.get('monthly_day', 1),
                                 include_hidden=data.get('include_hidden', False),
                                 include_system=data.get('include_system', False),
                                 retention_count=int(data.get('retention_count', 2)),
@@ -3789,7 +3790,7 @@ class App(tk.Tk):
         config_dir = os.path.join(appdata, 'ezBAK', 'ezBAK_Schedule')
         return config_dir
 
-    def _save_schedule_config(self, task_name, user, dest, schedule, time_str,
+    def _save_schedule_config(self, task_name, user, dest, schedule, time_str, monthly_day=1,
                              include_hidden=False, include_system=False,
                              retention_count=2, log_retention_days=30, filters=None):
         """
@@ -3815,6 +3816,7 @@ class App(tk.Tk):
                 'dest': dest,
                 'schedule': schedule,
                 'time_str': time_str,
+                'monthly_day': monthly_day,
                 'include_hidden': include_hidden,
                 'include_system': include_system,
                 'retention_count': retention_count,
@@ -3871,7 +3873,7 @@ class App(tk.Tk):
         except Exception:
             return ''
 
-    def create_scheduled_task(self, task_name, schedule, time_str, user, dest, include_hidden=False, include_system=False, retention_count=2, log_retention_days=30, filters=None):
+    def create_scheduled_task(self, task_name, schedule, time_str, user, dest, monthly_day=1, include_hidden=False, include_system=False, retention_count=2, log_retention_days=30, filters=None):
         """
         Create a scheduled task (set to run with administrator privileges)
         """
@@ -3916,6 +3918,7 @@ class App(tk.Tk):
                 dest=dest,
                 schedule=schedule,
                 time_str=time_str,
+                monthly_day=monthly_day,
                 include_hidden=include_hidden,
                 include_system=include_system,
                 retention_count=retention_count,
@@ -3952,7 +3955,7 @@ class App(tk.Tk):
                 "/st", formatted_time,
                 "/rl", "HIGHEST",     # Highest privilege level (administrator rights)
                 "/ru", run_as_user,   # Run as current user
-                "/it",                # Interactive token (run only when logged in)
+                "/np",                # No password stored (uses logged-on user's credentials)
                 "/f"                  # Overwrite if existing task exists
             ]
             
@@ -3960,7 +3963,8 @@ class App(tk.Tk):
             if sc_type == "WEEKLY":
                 cmd_args.extend(["/d", "SUN"])
             elif sc_type == "MONTHLY":
-                cmd_args.extend(["/d", "1"])
+                # Use the selected monthly day (1-30)
+                cmd_args.extend(["/d", str(monthly_day)])
 
             # Log command to be executed
             self.write_detailed_log(f"schtasks command with admin privileges: {' '.join(cmd_args)}")
@@ -4120,6 +4124,21 @@ class App(tk.Tk):
                 pass
             self.message_queue.put(('log', f"Schedule delete failed: {e}"))
             return
+
+        # Delete the schedule configuration file
+        try:
+            config_dir = self._get_schedule_config_dir()
+            safe_task_name = re.sub(r'[<>:"/\\|?*]', '_', task_name)
+            config_file = os.path.join(config_dir, f"{safe_task_name}.json")
+
+            if os.path.exists(config_file):
+                os.remove(config_file)
+                self.write_detailed_log(f"Schedule configuration file deleted: {config_file}")
+                self.message_queue.put(('log', f"Config file deleted: {config_file}"))
+        except Exception as config_error:
+            self.write_detailed_log(f"Failed to delete schedule config file: {config_error}")
+            # Don't fail the whole operation if config file deletion fails
+
         try:
             Win11Dialog.showinfo(self.translator.get('task_scheduler'), f"{self.translator.get('task_deleted')}: '{task_name}'",
                                parent=self, theme=self.theme, translator=self.translator)
@@ -5748,26 +5767,73 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
                     font=label_font).grid(
                 row=row, column=0, sticky="w", padx=15, pady=8
             )
+
+            schedule_frame = tk.Frame(self, bg=self.theme.get('bg'))
+            schedule_frame.grid(row=row, column=1, columnspan=2, sticky="w", padx=15, pady=8)
+
             self.schedule_var = tk.StringVar(value="Daily")
             schedule_combo = ttk.Combobox(
-                self, textvariable=self.schedule_var,
+                schedule_frame, textvariable=self.schedule_var,
                 values=["Daily", "Weekly", "Monthly"], state="readonly",
                 width=18, font=entry_font
             )
-            schedule_combo.grid(row=row, column=1, sticky="w", padx=15, pady=8)
+            schedule_combo.pack(side="left")
+
+            # Day selector for Monthly schedule (1-30)
+            tk.Label(schedule_frame, text="  Day:", bg=self.theme.get('bg'),
+                    fg=self.theme.get('fg'), font=("Segoe UI", 9)).pack(side="left", padx=(10, 5))
+
+            self.monthly_day_var = tk.StringVar(value="1")
+            self.monthly_day_combo = ttk.Combobox(
+                schedule_frame, textvariable=self.monthly_day_var,
+                values=[str(i) for i in range(1, 31)],
+                state="readonly",
+                width=4, font=entry_font
+            )
+            self.monthly_day_combo.pack(side="left")
+
+            # Update visibility based on schedule type
+            def on_schedule_change(*args):
+                if self.schedule_var.get() == "Monthly":
+                    self.monthly_day_combo.config(state="readonly")
+                else:
+                    self.monthly_day_combo.config(state="disabled")
+
+            self.schedule_var.trace_add('write', on_schedule_change)
+            on_schedule_change()  # Initialize visibility
 
             # Time
             row += 1
-            tk.Label(self, text="Time (HH:MM)", bg=self.theme.get('bg'),
+            tk.Label(self, text="Time", bg=self.theme.get('bg'),
                     fg=self.theme.get('fg'), font=label_font).grid(
                 row=row, column=0, sticky="w", padx=15, pady=8
             )
-            self.time_var = tk.StringVar(value="02:00")
-            tk.Entry(self, textvariable=self.time_var, width=18, font=entry_font,
-                    bg=self.theme.get('bg_elevated'), fg=self.theme.get('fg'),
-                    relief="solid", bd=1).grid(
-                row=row, column=1, sticky="w", padx=15, pady=8
+
+            time_frame = tk.Frame(self, bg=self.theme.get('bg'))
+            time_frame.grid(row=row, column=1, sticky="w", padx=15, pady=8)
+
+            # Hour combobox (00-23)
+            self.hour_var = tk.StringVar(value="02")
+            hour_combo = ttk.Combobox(
+                time_frame, textvariable=self.hour_var,
+                values=[f"{i:02d}" for i in range(24)],
+                state="readonly",
+                width=4, font=entry_font
             )
+            hour_combo.pack(side="left")
+
+            tk.Label(time_frame, text=":", bg=self.theme.get('bg'),
+                    fg=self.theme.get('fg'), font=label_font).pack(side="left", padx=5)
+
+            # Minute combobox (00-59)
+            self.minute_var = tk.StringVar(value="00")
+            minute_combo = ttk.Combobox(
+                time_frame, textvariable=self.minute_var,
+                values=[f"{i:02d}" for i in range(60)],
+                state="readonly",
+                width=4, font=entry_font
+            )
+            minute_combo.pack(side="left")
 
             # Attributes
             row += 1
@@ -5970,8 +6036,12 @@ Shift + Tab  Move to Previous Field
                     parent=self, theme=self.theme, translator=self.translator):
                     return
             
+            # Combine hour and minute into time string
+            hour = self.hour_var.get()
+            minute = self.minute_var.get()
+            time_str = f"{hour}:{minute}"
+
             # Validate time format
-            time_str = self.time_var.get().strip()
             try:
                 from datetime import datetime
                 time_obj = datetime.strptime(time_str, "%H:%M")
@@ -5995,6 +6065,7 @@ Shift + Tab  Move to Previous Field
                 "dest": dest,
                 "schedule": self.schedule_var.get(),
                 "time_str": time_str,
+                "monthly_day": int(self.monthly_day_var.get()),
                 "include_hidden": self.hidden_var.get(),
                 "include_system": self.system_var.get(),
                 "retention_count": int(self.retention_count_var.get()),
