@@ -3985,7 +3985,7 @@ class App(tk.Tk):
                     text=True,
                     encoding=system_encoding,
                     errors='replace',  # Replace problematic characters instead of ignoring
-                    timeout=30
+                    timeout=90
                 )
                 
                 # Log results

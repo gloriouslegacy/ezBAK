@@ -2872,14 +2872,14 @@ class App(tk.Tk):
             # Execute command
             try:
                 result = subprocess.run(
-                    cmd_args, 
+                    cmd_args,
                     check=False,
-                    shell=False, 
-                    capture_output=True, 
-                    text=True, 
+                    shell=False,
+                    capture_output=True,
+                    text=True,
                     encoding='utf-8',
                     errors='ignore',
-                    timeout=30
+                    timeout=90
                 )
                 
                 # Log results
