@@ -3862,12 +3862,14 @@ class App(tk.Tk):
         Create a scheduled task (set to run with administrator privileges)
         """
         import json
+        print(f"DEBUG: create_scheduled_task called with task_name={task_name}, schedule={schedule}, time_str={time_str}")
         try:
             # Time format validation and normalization
             from datetime import datetime
             try:
                 time_obj = datetime.strptime(time_str.strip(), "%H:%M")
                 formatted_time = time_obj.strftime("%H:%M")
+                print(f"DEBUG: Time format validated: {time_str} -> {formatted_time}")
                 self.write_detailed_log(f"Time format validated: {time_str} -> {formatted_time}")
             except ValueError as ve:
                 raise ValueError(f"Invalid time format '{time_str}'. Please use HH:MM format (e.g., 14:30)")
@@ -3961,6 +3963,7 @@ class App(tk.Tk):
             system_encoding = locale.getpreferredencoding()
 
             try:
+                print(f"DEBUG: Executing schtasks command: {' '.join(cmd_args)}")
                 result = subprocess.run(
                     cmd_args,
                     check=False,
@@ -3971,7 +3974,8 @@ class App(tk.Tk):
                     errors='replace',  # Replace problematic characters instead of ignoring
                     timeout=180  # Increased from 90 to 180 seconds to prevent timeouts on busy systems
                 )
-                
+
+                print(f"DEBUG: schtasks command completed with returncode={result.returncode}")
                 # Log results
                 self.write_detailed_log(f"schtasks return code: {result.returncode}")
                 if result.stdout:
@@ -3981,6 +3985,7 @@ class App(tk.Tk):
                     
                 # Check success
                 if result.returncode == 0:
+                    print(f"DEBUG: schtasks command succeeded (returncode=0)")
                     success_msg = (
                         f"Scheduled task '{task_name}' created successfully!\n\n"
                         f"Schedule: {schedule} at {formatted_time}\n"
@@ -3996,6 +4001,7 @@ class App(tk.Tk):
                     self.write_detailed_log(f"Task creation successful: {task_name} (with admin privileges)")
                     self.message_queue.put(('log', f"Scheduled task '{task_name}' created with administrator privileges"))
 
+                    print(f"DEBUG: Returning success message from create_scheduled_task")
                     # Return success message instead of showing dialog here (dialog will be shown from main thread)
                     return success_msg
                     
@@ -4025,8 +4031,10 @@ class App(tk.Tk):
         Thread wrapper for create_scheduled_task to prevent UI blocking
         """
         try:
+            print(f"DEBUG: Thread started with task_name={task_data.get('task_name')}")
             self.message_queue.put(('log', f"Creating scheduled task '{task_data.get('task_name')}'..."))
 
+            print(f"DEBUG: Calling create_scheduled_task...")
             # Call the actual task creation method
             result = self.create_scheduled_task(
                 task_name=task_data.get('task_name'),
@@ -4042,22 +4050,29 @@ class App(tk.Tk):
                 filters=task_data.get('filters', {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]})
             )
 
+            print(f"DEBUG: create_scheduled_task returned: {result}")
             self.message_queue.put(('log', f"Scheduled task '{task_data.get('task_name')}' created successfully"))
 
             # Show success dialog in main thread (result is the success message)
             if result:
+                print(f"DEBUG: Scheduling success dialog in main thread")
                 self.after(100, lambda msg=result: self._show_task_creation_success(msg))
+            else:
+                print(f"DEBUG: No result returned from create_scheduled_task")
 
         except Exception as task_error:
             # Handle errors in the thread
+            print(f"DEBUG: Exception in thread: {task_error}")
             error_msg = f"Failed to create scheduled task: {str(task_error)}"
             self.write_detailed_log(f"Thread error: {error_msg}")
             self.message_queue.put(('log', error_msg))
 
             # Schedule error dialog to show in main thread
+            print(f"DEBUG: Scheduling error dialog in main thread")
             self.after(100, lambda: self._show_task_creation_error(error_msg))
         finally:
             # Re-enable buttons in main thread
+            print(f"DEBUG: Re-enabling buttons")
             self.after(100, lambda: self.set_buttons_state("normal"))
 
     def _show_task_creation_success(self, success_msg):
