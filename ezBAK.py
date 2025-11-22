@@ -3857,9 +3857,19 @@ class App(tk.Tk):
         except Exception:
             return ''
 
-    def _create_task_xml(self, task_name, command, formatted_time, sc_type, run_as_user, monthly_day=1):
+    def _create_task_xml(self, task_name, executable, arguments, formatted_time, sc_type, run_as_user, monthly_day=1):
         """
         Create XML file for scheduled task to avoid 261-character limit of /tr parameter
+
+        Args:
+            task_name: Name of the scheduled task
+            executable: Path to the executable (e.g., python.exe)
+            arguments: Command-line arguments for the executable
+            formatted_time: Time in HH:MM format
+            sc_type: Schedule type (DAILY, WEEKLY, MONTHLY)
+            run_as_user: User account to run the task
+            monthly_day: Day of month for monthly schedules (default: 1)
+
         Returns path to the temporary XML file
         """
         import tempfile
@@ -3964,7 +3974,8 @@ class App(tk.Tk):
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>{command}</Command>
+      <Command>{executable}</Command>
+      <Arguments>{arguments}</Arguments>
     </Exec>
   </Actions>
 </Task>'''
@@ -4045,14 +4056,15 @@ class App(tk.Tk):
             )
 
             # Configure command to use schedule config file
-            # Build command without escaping (will be embedded in XML)
+            # Separate executable and arguments for proper Windows Task Scheduler format
+            executable = exe_path
             if script_path:
-                base_cmd = f'"{exe_path}" "{script_path}" --schedule-config "{config_file}"'
+                arguments = f'"{script_path}" --schedule-config "{config_file}"'
             else:
-                base_cmd = f'"{exe_path}" --schedule-config "{config_file}"'
+                arguments = f'--schedule-config "{config_file}"'
 
-            self.write_detailed_log(f"Task command: {base_cmd}")
-            self.write_detailed_log(f"Command length: {len(base_cmd)} characters")
+            self.write_detailed_log(f"Task executable: {executable}")
+            self.write_detailed_log(f"Task arguments: {arguments}")
             self.write_detailed_log(f"Schedule config saved to: {config_file}")
             self.write_detailed_log(f"Creating scheduled task with retention_count={retention_count}, log_retention_days={log_retention_days}")
 
@@ -4069,7 +4081,8 @@ class App(tk.Tk):
             # Create XML file for task (avoids 261-character limit of /tr parameter)
             xml_file = self._create_task_xml(
                 task_name=task_name,
-                command=base_cmd,
+                executable=executable,
+                arguments=arguments,
                 formatted_time=formatted_time,
                 sc_type=sc_type,
                 run_as_user=run_as_user,
