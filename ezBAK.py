@@ -3992,18 +3992,12 @@ class App(tk.Tk):
                         f"Run Level: Administrator (Highest Privileges)\n"
                         f"Run As: {run_as_user}"
                     )
-                    
+
                     self.write_detailed_log(f"Task creation successful: {task_name} (with admin privileges)")
                     self.message_queue.put(('log', f"Scheduled task '{task_name}' created with administrator privileges"))
-                    
-                    try:
-                        Win11Dialog.showinfo(self.translator.get('schedule_created'), success_msg,
-                                           parent=self, theme=self.theme, translator=self.translator)
-                    except Exception as mb_error:
-                        self.write_detailed_log(f"messagebox.showinfo failed: {mb_error}")
-                        print(f"Task created successfully with admin privileges: {task_name}")
-                        
-                    return True
+
+                    # Return success message instead of showing dialog here (dialog will be shown from main thread)
+                    return success_msg
                     
                 else:
                     # Detailed error analysis on failure
@@ -4034,7 +4028,7 @@ class App(tk.Tk):
             self.message_queue.put(('log', f"Creating scheduled task '{task_data.get('task_name')}'..."))
 
             # Call the actual task creation method
-            self.create_scheduled_task(
+            result = self.create_scheduled_task(
                 task_name=task_data.get('task_name'),
                 dest=task_data.get('dest'),
                 schedule=task_data.get('schedule'),
@@ -4050,6 +4044,10 @@ class App(tk.Tk):
 
             self.message_queue.put(('log', f"Scheduled task '{task_data.get('task_name')}' created successfully"))
 
+            # Show success dialog in main thread (result is the success message)
+            if result:
+                self.after(100, lambda msg=result: self._show_task_creation_success(msg))
+
         except Exception as task_error:
             # Handle errors in the thread
             error_msg = f"Failed to create scheduled task: {str(task_error)}"
@@ -4061,6 +4059,20 @@ class App(tk.Tk):
         finally:
             # Re-enable buttons in main thread
             self.after(100, lambda: self.set_buttons_state("normal"))
+
+    def _show_task_creation_success(self, success_msg):
+        """Show task creation success in main thread"""
+        try:
+            Win11Dialog.showinfo(
+                self.translator.get('schedule_created'),
+                success_msg,
+                parent=self,
+                theme=self.theme,
+                translator=self.translator
+            )
+        except Exception as dlg_error:
+            self.write_detailed_log(f"Error showing success dialog: {dlg_error}")
+            print(f"Task created successfully: {success_msg}")
 
     def _show_task_creation_error(self, error_msg):
         """Show task creation error in main thread"""
