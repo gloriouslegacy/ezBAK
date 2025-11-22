@@ -840,7 +840,7 @@ class Win11Dialog:
         # Center the dialog
         dlg.update_idletasks()
         width = 420
-        height = 200
+        height = 280  # Increased from 200 to 280 to accommodate longer messages
         x = (dlg.winfo_screenwidth() // 2) - (width // 2)
         y = (dlg.winfo_screenheight() // 2) - (height // 2)
         dlg.geometry(f'{width}x{height}+{x}+{y}')
@@ -7197,8 +7197,24 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
         # Write Policy line
         log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Policy: Hidden={'include' if include_hidden else 'exclude'}, System={'include' if include_system else 'exclude'}, BackupKeep={retention_count}, LogKeep={log_retention_days}\n")
 
-        # Write Filters line (default filters for scheduled backup)
-        log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Filters: Include=[None], Exclude=[name:onedrive*]\n")
+        # Write Filters line (format actual filters from default_filters)
+        # Format include filters
+        include_list = default_filters.get('include', []) or []
+        if include_list:
+            include_str = ', '.join([f"{f.get('type', '').lower()}:{f.get('pattern', '')}" for f in include_list])
+        else:
+            include_str = 'None'
+
+        # Format exclude filters - add default hidden files pattern
+        exclude_list = default_filters.get('exclude', []) or []
+        exclude_patterns = ['name:^\\...*']  # Default: exclude hidden files starting with dot
+        for f in exclude_list:
+            pattern_type = f.get('type', '').lower()
+            pattern_val = f.get('pattern', '')
+            exclude_patterns.append(f"{pattern_type}:{pattern_val}")
+        exclude_str = ', '.join(exclude_patterns)
+
+        log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Filters: Include=[{include_str}], Exclude=[{exclude_str}]\n")
 
         # Write separator
         log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] --------------------------------------------------\n")
