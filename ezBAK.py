@@ -3891,7 +3891,7 @@ class App(tk.Tk):
                 script_path = ""
             else:
                 exe_path = sys.executable
-                script_path = f'"{os.path.abspath(__file__)}"'
+                script_path = os.path.abspath(__file__)
 
             # Prepare filters if not provided
             if filters is None:
@@ -3913,10 +3913,11 @@ class App(tk.Tk):
             )
 
             # Configure command to use schedule config file
+            # For schtasks /tr parameter, we need to escape quotes properly
             if script_path:
-                base_cmd = f'"{exe_path}" {script_path} --schedule-config "{config_file}"'
+                base_cmd = f'\\"{exe_path}\\" \\"{script_path}\\" --schedule-config \\"{config_file}\\"'
             else:
-                base_cmd = f'"{exe_path}" --schedule-config "{config_file}"'
+                base_cmd = f'\\"{exe_path}\\" --schedule-config \\"{config_file}\\"'
 
             self.write_detailed_log(f"Task command: {base_cmd}")
             self.write_detailed_log(f"Schedule config saved to: {config_file}")
