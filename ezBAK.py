@@ -3778,8 +3778,81 @@ class App(tk.Tk):
             except Exception as mb_error:
                 print(f"DEBUG: messagebox.showerror failed: {mb_error}")
 
-            
+
     ############# Schedule Backup Functions #############
+
+    def _get_schedule_config_dir(self):
+        """Get the directory path for schedule configuration files"""
+        appdata = os.environ.get('APPDATA', '')
+        if not appdata:
+            raise RuntimeError("APPDATA environment variable not found")
+        config_dir = os.path.join(appdata, 'ezBAK', 'ezBAK_Schedule')
+        return config_dir
+
+    def _save_schedule_config(self, task_name, user, dest, schedule, time_str,
+                             include_hidden=False, include_system=False,
+                             retention_count=2, log_retention_days=30, filters=None):
+        """
+        Save schedule configuration to a JSON file in %appdata%\ezBAK\ezBAK_Schedule\
+        Returns the path to the saved configuration file
+        """
+        try:
+            # Get config directory
+            config_dir = self._get_schedule_config_dir()
+
+            # Create directory if it doesn't exist
+            os.makedirs(config_dir, exist_ok=True)
+
+            # Create config file path (use task name as filename)
+            # Sanitize task name for filename
+            safe_task_name = re.sub(r'[<>:"/\\|?*]', '_', task_name)
+            config_file = os.path.join(config_dir, f"{safe_task_name}.json")
+
+            # Prepare configuration data
+            config_data = {
+                'task_name': task_name,
+                'user': user,
+                'dest': dest,
+                'schedule': schedule,
+                'time_str': time_str,
+                'include_hidden': include_hidden,
+                'include_system': include_system,
+                'retention_count': retention_count,
+                'log_retention_days': log_retention_days,
+                'filters': filters if filters else {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]},
+                'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            }
+
+            # Save to JSON file
+            with open(config_file, 'w', encoding='utf-8') as f:
+                json.dump(config_data, f, indent=2, ensure_ascii=False)
+
+            self.write_detailed_log(f"Schedule configuration saved to: {config_file}")
+            return config_file
+
+        except Exception as e:
+            error_msg = f"Failed to save schedule configuration: {str(e)}"
+            self.write_detailed_log(error_msg)
+            raise RuntimeError(error_msg) from e
+
+    def _load_schedule_config(self, config_file):
+        """
+        Load schedule configuration from a JSON file
+        Returns a dictionary with configuration data
+        """
+        try:
+            if not os.path.exists(config_file):
+                raise FileNotFoundError(f"Configuration file not found: {config_file}")
+
+            with open(config_file, 'r', encoding='utf-8') as f:
+                config_data = json.load(f)
+
+            return config_data
+
+        except Exception as e:
+            error_msg = f"Failed to load schedule configuration from {config_file}: {str(e)}"
+            raise RuntimeError(error_msg) from e
+
     def _build_auto_backup_command(self, user, dest, include_hidden=False, include_system=False):
         # Build the command string used by Task Scheduler (/TR argument)
         try:
@@ -3832,28 +3905,32 @@ class App(tk.Tk):
                 exe_path = sys.executable
                 script_path = f'"{os.path.abspath(__file__)}"'
 
-            # Configure command (including retention option and filters)
-            if script_path:
-                base_cmd = f'"{exe_path}" {script_path} --user "{user}" --dest "{dest}" --retention {retention_count} --log-retention {log_retention_days}'
-            else:
-                base_cmd = f'"{exe_path}" --user "{user}" --dest "{dest}" --retention {retention_count} --log-retention {log_retention_days}'
-
-            if include_hidden:
-                base_cmd += " --include-hidden"
-            if include_system:
-                base_cmd += " --include-system"
-
-            # Add filters if provided
+            # Prepare filters if not provided
             if filters is None:
                 filters = {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]}
 
-            # Encode filters as JSON and add to command
-            filters_json = json.dumps(filters)
-            # Escape quotes for command line
-            filters_json_escaped = filters_json.replace('"', '\\"')
-            base_cmd += f' --filters "{filters_json_escaped}"'
-                
+            # Save schedule configuration to file
+            config_file = self._save_schedule_config(
+                task_name=task_name,
+                user=user,
+                dest=dest,
+                schedule=schedule,
+                time_str=time_str,
+                include_hidden=include_hidden,
+                include_system=include_system,
+                retention_count=retention_count,
+                log_retention_days=log_retention_days,
+                filters=filters
+            )
+
+            # Configure command to use schedule config file
+            if script_path:
+                base_cmd = f'"{exe_path}" {script_path} --schedule-config "{config_file}"'
+            else:
+                base_cmd = f'"{exe_path}" --schedule-config "{config_file}"'
+
             self.write_detailed_log(f"Task command: {base_cmd}")
+            self.write_detailed_log(f"Schedule config saved to: {config_file}")
             self.write_detailed_log(f"Creating scheduled task with retention_count={retention_count}, log_retention_days={log_retention_days}")
 
             # Get current user info
@@ -7516,6 +7593,7 @@ if __name__ == "__main__":
     def _run_headless_if_requested():
 
         parser = argparse.ArgumentParser()
+        parser.add_argument("--schedule-config", help="Path to schedule configuration file")
         parser.add_argument("--user", help="User name to back up")
         parser.add_argument("--dest", help="Destination folder for backup")
         parser.add_argument("--include-hidden", action="store_true")
@@ -7524,11 +7602,55 @@ if __name__ == "__main__":
         parser.add_argument("--log-retention", type=int, default=30, help="Number of days to keep logs")
         parser.add_argument("--log-folder", default="logs")
         parser.add_argument("--filters", type=str, help="JSON-encoded filter configuration")
-        
+
         # Use parse_known_args to ignore other arguments
         args, unknown = parser.parse_known_args()
 
-        if args.user and args.dest:
+        # Check if schedule config file is provided
+        if args.schedule_config:
+            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            print(f"[{timestamp}] Scheduled backup start using config: {args.schedule_config}")
+
+            try:
+                # Load configuration from file
+                import json
+                if not os.path.exists(args.schedule_config):
+                    print(f"[{timestamp}] ERROR: Configuration file not found: {args.schedule_config}")
+                    sys.exit(1)
+
+                with open(args.schedule_config, 'r', encoding='utf-8') as f:
+                    config = json.load(f)
+
+                print(f"[{timestamp}] Configuration loaded successfully")
+                print(f"[{timestamp}] Task: {config.get('task_name')}")
+                print(f"[{timestamp}] User: {config.get('user')}")
+                print(f"[{timestamp}] Destination: {config.get('dest')}")
+                print(f"[{timestamp}] Retention: {config.get('retention_count')} backups, {config.get('log_retention_days')} days logs")
+
+                # Run backup with loaded configuration
+                backup_path, log_path = core_run_backup(
+                    config.get('user'),
+                    config.get('dest'),
+                    include_hidden=config.get('include_hidden', False),
+                    include_system=config.get('include_system', False),
+                    log_folder=args.log_folder,
+                    retention_count=config.get('retention_count', 2),
+                    log_retention_days=config.get('log_retention_days', 30),
+                    filters=config.get('filters')
+                )
+                print(f"[{timestamp}] Backup finished → {backup_path}")
+                print(f"[{timestamp}] Log saved at {log_path}")
+
+            except Exception as e:
+                print(f"[{timestamp}] ERROR during scheduled backup: {e}")
+                import traceback
+                traceback.print_exc()
+                sys.exit(1)
+
+            sys.exit(0)
+
+        # Legacy mode: direct command line arguments
+        elif args.user and args.dest:
             timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             print(f"[{timestamp}] Headless backup start for user '{args.user}'")
 
@@ -7559,10 +7681,10 @@ if __name__ == "__main__":
                 )
                 print(f"[{timestamp}] Backup finished → {backup_path}")
                 print(f"[{timestamp}] Log saved at {log_path}")
-                
+
             except Exception as e:
                 print(f"[{timestamp}] ERROR during headless backup: {e}")
-                    
+
             sys.exit(0)
 
 
