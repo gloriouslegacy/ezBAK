@@ -3713,34 +3713,18 @@ class App(tk.Tk):
                     if hasattr(dlg, 'result') and dlg.result:
                         data = dlg.result
                         print(f"DEBUG: Creating scheduled task with data: {data}")
-                        
-                        try:
-                            self.create_scheduled_task(
-                                task_name=data.get('task_name'),
-                                dest=data.get('dest'),
-                                schedule=data.get('schedule'),
-                                time_str=data.get('time_str'),
-                                monthly_day=data.get('monthly_day', 1),
-                                include_hidden=data.get('include_hidden', False),
-                                include_system=data.get('include_system', False),
-                                retention_count=int(data.get('retention_count', 2)),
-                                log_retention_days=int(data.get('log_retention_days', 30)),
-                                user=data.get('user'),
-                                filters=data.get('filters', {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]})
-                            )
-                            print("DEBUG: Scheduled task created successfully")
-                            # The success message is handled within the create_scheduled_task function
-                            
-                        except Exception as task_error:
-                            print(f"DEBUG: Task creation failed: {task_error}")
-                            # Don't re-raise exception, display to user instead
-                            error_msg = f"Failed to create scheduled task: {str(task_error)}"
-                            self.message_queue.put(('log', error_msg))
-                            try:
-                                Win11Dialog.showerror(self.translator.get('task_creation_failed'), error_msg,
-                                                    parent=self, theme=self.theme, translator=self.translator)
-                            except Exception:
-                                print(f"ERROR: {error_msg}")
+
+                        # Disable buttons to prevent multiple clicks during task creation
+                        self.set_buttons_state("disabled")
+
+                        # Create and start thread for task creation (prevents UI blocking)
+                        task_thread = threading.Thread(
+                            target=self.run_create_scheduled_task_thread,
+                            args=(data,),
+                            daemon=True
+                        )
+                        task_thread.start()
+                        print("DEBUG: Scheduled task creation thread started")
                     else:
                         print("DEBUG: No result data found")
                         
@@ -3985,7 +3969,7 @@ class App(tk.Tk):
                     text=True,
                     encoding=system_encoding,
                     errors='replace',  # Replace problematic characters instead of ignoring
-                    timeout=90
+                    timeout=180  # Increased from 90 to 180 seconds to prevent timeouts on busy systems
                 )
                 
                 # Log results
@@ -4041,6 +4025,56 @@ class App(tk.Tk):
             
             print(f"ERROR: {error_msg}")
             raise RuntimeError(error_msg) from e
+
+    def run_create_scheduled_task_thread(self, task_data):
+        """
+        Thread wrapper for create_scheduled_task to prevent UI blocking
+        """
+        try:
+            self.message_queue.put(('log', f"Creating scheduled task '{task_data.get('task_name')}'..."))
+
+            # Call the actual task creation method
+            self.create_scheduled_task(
+                task_name=task_data.get('task_name'),
+                dest=task_data.get('dest'),
+                schedule=task_data.get('schedule'),
+                time_str=task_data.get('time_str'),
+                monthly_day=task_data.get('monthly_day', 1),
+                include_hidden=task_data.get('include_hidden', False),
+                include_system=task_data.get('include_system', False),
+                retention_count=int(task_data.get('retention_count', 2)),
+                log_retention_days=int(task_data.get('log_retention_days', 30)),
+                user=task_data.get('user'),
+                filters=task_data.get('filters', {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]})
+            )
+
+            self.message_queue.put(('log', f"Scheduled task '{task_data.get('task_name')}' created successfully"))
+
+        except Exception as task_error:
+            # Handle errors in the thread
+            error_msg = f"Failed to create scheduled task: {str(task_error)}"
+            self.write_detailed_log(f"Thread error: {error_msg}")
+            self.message_queue.put(('log', error_msg))
+
+            # Schedule error dialog to show in main thread
+            self.after(100, lambda: self._show_task_creation_error(error_msg))
+        finally:
+            # Re-enable buttons in main thread
+            self.after(100, lambda: self.set_buttons_state("normal"))
+
+    def _show_task_creation_error(self, error_msg):
+        """Show task creation error in main thread"""
+        try:
+            Win11Dialog.showerror(
+                self.translator.get('task_creation_failed'),
+                error_msg,
+                parent=self,
+                theme=self.theme,
+                translator=self.translator
+            )
+        except Exception as dlg_error:
+            self.write_detailed_log(f"Error showing dialog: {dlg_error}")
+            print(f"ERROR: {error_msg}")
 
     def _analyze_schtasks_error(self, return_code, stderr, stdout):
         """Analyze schtasks error code and provide solutions (including admin privileges)"""
