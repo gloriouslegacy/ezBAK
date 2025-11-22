@@ -3857,6 +3857,138 @@ class App(tk.Tk):
         except Exception:
             return ''
 
+    def _create_task_xml(self, task_name, command, formatted_time, sc_type, run_as_user, monthly_day=1):
+        """
+        Create XML file for scheduled task to avoid 261-character limit of /tr parameter
+        Returns path to the temporary XML file
+        """
+        import tempfile
+        import xml.etree.ElementTree as ET
+        from datetime import datetime, timedelta
+
+        # Parse the time
+        time_parts = formatted_time.split(':')
+        hour = time_parts[0]
+        minute = time_parts[1]
+
+        # Create XML structure for Windows Task Scheduler
+        # Get start boundary (tomorrow at the specified time to avoid immediate execution)
+        start_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+        start_boundary = f"{start_date}T{formatted_time}:00"
+
+        # Build the XML structure
+        xml_template = f'''<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Date>{datetime.now().isoformat()}</Date>
+    <Author>{run_as_user}</Author>
+    <Description>ezBAK Automated Backup Task</Description>
+  </RegistrationInfo>
+  <Triggers>
+'''
+
+        # Add appropriate trigger based on schedule type
+        if sc_type == "DAILY":
+            xml_template += f'''    <CalendarTrigger>
+      <StartBoundary>{start_boundary}</StartBoundary>
+      <Enabled>true</Enabled>
+      <ScheduleByDay>
+        <DaysInterval>1</DaysInterval>
+      </ScheduleByDay>
+    </CalendarTrigger>
+'''
+        elif sc_type == "WEEKLY":
+            xml_template += f'''    <CalendarTrigger>
+      <StartBoundary>{start_boundary}</StartBoundary>
+      <Enabled>true</Enabled>
+      <ScheduleByWeek>
+        <DaysOfWeek>
+          <Sunday />
+        </DaysOfWeek>
+        <WeeksInterval>1</WeeksInterval>
+      </ScheduleByWeek>
+    </CalendarTrigger>
+'''
+        elif sc_type == "MONTHLY":
+            xml_template += f'''    <CalendarTrigger>
+      <StartBoundary>{start_boundary}</StartBoundary>
+      <Enabled>true</Enabled>
+      <ScheduleByMonth>
+        <DaysOfMonth>
+          <Day>{monthly_day}</Day>
+        </DaysOfMonth>
+        <Months>
+          <January />
+          <February />
+          <March />
+          <April />
+          <May />
+          <June />
+          <July />
+          <August />
+          <September />
+          <October />
+          <November />
+          <December />
+        </Months>
+      </ScheduleByMonth>
+    </CalendarTrigger>
+'''
+
+        xml_template += f'''  </Triggers>
+  <Principals>
+    <Principal id="Author">
+      <UserId>{run_as_user}</UserId>
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>HighestAvailable</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <AllowHardTerminate>true</AllowHardTerminate>
+    <StartWhenAvailable>true</StartWhenAvailable>
+    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
+    <IdleSettings>
+      <StopOnIdleEnd>false</StopOnIdleEnd>
+      <RestartOnIdle>false</RestartOnIdle>
+    </IdleSettings>
+    <AllowStartOnDemand>true</AllowStartOnDemand>
+    <Enabled>true</Enabled>
+    <Hidden>false</Hidden>
+    <RunOnlyIfIdle>false</RunOnlyIfIdle>
+    <WakeToRun>false</WakeToRun>
+    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
+    <Priority>7</Priority>
+  </Settings>
+  <Actions Context="Author">
+    <Exec>
+      <Command>{command}</Command>
+    </Exec>
+  </Actions>
+</Task>'''
+
+        # Create temporary XML file
+        try:
+            # Create temp file in the schedules directory for better organization
+            schedules_dir = os.path.join(os.path.expanduser('~'), 'AppData', 'Local', 'ezBAK', 'schedules')
+            os.makedirs(schedules_dir, exist_ok=True)
+
+            xml_file = os.path.join(schedules_dir, f"{task_name}_task.xml")
+
+            # Write XML file with UTF-16 encoding (required by Windows Task Scheduler)
+            with open(xml_file, 'w', encoding='utf-16') as f:
+                f.write(xml_template)
+
+            self.write_detailed_log(f"Task XML file created: {xml_file}")
+            return xml_file
+
+        except Exception as e:
+            error_msg = f"Failed to create task XML file: {str(e)}"
+            self.write_detailed_log(error_msg)
+            raise RuntimeError(error_msg) from e
+
     def create_scheduled_task(self, task_name, schedule, time_str, user, dest, monthly_day=1, include_hidden=False, include_system=False, retention_count=2, log_retention_days=30, filters=None):
         """
         Create a scheduled task (set to run with administrator privileges)
@@ -3913,49 +4045,49 @@ class App(tk.Tk):
             )
 
             # Configure command to use schedule config file
-            # For schtasks /tr parameter, we need to escape quotes properly
+            # Build command without escaping (will be embedded in XML)
             if script_path:
-                base_cmd = f'\\"{exe_path}\\" \\"{script_path}\\" --schedule-config \\"{config_file}\\"'
+                base_cmd = f'"{exe_path}" "{script_path}" --schedule-config "{config_file}"'
             else:
-                base_cmd = f'\\"{exe_path}\\" --schedule-config \\"{config_file}\\"'
+                base_cmd = f'"{exe_path}" --schedule-config "{config_file}"'
 
             self.write_detailed_log(f"Task command: {base_cmd}")
+            self.write_detailed_log(f"Command length: {len(base_cmd)} characters")
             self.write_detailed_log(f"Schedule config saved to: {config_file}")
             self.write_detailed_log(f"Creating scheduled task with retention_count={retention_count}, log_retention_days={log_retention_days}")
 
             # Get current user info
             current_user = os.environ.get('USERNAME', 'Administrator')
             domain = os.environ.get('USERDOMAIN', os.environ.get('COMPUTERNAME', ''))
-            
+
             # Determine user account format
             if domain and domain.upper() != current_user.upper():
                 run_as_user = f"{domain}\\{current_user}"
             else:
                 run_as_user = current_user
 
-            # Configure schtasks command (with admin privileges)
+            # Create XML file for task (avoids 261-character limit of /tr parameter)
+            xml_file = self._create_task_xml(
+                task_name=task_name,
+                command=base_cmd,
+                formatted_time=formatted_time,
+                sc_type=sc_type,
+                run_as_user=run_as_user,
+                monthly_day=monthly_day
+            )
+
+            # Configure schtasks command using XML file
             cmd_args = [
                 "schtasks", "/create",
                 "/tn", task_name,
-                "/sc", sc_type,
-                "/tr", base_cmd,
-                "/st", formatted_time,
-                "/rl", "HIGHEST",     # Highest privilege level (administrator rights)
-                "/ru", run_as_user,   # Run as current user
-                "/np",                # No password stored (uses logged-on user's credentials)
-                "/f"                  # Overwrite if existing task exists
+                "/xml", xml_file,
+                "/f"  # Overwrite if existing task exists
             ]
-            
-            # Additional options
-            if sc_type == "WEEKLY":
-                cmd_args.extend(["/d", "SUN"])
-            elif sc_type == "MONTHLY":
-                # Use the selected monthly day (1-30)
-                cmd_args.extend(["/d", str(monthly_day)])
 
             # Log command to be executed
-            self.write_detailed_log(f"schtasks command with admin privileges: {' '.join(cmd_args)}")
+            self.write_detailed_log(f"schtasks command (XML-based): {' '.join(cmd_args)}")
             self.write_detailed_log(f"Task will run as: {run_as_user} with HIGHEST privileges")
+            self.write_detailed_log(f"Using XML file to avoid command length limitations")
             
             # Execute command
             # On Windows, use system default encoding (e.g., cp949 on Korean Windows)
