@@ -2342,14 +2342,21 @@ class App(tk.Tk):
                         else:
                             include_str = 'None'
 
-                        # Format exclude filters - add default hidden files pattern
+                        # Format exclude filters
                         exclude_list = filters.get('exclude', []) or []
-                        exclude_patterns = ['name:^\\\\...*']  # Default: exclude hidden files starting with dot
+                        
+                        # exclude_patterns = ['name:^\\\\...*']  # Default: exclude hidden files starting with dot
+                        # User-defined exclude patterns only
+                        exclude_patterns = []
                         for f in exclude_list:
                             pattern_type = f.get('type', '').lower()
                             pattern_val = f.get('pattern', '')
                             exclude_patterns.append(f"{pattern_type}:{pattern_val}")
-                        exclude_str = ', '.join(exclude_patterns)
+                        
+                        if exclude_patterns:
+                            exclude_str = ', '.join(exclude_patterns)
+                        else:
+                            exclude_str = 'None'
 
                         # Write Filters line
                         self._log_file.write(f"[{log_timestamp}] Filters: Include=[{include_str}], Exclude=[{exclude_str}]\n")
