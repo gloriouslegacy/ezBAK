@@ -1566,7 +1566,12 @@ class App(tk.Tk):
         # Sound notifications enabled
         self.sound_enabled_var = tk.BooleanVar(value=True)
         # self.filters = {'include': [], 'exclude': []}
-        self.filters = {'include': [], 'exclude': [{'type': 'NAME', 'pattern': 'onedrive*'}]}
+        self.filters = {'include': [], 'exclude': [
+            {'type': 'NAME', 'pattern': 'onedrive*'},
+            {'type': 'NAME', 'pattern': 'thumbs.db'},
+            {'type': 'NAME', 'pattern': 'desktop.ini'},
+            {'type': 'NAME', 'pattern': '$recycle.bin'}
+        ]}
         # Load persisted settings (if any)
         try:
             self.load_settings()
@@ -2345,7 +2350,6 @@ class App(tk.Tk):
                         # Format exclude filters
                         exclude_list = filters.get('exclude', []) or []
                         
-                        # exclude_patterns = ['name:^\\\\...*']  # Default: exclude hidden files starting with dot
                         # User-defined exclude patterns only
                         exclude_patterns = []
                         for f in exclude_list:
@@ -3417,11 +3421,6 @@ class App(tk.Tk):
                         break
                 if not has_match:
                     return True
-            
-            # Check basic hidden files
-            base = os.path.basename(filepath).lower()
-            if base.startswith('.') or base in ('thumbs.db', 'desktop.ini', '$recycle.bin'):
-                return True
             
             # Check Windows attributes
             try:
@@ -6011,7 +6010,11 @@ class App(tk.Tk):
                         except Exception:
                             continue
                     return out
-                self.filters = {'include': _sanitize(inc), 'exclude': _sanitize(exc)}
+                
+                # Merge with default filters - only update if filters exist in saved settings
+                if 'filters' in data:
+                    self.filters = {'include': _sanitize(inc), 'exclude': _sanitize(exc)}
+                # If no filters in settings file, keep default filters initialized in __init__
 
                 # Load theme and language settings
                 if 'theme' in data:
