@@ -7941,14 +7941,18 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
         else:
             include_str = 'None'
 
-        # Format exclude filters - add default hidden files pattern
+        # Format exclude filters
         exclude_list = default_filters.get('exclude', []) or []
-        exclude_patterns = ['name:^\\...*']  # Default: exclude hidden files starting with dot
+        exclude_patterns = []
         for f in exclude_list:
             pattern_type = f.get('type', '').lower()
             pattern_val = f.get('pattern', '')
             exclude_patterns.append(f"{pattern_type}:{pattern_val}")
-        exclude_str = ', '.join(exclude_patterns)
+        
+        if exclude_patterns:
+            exclude_str = ', '.join(exclude_patterns)
+        else:
+            exclude_str = 'None'
 
         log.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] Filters: Include=[{include_str}], Exclude=[{exclude_str}]\n")
 
