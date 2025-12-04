@@ -1565,13 +1565,16 @@ class App(tk.Tk):
         
         # Sound notifications enabled
         self.sound_enabled_var = tk.BooleanVar(value=True)
-        # self.filters = {'include': [], 'exclude': []}
-        self.filters = {'include': [], 'exclude': [
-            {'type': 'NAME', 'pattern': 'onedrive*'},
-            {'type': 'NAME', 'pattern': 'thumbs.db'},
-            {'type': 'NAME', 'pattern': 'desktop.ini'},
-            {'type': 'NAME', 'pattern': '$recycle.bin'}
-        ]}
+        # Initialize filters with default exclude patterns
+        self.filters = {
+            'include': [], 
+            'exclude': [
+                {'type': 'NAME', 'pattern': 'onedrive*'},
+                {'type': 'NAME', 'pattern': 'thumbs.db'},
+                {'type': 'NAME', 'pattern': 'desktop.ini'},
+                {'type': 'NAME', 'pattern': '$recycle.bin'}
+            ]
+        }
         # Load persisted settings (if any)
         try:
             self.load_settings()
@@ -2638,6 +2641,13 @@ class App(tk.Tk):
         """Show dialog to select backup folder from list"""
         dialog = tk.Toplevel(self)
         dialog.title(self.translator.get('select_backup_folder'))
+        
+        # Set titlebar icon
+        try:
+            dialog.iconbitmap(resource_path('./icon/ezbak.ico'))
+        except Exception:
+            pass
+        
         dialog.transient(self)
         dialog.grab_set()
         
@@ -4076,7 +4086,15 @@ class App(tk.Tk):
                 'include_system': include_system,
                 'retention_count': retention_count,
                 'log_retention_days': log_retention_days,
-                'filters': filters if filters else {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]},
+                'filters': filters if filters else {
+                    'include': [], 
+                    'exclude': [
+                        {'type': 'name', 'pattern': 'onedrive*'},
+                        {'type': 'name', 'pattern': 'thumbs.db'},
+                        {'type': 'name', 'pattern': 'desktop.ini'},
+                        {'type': 'name', 'pattern': '$recycle.bin'}
+                    ]
+                },
                 'created_at': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
 
@@ -4309,7 +4327,15 @@ class App(tk.Tk):
 
             # Prepare filters if not provided
             if filters is None:
-                filters = {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]}
+                filters = {
+                    'include': [], 
+                    'exclude': [
+                        {'type': 'name', 'pattern': 'onedrive*'},
+                        {'type': 'name', 'pattern': 'thumbs.db'},
+                        {'type': 'name', 'pattern': 'desktop.ini'},
+                        {'type': 'name', 'pattern': '$recycle.bin'}
+                    ]
+                }
 
             # Save schedule configuration to file
             config_file = self._save_schedule_config(
@@ -4464,7 +4490,15 @@ class App(tk.Tk):
                 retention_count=int(task_data.get('retention_count', 2)),
                 log_retention_days=int(task_data.get('log_retention_days', 30)),
                 user=task_data.get('user'),
-                filters=task_data.get('filters', {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]})
+                filters=task_data.get('filters', {
+                    'include': [], 
+                    'exclude': [
+                        {'type': 'name', 'pattern': 'onedrive*'},
+                        {'type': 'name', 'pattern': 'thumbs.db'},
+                        {'type': 'name', 'pattern': 'desktop.ini'},
+                        {'type': 'name', 'pattern': '$recycle.bin'}
+                    ]
+                })
             )
 
             print(f"DEBUG: create_scheduled_task returned: {result}")
@@ -6010,11 +6044,7 @@ class App(tk.Tk):
                         except Exception:
                             continue
                     return out
-                
-                # Merge with default filters - only update if filters exist in saved settings
-                if 'filters' in data:
-                    self.filters = {'include': _sanitize(inc), 'exclude': _sanitize(exc)}
-                # If no filters in settings file, keep default filters initialized in __init__
+                self.filters = {'include': _sanitize(inc), 'exclude': _sanitize(exc)}
 
                 # Load theme and language settings
                 if 'theme' in data:
@@ -6060,8 +6090,16 @@ class ScheduleBackupDialog(tk.Toplevel, DialogShortcuts):
         self.parent = parent
         self.theme = parent.theme  # Use parent's theme
         self.translator = parent.translator  # Use parent's translator
-        # Initialize filters with default onedrive* exclude filter
-        self.filters = {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]}
+        # Initialize filters with default exclude patterns
+        self.filters = {
+            'include': [], 
+            'exclude': [
+                {'type': 'name', 'pattern': 'onedrive*'},
+                {'type': 'name', 'pattern': 'thumbs.db'},
+                {'type': 'name', 'pattern': 'desktop.ini'},
+                {'type': 'name', 'pattern': '$recycle.bin'}
+            ]
+        }
 
         try:
             tk.Toplevel.__init__(self, parent)  # Explicitly initialize Toplevel
@@ -7756,7 +7794,15 @@ def core_run_backup(user_name, dest_dir, include_hidden=False, include_system=Fa
 
     # Use provided filters or default filters for scheduled backup (same as GUI default)
     if filters is None:
-        filters = {'include': [], 'exclude': [{'type': 'name', 'pattern': 'onedrive*'}]}
+        filters = {
+            'include': [], 
+            'exclude': [
+                {'type': 'name', 'pattern': 'onedrive*'},
+                {'type': 'name', 'pattern': 'thumbs.db'},
+                {'type': 'name', 'pattern': 'desktop.ini'},
+                {'type': 'name', 'pattern': '$recycle.bin'}
+            ]
+        }
 
     default_filters = filters
 
