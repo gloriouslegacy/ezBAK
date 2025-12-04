@@ -380,6 +380,11 @@ EXAMPLES:
 
 Tips :  Shortcuts are not case-sensitive.""",
             'help_exit_esc': 'Exit (Esc)',
+            'data_restore_cancelled': 'Data restore cancelled by user.',
+            'driver_restore_cancelled': 'Driver restore cancelled by user.',
+            'cross_user_restore_warning': 'Cross-User Restore Warning\n\nYou are about to restore:\n  {0}\'s backup\nto:\n  {1}\'s account\n\nFolder: {2}\n\nThis may cause data conflicts or permission issues.\n\nDo you want to continue?',
+            'select_backup_folder': 'Select Backup Folder',
+            'select_backup_folder_msg': 'Select a backup folder to restore:',
         },
         'ko': {
             'app_title': 'ezBAK',
@@ -613,6 +618,11 @@ Tips :  Shortcuts are not case-sensitive.""",
 
 팁 : 단축키는 대소문자를 구분하지 않습니다.""",
             'help_exit_esc': '종료 (Esc)',
+            'data_restore_cancelled': '사용자에 의해 데이터 복원이 취소되었습니다.',
+            'driver_restore_cancelled': '사용자에 의해 드라이버 복원이 취소되었습니다.',
+            'cross_user_restore_warning': '크로스 사용자 복원 경고\n\n다음 백업을 복원하려고 합니다:\n  {0}의 백업\n대상:\n  {1} 계정\n\n폴더: {2}\n\n데이터 충돌이나 권한 문제가 발생할 수 있습니다.\n\n계속하시겠습니까?',
+            'select_backup_folder': '백업 폴더 선택',
+            'select_backup_folder_msg': '복원할 백업 폴더를 선택하세요:',
         }
     }
 
@@ -908,10 +918,16 @@ class Win11Dialog:
         dlg.transient(parent)
         dlg.grab_set()
 
+        # Calculate required height based on message length
+        # Estimate: ~15 pixels per line, plus padding
+        line_count = message.count('\n') + 1
+        text_height = max(100, line_count * 20)  # Minimum 100, ~20 pixels per line
+        total_height = text_height + 120  # Add space for buttons and padding
+        
         # Center the dialog
         dlg.update_idletasks()
-        width = 400
-        height = 200
+        width = 450
+        height = min(600, total_height)  # Maximum 600 pixels
         x = (dlg.winfo_screenwidth() // 2) - (width // 2)
         y = (dlg.winfo_screenheight() // 2) - (height // 2)
         dlg.geometry(f'{width}x{height}+{x}+{y}')
@@ -924,7 +940,7 @@ class Win11Dialog:
                 bg=theme.get('bg_elevated'),
                 fg=theme.get('fg'),
                 font=("Segoe UI", 10),
-                wraplength=350,
+                wraplength=400,
                 justify='left').pack()
 
         # Button area
@@ -2314,27 +2330,29 @@ class App(tk.Tk):
                     # Write Policy line
                     self._log_file.write(f"[{log_timestamp}] Policy: Hidden={self.hidden_mode_var.get()}, System={self.system_mode_var.get()}, BackupKeep={backup_keep}, LogKeep={log_keep}\n")
 
-                    # Format filters
-                    filters = getattr(self, 'filters', {'include': [], 'exclude': []}) or {'include': [], 'exclude': []}
+                    # Only write filters for backup operations (not for restore)
+                    if '_restore' not in prefix.lower():
+                        # Format filters
+                        filters = getattr(self, 'filters', {'include': [], 'exclude': []}) or {'include': [], 'exclude': []}
 
-                    # Format include filters
-                    include_list = filters.get('include', []) or []
-                    if include_list:
-                        include_str = ', '.join([f"{f.get('type', '').lower()}:{f.get('pattern', '')}" for f in include_list])
-                    else:
-                        include_str = 'None'
+                        # Format include filters
+                        include_list = filters.get('include', []) or []
+                        if include_list:
+                            include_str = ', '.join([f"{f.get('type', '').lower()}:{f.get('pattern', '')}" for f in include_list])
+                        else:
+                            include_str = 'None'
 
-                    # Format exclude filters - add default hidden files pattern
-                    exclude_list = filters.get('exclude', []) or []
-                    exclude_patterns = ['name:^\\\\...*']  # Default: exclude hidden files starting with dot
-                    for f in exclude_list:
-                        pattern_type = f.get('type', '').lower()
-                        pattern_val = f.get('pattern', '')
-                        exclude_patterns.append(f"{pattern_type}:{pattern_val}")
-                    exclude_str = ', '.join(exclude_patterns)
+                        # Format exclude filters - add default hidden files pattern
+                        exclude_list = filters.get('exclude', []) or []
+                        exclude_patterns = ['name:^\\\\...*']  # Default: exclude hidden files starting with dot
+                        for f in exclude_list:
+                            pattern_type = f.get('type', '').lower()
+                            pattern_val = f.get('pattern', '')
+                            exclude_patterns.append(f"{pattern_type}:{pattern_val}")
+                        exclude_str = ', '.join(exclude_patterns)
 
-                    # Write Filters line
-                    self._log_file.write(f"[{log_timestamp}] Filters: Include=[{include_str}], Exclude=[{exclude_str}]\n")
+                        # Write Filters line
+                        self._log_file.write(f"[{log_timestamp}] Filters: Include=[{include_str}], Exclude=[{exclude_str}]\n")
 
                     # Write separator
                     self._log_file.write(f"[{log_timestamp}] --------------------------------------------------\n")
@@ -2547,6 +2565,14 @@ class App(tk.Tk):
                         self.reset_progress_bar()
                     except Exception as e:
                         print(f"DEBUG: Progress bar reset failed: {e}")
+                elif task == 'show_cross_user_warning':
+                    # Handle cross-user restore warning
+                    backup_user, target_user, folder_name = value
+                    self.show_cross_user_warning_dialog(backup_user, target_user, folder_name)
+                elif task == 'select_folder':
+                    # Handle backup folder selection
+                    backup_folders = value
+                    self.show_folder_selection_dialog(backup_folders)
 
                 self.message_queue.task_done()
         except queue.Empty:
@@ -2585,6 +2611,129 @@ class App(tk.Tk):
             self.message_queue.put(('log', f"Space LOW. Required={self.format_bytes(required)} Available={self.format_bytes(available)}"))
             self.message_queue.put(('update_status', "Space check completed - Insufficient"))
 
+    def show_cross_user_warning_dialog(self, backup_user, target_user, folder_name):
+        """Show warning dialog for cross-user restore"""
+        message = self.translator.get('cross_user_restore_warning').format(backup_user, target_user, folder_name)
+        response = Win11Dialog.askyesno(
+            self.translator.get('warning'),
+            message,
+            parent=self, 
+            theme=self.theme, 
+            translator=self.translator
+        )
+        self._cross_user_confirmed = response
+
+    def show_folder_selection_dialog(self, backup_folders):
+        """Show dialog to select backup folder from list"""
+        dialog = tk.Toplevel(self)
+        dialog.title(self.translator.get('select_backup_folder'))
+        dialog.transient(self)
+        dialog.grab_set()
+        
+        # Center dialog
+        dialog.update_idletasks()
+        width = 500
+        height = 400
+        x = (dialog.winfo_screenwidth() // 2) - (width // 2)
+        y = (dialog.winfo_screenheight() // 2) - (height // 2)
+        dialog.geometry(f'{width}x{height}+{x}+{y}')
+        
+        # Apply theme
+        dialog.configure(bg=self.theme.get('bg'))
+        
+        # Title label
+        title_label = tk.Label(
+            dialog,
+            text=self.translator.get('select_backup_folder_msg'),
+            font=("Segoe UI", 11, "bold"),
+            bg=self.theme.get('bg'),
+            fg=self.theme.get('fg')
+        )
+        title_label.pack(pady=(20, 10))
+        
+        # Listbox frame
+        list_frame = tk.Frame(dialog, bg=self.theme.get('bg'))
+        list_frame.pack(fill="both", expand=True, padx=20, pady=10)
+        
+        # Scrollbar
+        scrollbar = tk.Scrollbar(list_frame)
+        scrollbar.pack(side="right", fill="y")
+        
+        # Listbox
+        listbox = tk.Listbox(
+            list_frame,
+            font=("Consolas", 9),
+            bg=self.theme.get('bg_elevated'),
+            fg=self.theme.get('fg'),
+            selectbackground=self.theme.get('accent'),
+            selectforeground="white",
+            yscrollcommand=scrollbar.set,
+            height=15
+        )
+        listbox.pack(side="left", fill="both", expand=True)
+        scrollbar.config(command=listbox.yview)
+        
+        # Add backup folders to listbox
+        for folder in backup_folders:
+            listbox.insert(tk.END, folder)
+        
+        # Select first item by default
+        if backup_folders:
+            listbox.selection_set(0)
+            listbox.activate(0)
+        
+        selected_folder = [None]
+        
+        def on_ok():
+            selection = listbox.curselection()
+            if selection:
+                selected_folder[0] = backup_folders[selection[0]]
+            dialog.destroy()
+        
+        def on_cancel():
+            selected_folder[0] = None
+            dialog.destroy()
+        
+        def on_double_click(event):
+            on_ok()
+        
+        listbox.bind('<Double-Button-1>', on_double_click)
+        
+        # Buttons frame
+        btn_frame = tk.Frame(dialog, bg=self.theme.get('bg'))
+        btn_frame.pack(pady=(0, 20))
+        
+        ok_btn = tk.Button(
+            btn_frame,
+            text=self.translator.get('dialog_ok'),
+            command=on_ok,
+            font=("Segoe UI", 10),
+            bg=self.theme.get('accent'),
+            fg="white",
+            width=10,
+            relief="flat",
+            cursor="hand2"
+        )
+        ok_btn.pack(side="left", padx=5)
+        
+        cancel_btn = tk.Button(
+            btn_frame,
+            text=self.translator.get('dialog_cancel'),
+            command=on_cancel,
+            font=("Segoe UI", 10),
+            bg=self.theme.get('bg_elevated'),
+            fg=self.theme.get('fg'),
+            width=10,
+            relief="flat",
+            cursor="hand2"
+        )
+        cancel_btn.pack(side="left", padx=5)
+        
+        # Wait for dialog to close
+        dialog.wait_window()
+        
+        # Set result
+        self._folder_selection_result = selected_folder[0]
 
     def set_buttons_state(self, state):
         """Enable or disable all action buttons."""
@@ -3383,11 +3532,6 @@ class App(tk.Tk):
         if not backup_folder:
             self.message_queue.put(('log', "Restore folder selection cancelled."))
             return
-        
-        log_folder = os.path.dirname(backup_folder)
-
-        # open log file in backup folder
-        self.open_log_file(backup_folder, f"{self.user_var.get()}_restore")
 
         self.message_queue.put(('log', "User data restore process started."))
         self.set_buttons_state("disabled")
@@ -3401,6 +3545,7 @@ class App(tk.Tk):
         """Executes the actual restore logic (byte-based progress)."""
         bytes_copied = 0
         restore_success = False
+        log_opened = False  # Track if log file is opened
         
         try:
             user_name = self.user_var.get()
@@ -3410,42 +3555,161 @@ class App(tk.Tk):
                     f"The selected path is a log file.\n\n"
                     f"'{backup_folder}'\n\n"
                     f"You must select a backup folder"))
-                self.write_detailed_log("Restore failed: .log file selected instead of backup folder.")
                 return
 
             if os.path.isfile(backup_folder):
                 self.message_queue.put(('show_error',
                     f"The selected path is a file. Please select a folder:\n{backup_folder}"))
-                self.write_detailed_log("Restore failed: backup_folder is a file, expected directory.")
                 return
 
-            if os.path.isfile(backup_folder):
-                self.message_queue.put(('show_error',
-                    f"Selected path is a file, not a backup folder:\n{backup_folder}"))
-                self.write_detailed_log("Restore failed: backup_folder is a file, expected directory.")
-                return
             if not os.path.isdir(backup_folder):
                 self.message_queue.put(('show_error', f"Backup folder not found:\n{backup_folder}"))
-                self.write_detailed_log("Restore failed: backup folder not found.")
                 return
 
             self.message_queue.put(('log', f"Selected backup folder: {backup_folder}"))
-            self.write_detailed_log(f"Restore start for user '{user_name}' from {backup_folder}")
 
-            # backup_folders = [d for d in os.listdir(backup_folder) if d.startswith(f"{user_name}_backup_")]
-            # backup_folders = [d for d in os.listdir(backup_folder) if os.path.isdir(os.path.join(backup_folder, d)) and d.startswith(f"{user_name}_backup_")]
-            user_name_lower = user_name.lower()
-            backup_folders = [d for d in os.listdir(backup_folder) if os.path.isdir(os.path.join(backup_folder, d)) and d.lower().startswith(f"{user_name_lower}_backup_")]
+            # Check if user selected a backup folder directly (e.g., test_backup_2025-12-04_091400)
+            # or a parent folder containing multiple backups
+            folder_name = os.path.basename(backup_folder)
             
-            
-            if not backup_folders:
-                self.message_queue.put(('show_error', f"No backup data found for '{user_name}' in:\n{backup_folder}"))
-                self.write_detailed_log("Restore failed: no matching backup folder.")
-                return
+            # Case 1: Direct backup folder selection (contains '_backup_' in its name)
+            if '_backup_' in folder_name and os.path.isdir(backup_folder):
+                # Check if this is actually a backup folder by looking for user data structure
+                has_user_folders = any(
+                    os.path.exists(os.path.join(backup_folder, folder))
+                    for folder in ['Desktop', 'Documents', 'Downloads', 'Pictures', 'Videos', 'Music']
+                )
+                
+                if has_user_folders:
+                    # This is a backup folder selected directly
+                    folder_selected = folder_name
+                    parent_folder = os.path.dirname(backup_folder)  # Get parent folder
+                    
+                    # Open log file in parent folder with backup folder name
+                    log_name = f"{folder_name}_restore"
+                    self.open_log_file(parent_folder, log_name)
+                    log_opened = True
+                    
+                    self.write_detailed_log(f"Direct backup folder selection detected: {folder_name}")
+                    self.write_detailed_log(f"Parent folder: {parent_folder}")
+                    
+                    # Update backup_folder to parent for subsequent operations
+                    backup_folder = parent_folder
+                    
+                    # Extract backup user from folder name
+                    backup_user = folder_name.split('_backup_')[0] if '_backup_' in folder_name else ''
+                    
+                    # Check cross-user restore
+                    if backup_user.lower() != user_name.lower():
+                        self.write_detailed_log(f"Cross-user restore detected: {backup_user} → {user_name}")
+                        self.message_queue.put(('show_cross_user_warning', (backup_user, user_name, folder_name)))
+                        
+                        while True:
+                            if hasattr(self, '_cross_user_confirmed'):
+                                confirmed = self._cross_user_confirmed
+                                delattr(self, '_cross_user_confirmed')
+                                break
+                            time.sleep(0.1)
+                        
+                        if not confirmed:
+                            self.message_queue.put(('log', self.translator.get('data_restore_cancelled')))
+                            self.write_detailed_log("Cross-user restore cancelled by user")
+                            return
+                        
+                        self.write_detailed_log("User confirmed cross-user restore")
+                    
+                    # Proceed to restore
+                    source_dir = os.path.join(backup_folder, folder_selected)
+                    destination_dir = os.path.join("C:", os.sep, "Users", user_name)
+                    self.write_detailed_log(f"Restoring from {source_dir} to {destination_dir}")
+                else:
+                    # Has '_backup_' in name but not a valid backup folder
+                    self.message_queue.put(('show_error', 
+                        f"The selected folder appears to be named like a backup but does not contain user data:\n{backup_folder}\n\n"
+                        f"Please select either:\n"
+                        f"1. A parent folder containing backup folders, or\n"
+                        f"2. A valid backup folder with user data"))
+                    return
+            else:
+                # Case 2: Parent folder selection - find all backup folders inside
+                
+                # Find all backup folders (support cross-user restore)
+                all_folders = []
+                try:
+                    for item in os.listdir(backup_folder):
+                        full_path = os.path.join(backup_folder, item)
+                        if os.path.isdir(full_path) and '_backup_' in item:
+                            all_folders.append(item)
+                except Exception as e:
+                    self.message_queue.put(('show_error', f"Error reading backup folder:\n{e}"))
+                    return
+                
+                if not all_folders:
+                    self.message_queue.put(('show_error', 
+                        f"No backup folders found in:\n{backup_folder}\n\n"
+                        f"Please select either:\n"
+                        f"1. A parent folder containing backup folders (e.g., E:\\), or\n"
+                        f"2. A backup folder directly (e.g., test_backup_2025-12-04_091400)"))
+                    return
+                
+                # Separate matching and non-matching backups
+                user_name_lower = user_name.lower()
+                matching_folders = [d for d in all_folders if d.lower().startswith(f"{user_name_lower}_backup_")]
+                other_folders = [d for d in all_folders if not d.lower().startswith(f"{user_name_lower}_backup_")]
+                
+                # Prioritize matching backups, but show all
+                backup_folders = matching_folders + other_folders
 
-            source_dir = os.path.join(backup_folder, sorted(backup_folders, reverse=True)[0])
-            destination_dir = os.path.join("C:", os.sep, "Users", user_name)
-            self.write_detailed_log(f"Restoring from {source_dir} to {destination_dir}")
+                # Let user select which backup to restore
+                if len(backup_folders) == 1:
+                    folder_selected = backup_folders[0]
+                else:
+                    sorted_folders = sorted(backup_folders, reverse=True)
+                    self.message_queue.put(('select_folder', sorted_folders))
+                    
+                    # Wait for user selection
+                    while True:
+                        if hasattr(self, '_folder_selection_result'):
+                            folder_selected = self._folder_selection_result
+                            delattr(self, '_folder_selection_result')
+                            break
+                        time.sleep(0.1)
+                    
+                    if not folder_selected:
+                        self.message_queue.put(('log', self.translator.get('data_restore_cancelled')))
+                        return
+
+                # Open log file with selected backup folder name
+                log_name = f"{folder_selected}_restore"
+                self.open_log_file(backup_folder, log_name)
+                log_opened = True
+                self.write_detailed_log(f"User selected backup: {folder_selected}")
+
+                # Check if selected backup is from a different user
+                backup_user = folder_selected.split('_backup_')[0] if '_backup_' in folder_selected else ''
+                if backup_user.lower() != user_name_lower:
+                    # Cross-user restore warning
+                    self.write_detailed_log(f"Cross-user restore detected: {backup_user} → {user_name}")
+                    self.message_queue.put(('show_cross_user_warning', (backup_user, user_name, folder_selected)))
+                    
+                    # Wait for user confirmation
+                    while True:
+                        if hasattr(self, '_cross_user_confirmed'):
+                            confirmed = self._cross_user_confirmed
+                            delattr(self, '_cross_user_confirmed')
+                            break
+                        time.sleep(0.1)
+                    
+                    if not confirmed:
+                        self.message_queue.put(('log', self.translator.get('data_restore_cancelled')))
+                        self.write_detailed_log("Cross-user restore cancelled by user")
+                        return
+                    
+                    self.write_detailed_log("User confirmed cross-user restore")
+
+                source_dir = os.path.join(backup_folder, folder_selected)
+                destination_dir = os.path.join("C:", os.sep, "Users", user_name)
+                self.write_detailed_log(f"Restoring from {source_dir} to {destination_dir}")
 
              
             total_bytes = 0
@@ -3530,10 +3794,11 @@ class App(tk.Tk):
             restore_success = False
             
         finally:
-            try:
-                self.close_log_file()
-            except Exception:
-                pass
+            if log_opened:
+                try:
+                    self.close_log_file()
+                except Exception:
+                    pass
 
             try:
                 max_val = self.progress_bar['maximum'] if self.progress_bar['maximum'] > 0 else 1
@@ -5560,7 +5825,7 @@ class App(tk.Tk):
                 if not Win11Dialog.askyesno(self.translator.get('system_mismatch_warning'), warning_msg,
                                           parent=self, theme=self.theme, translator=self.translator):
                     self.write_detailed_log("User cancelled restore due to system mismatch")
-                    self.message_queue.put(('log', "Driver restore cancelled by user"))
+                    self.message_queue.put(('log', self.translator.get('driver_restore_cancelled')))
                     return
                 
                 self.message_queue.put(('log', f"Warning: Restoring from different system backup"))

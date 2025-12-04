@@ -184,6 +184,9 @@ jobs:
             - Administrator privileges required
             - This is open-source software - source code available in repository
 
+            ## Change Log
+            - Fix DataRestore :Restore Cross User
+
             ## SHA256 Hash
             Check file integrity after download
           files: |
