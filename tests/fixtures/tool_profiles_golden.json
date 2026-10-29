@@ -1,0 +1,862 @@
+{
+  "profiles_all_three-nopywin32": {
+    "dialogs": [
+      [
+        "askyesno",
+        "Browser Profiles Backup",
+        "Back up the full browser profiles of user 'tester'?\n\nSource: <TMP>\\Users\\tester"
+      ]
+    ],
+    "logs": {
+      "browser_profiles_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Browser profiles total bytes: 125",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Local State -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Local State",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Default\\Bookmarks",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Default\\Login Data",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Edge\\User Data",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data\\Local State -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Edge\\User Data\\Local State",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data\\Profile 1\\Preferences -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Edge\\User Data\\Profile 1\\Preferences",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\Profiles",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\abcd.default-release\\cookies.sqlite -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\Profiles\\abcd.default-release\\cookies.sqlite",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\abcd.default-release\\prefs.js -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\Profiles\\abcd.default-release\\prefs.js",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\profiles.ini -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\profiles.ini",
+        "[<TS>] Browser profiles backup completed."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\browser_profiles_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "backup Browser profiles : Chrome/Edge/Firefox profiles (inc. passwords, cookies, extensions)"
+      ],
+      [
+        "update_status",
+        "Preparing browser profiles backup..."
+      ],
+      [
+        "update_progress_max",
+        125
+      ],
+      [
+        "update_progress",
+        125
+      ],
+      [
+        "log",
+        "Browser profiles backup complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Browser profiles backup complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "update_status",
+        "Browser profiles backup complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "stdout": [],
+    "tree": [
+      "BrowserProfiles_backup_2024-01-02_030405/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/Bookmarks",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/Login Data",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Local State",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/Local State",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/Profile 1/",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/Profile 1/Preferences",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/abcd.default-release/",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/abcd.default-release/cookies.sqlite",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/abcd.default-release/prefs.js",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/profiles.ini",
+      "browser_profiles_2024-01-02_030405.log"
+    ]
+  },
+  "profiles_all_three-pywin32": {
+    "dialogs": [
+      [
+        "askyesno",
+        "Browser Profiles Backup",
+        "Back up the full browser profiles of user 'tester'?\n\nSource: <TMP>\\Users\\tester"
+      ]
+    ],
+    "logs": {
+      "browser_profiles_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Browser profiles total bytes: 125",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Local State -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Local State",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Default\\Bookmarks",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Default\\Login Data",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Edge\\User Data",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data\\Local State -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Edge\\User Data\\Local State",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data\\Profile 1\\Preferences -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Edge\\User Data\\Profile 1\\Preferences",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\Profiles",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\abcd.default-release\\cookies.sqlite -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\Profiles\\abcd.default-release\\cookies.sqlite",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\abcd.default-release\\prefs.js -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\Profiles\\abcd.default-release\\prefs.js",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\profiles.ini -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\profiles.ini",
+        "[<TS>] Browser profiles backup completed."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\browser_profiles_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "backup Browser profiles : Chrome/Edge/Firefox profiles (inc. passwords, cookies, extensions)"
+      ],
+      [
+        "update_status",
+        "Preparing browser profiles backup..."
+      ],
+      [
+        "update_progress_max",
+        125
+      ],
+      [
+        "update_progress",
+        125
+      ],
+      [
+        "log",
+        "Browser profiles backup complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Browser profiles backup complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "update_status",
+        "Browser profiles backup complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "stdout": [],
+    "tree": [
+      "BrowserProfiles_backup_2024-01-02_030405/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/Bookmarks",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/Login Data",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Local State",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/Local State",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/Profile 1/",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/Profile 1/Preferences",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/abcd.default-release/",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/abcd.default-release/cookies.sqlite",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/abcd.default-release/prefs.js",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/profiles.ini",
+      "browser_profiles_2024-01-02_030405.log"
+    ]
+  },
+  "profiles_confirm_no-nopywin32": {
+    "dialogs": [
+      [
+        "askyesno",
+        "Browser Profiles Backup",
+        "Back up the full browser profiles of user 'tester'?\n\nSource: <TMP>\\Users\\tester"
+      ]
+    ],
+    "logs": {},
+    "queue": [],
+    "returned": "None",
+    "stdout": [],
+    "tree": []
+  },
+  "profiles_confirm_no-pywin32": {
+    "dialogs": [
+      [
+        "askyesno",
+        "Browser Profiles Backup",
+        "Back up the full browser profiles of user 'tester'?\n\nSource: <TMP>\\Users\\tester"
+      ]
+    ],
+    "logs": {},
+    "queue": [],
+    "returned": "None",
+    "stdout": [],
+    "tree": []
+  },
+  "profiles_disk_usage_fail-nopywin32": {
+    "dialogs": [
+      [
+        "askyesno",
+        "Browser Profiles Backup",
+        "Back up the full browser profiles of user 'tester'?\n\nSource: <TMP>\\Users\\tester"
+      ]
+    ],
+    "logs": {
+      "browser_profiles_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Browser profiles total bytes: 125",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Local State -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Local State",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Default\\Bookmarks",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Default\\Login Data",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Edge\\User Data",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data\\Local State -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Edge\\User Data\\Local State",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data\\Profile 1\\Preferences -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Edge\\User Data\\Profile 1\\Preferences",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\Profiles",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\abcd.default-release\\cookies.sqlite -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\Profiles\\abcd.default-release\\cookies.sqlite",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\abcd.default-release\\prefs.js -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\Profiles\\abcd.default-release\\prefs.js",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\profiles.ini -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\profiles.ini",
+        "[<TS>] Browser profiles backup completed."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\browser_profiles_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "backup Browser profiles : Chrome/Edge/Firefox profiles (inc. passwords, cookies, extensions)"
+      ],
+      [
+        "update_status",
+        "Preparing browser profiles backup..."
+      ],
+      [
+        "update_progress_max",
+        125
+      ],
+      [
+        "update_progress",
+        125
+      ],
+      [
+        "log",
+        "Browser profiles backup complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Browser profiles backup complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "update_status",
+        "Browser profiles backup complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "stdout": [],
+    "tree": [
+      "BrowserProfiles_backup_2024-01-02_030405/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/Bookmarks",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/Login Data",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Local State",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/Local State",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/Profile 1/",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/Profile 1/Preferences",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/abcd.default-release/",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/abcd.default-release/cookies.sqlite",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/abcd.default-release/prefs.js",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/profiles.ini",
+      "browser_profiles_2024-01-02_030405.log"
+    ]
+  },
+  "profiles_disk_usage_fail-pywin32": {
+    "dialogs": [
+      [
+        "askyesno",
+        "Browser Profiles Backup",
+        "Back up the full browser profiles of user 'tester'?\n\nSource: <TMP>\\Users\\tester"
+      ]
+    ],
+    "logs": {
+      "browser_profiles_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Browser profiles total bytes: 125",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Local State -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Local State",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Default\\Bookmarks",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Default\\Login Data",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Edge\\User Data",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data\\Local State -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Edge\\User Data\\Local State",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data\\Profile 1\\Preferences -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Edge\\User Data\\Profile 1\\Preferences",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\Profiles",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\abcd.default-release\\cookies.sqlite -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\Profiles\\abcd.default-release\\cookies.sqlite",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\abcd.default-release\\prefs.js -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\Profiles\\abcd.default-release\\prefs.js",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Roaming\\Mozilla\\Firefox\\profiles.ini -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Firefox\\profiles.ini",
+        "[<TS>] Browser profiles backup completed."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\browser_profiles_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "backup Browser profiles : Chrome/Edge/Firefox profiles (inc. passwords, cookies, extensions)"
+      ],
+      [
+        "update_status",
+        "Preparing browser profiles backup..."
+      ],
+      [
+        "update_progress_max",
+        125
+      ],
+      [
+        "update_progress",
+        125
+      ],
+      [
+        "log",
+        "Browser profiles backup complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Browser profiles backup complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "update_status",
+        "Browser profiles backup complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "stdout": [],
+    "tree": [
+      "BrowserProfiles_backup_2024-01-02_030405/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/Bookmarks",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/Login Data",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Local State",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/Local State",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/Profile 1/",
+      "BrowserProfiles_backup_2024-01-02_030405/Edge/User Data/Profile 1/Preferences",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/abcd.default-release/",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/abcd.default-release/cookies.sqlite",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/Profiles/abcd.default-release/prefs.js",
+      "BrowserProfiles_backup_2024-01-02_030405/Firefox/profiles.ini",
+      "browser_profiles_2024-01-02_030405.log"
+    ]
+  },
+  "profiles_folder_cancel-nopywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Browser profiles backup cancelled (no destination)."
+      ]
+    ],
+    "returned": "None",
+    "stdout": [],
+    "tree": []
+  },
+  "profiles_folder_cancel-pywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Browser profiles backup cancelled (no destination)."
+      ]
+    ],
+    "returned": "None",
+    "stdout": [],
+    "tree": []
+  },
+  "profiles_insufficient_space-nopywin32": {
+    "dialogs": [
+      [
+        "askyesno",
+        "Browser Profiles Backup",
+        "Back up the full browser profiles of user 'tester'?\n\nSource: <TMP>\\Users\\tester"
+      ]
+    ],
+    "logs": {
+      "browser_profiles_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Browser profiles total bytes: 125",
+        "[<TS>] Insufficient free space. Required=125 Free=10"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\browser_profiles_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "backup Browser profiles : Chrome/Edge/Firefox profiles (inc. passwords, cookies, extensions)"
+      ],
+      [
+        "update_status",
+        "Preparing browser profiles backup..."
+      ],
+      [
+        "update_progress_max",
+        125
+      ],
+      [
+        "show_error",
+        "Not enough free space.\nRequired: 125.00 B\nAvailable: 10.00 B"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "stdout": [],
+    "tree": [
+      "browser_profiles_2024-01-02_030405.log"
+    ]
+  },
+  "profiles_insufficient_space-pywin32": {
+    "dialogs": [
+      [
+        "askyesno",
+        "Browser Profiles Backup",
+        "Back up the full browser profiles of user 'tester'?\n\nSource: <TMP>\\Users\\tester"
+      ]
+    ],
+    "logs": {
+      "browser_profiles_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Browser profiles total bytes: 125",
+        "[<TS>] Insufficient free space. Required=125 Free=10"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\browser_profiles_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "backup Browser profiles : Chrome/Edge/Firefox profiles (inc. passwords, cookies, extensions)"
+      ],
+      [
+        "update_status",
+        "Preparing browser profiles backup..."
+      ],
+      [
+        "update_progress_max",
+        125
+      ],
+      [
+        "show_error",
+        "Not enough free space.\nRequired: 125.00 B\nAvailable: 10.00 B"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "stdout": [],
+    "tree": [
+      "browser_profiles_2024-01-02_030405.log"
+    ]
+  },
+  "profiles_junction_skipped-nopywin32": {
+    "dialogs": [
+      [
+        "askyesno",
+        "Browser Profiles Backup",
+        "Back up the full browser profiles of user 'tester'?\n\nSource: <TMP>\\Users\\tester"
+      ]
+    ],
+    "logs": {
+      "browser_profiles_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Browser profiles total bytes: 38",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Local State -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Local State",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Default\\Bookmarks",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Default\\Login Data",
+        "[<TS>] Browser profiles backup completed."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\browser_profiles_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "backup Browser profiles : Chrome/Edge/Firefox profiles (inc. passwords, cookies, extensions)"
+      ],
+      [
+        "update_status",
+        "Preparing browser profiles backup..."
+      ],
+      [
+        "update_progress_max",
+        38
+      ],
+      [
+        "update_progress",
+        38
+      ],
+      [
+        "log",
+        "Browser profiles backup complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Browser profiles backup complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "update_status",
+        "Browser profiles backup complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "stdout": [],
+    "tree": [
+      "BrowserProfiles_backup_2024-01-02_030405/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/Bookmarks",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/Login Data",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Local State",
+      "browser_profiles_2024-01-02_030405.log"
+    ]
+  },
+  "profiles_junction_skipped-pywin32": {
+    "dialogs": [
+      [
+        "askyesno",
+        "Browser Profiles Backup",
+        "Back up the full browser profiles of user 'tester'?\n\nSource: <TMP>\\Users\\tester"
+      ]
+    ],
+    "logs": {
+      "browser_profiles_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Browser profiles total bytes: 38",
+        "[<TS>] Copying directory: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Local State -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Local State",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Default\\Bookmarks",
+        "[<TS>] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Login Data -> <TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405\\Chrome\\User Data\\Default\\Login Data",
+        "[<TS>] Browser profiles backup completed."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\browser_profiles_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "backup Browser profiles : Chrome/Edge/Firefox profiles (inc. passwords, cookies, extensions)"
+      ],
+      [
+        "update_status",
+        "Preparing browser profiles backup..."
+      ],
+      [
+        "update_progress_max",
+        38
+      ],
+      [
+        "update_progress",
+        38
+      ],
+      [
+        "log",
+        "Browser profiles backup complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Browser profiles backup complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\BrowserProfiles_backup_2024-01-02_030405"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "update_status",
+        "Browser profiles backup complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "stdout": [],
+    "tree": [
+      "BrowserProfiles_backup_2024-01-02_030405/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/Bookmarks",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Default/Login Data",
+      "BrowserProfiles_backup_2024-01-02_030405/Chrome/User Data/Local State",
+      "browser_profiles_2024-01-02_030405.log"
+    ]
+  },
+  "profiles_no_source-nopywin32": {
+    "dialogs": [
+      [
+        "askyesno",
+        "Browser Profiles Backup",
+        "Back up the full browser profiles of user 'tester'?\n\nSource: <TMP>\\Users\\tester"
+      ]
+    ],
+    "logs": {
+      "browser_profiles_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Browser profiles total bytes: 0"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\browser_profiles_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "backup Browser profiles : Chrome/Edge/Firefox profiles (inc. passwords, cookies, extensions)"
+      ],
+      [
+        "update_status",
+        "Preparing browser profiles backup..."
+      ],
+      [
+        "update_progress_max",
+        0
+      ],
+      [
+        "show_error",
+        "No browser profile data was found to back up."
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "stdout": [],
+    "tree": [
+      "browser_profiles_2024-01-02_030405.log"
+    ]
+  },
+  "profiles_no_source-pywin32": {
+    "dialogs": [
+      [
+        "askyesno",
+        "Browser Profiles Backup",
+        "Back up the full browser profiles of user 'tester'?\n\nSource: <TMP>\\Users\\tester"
+      ]
+    ],
+    "logs": {
+      "browser_profiles_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Browser profiles total bytes: 0"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\browser_profiles_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "backup Browser profiles : Chrome/Edge/Firefox profiles (inc. passwords, cookies, extensions)"
+      ],
+      [
+        "update_status",
+        "Preparing browser profiles backup..."
+      ],
+      [
+        "update_progress_max",
+        0
+      ],
+      [
+        "show_error",
+        "No browser profile data was found to back up."
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "stdout": [],
+    "tree": [
+      "browser_profiles_2024-01-02_030405.log"
+    ]
+  },
+  "profiles_no_user-nopywin32": {
+    "dialogs": [
+      [
+        "showwarning",
+        "Warning",
+        "Please select a user."
+      ]
+    ],
+    "logs": {},
+    "queue": [],
+    "returned": "None",
+    "stdout": [],
+    "tree": []
+  },
+  "profiles_no_user-pywin32": {
+    "dialogs": [
+      [
+        "showwarning",
+        "Warning",
+        "Please select a user."
+      ]
+    ],
+    "logs": {},
+    "queue": [],
+    "returned": "None",
+    "stdout": [],
+    "tree": []
+  }
+}

@@ -1,0 +1,96 @@
+name: Regenerate golden files
+
+# For a commit that is an approved Q1 exception (ADR 0003 §6, ADR 0004 §3): rewrites the
+# golden entries of the given test files on Windows, checks that a normal run then passes
+# twice, runs the whole suite, and pushes the changed tests/fixtures/*.json to the same
+# branch. Review the pushed diff key by key before building on it.
+# Two ways to start it:
+# - push a commit whose message has a trailer line
+#     Regen-Golden: tests/characterization/test_gui_snapshot.py [more files]
+#   (the commit subject is used as the reason; the cloud session cannot dispatch);
+# - by hand: Actions > Regenerate golden files > Run workflow.
+on:
+  push:
+    branches:
+      - 'claude/**'
+  workflow_dispatch:
+    inputs:
+      tests:
+        description: "Test files to regenerate (space separated, e.g. tests/characterization/test_gui_snapshot.py)"
+        required: true
+      reason:
+        description: "Why (goes into the commit message, e.g. 'U4-2 window structure, ADR 0004')"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  regen:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, 'Regen-Golden:')
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Read test files and reason
+        shell: pwsh
+        env:
+          IN_TESTS: ${{ inputs.tests }}
+          IN_REASON: ${{ inputs.reason }}
+          MSG: ${{ github.event.head_commit.message }}
+        run: |
+          $tests = $env:IN_TESTS; $reason = $env:IN_REASON
+          if (-not $tests) {
+            $line = ($env:MSG -split "`n" | Where-Object { $_ -match '^Regen-Golden:' } | Select-Object -First 1)
+            $tests = ($line -replace '^Regen-Golden:\s*', '').Trim()
+            $reason = ($env:MSG -split "`n")[0].Trim()
+          }
+          if (-not $tests) { Write-Error "no test files"; exit 1 }
+          "TESTS=$tests" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "REASON=$reason" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Regenerate golden entries
+        shell: pwsh
+        env:
+          EZBAK_REGEN_GOLDEN: "1"
+        run: python -m pytest $($env:TESTS -split ' ') -q -ra
+
+      - name: Check the regenerated files twice, then the whole suite
+        shell: pwsh
+        run: |
+          python -m pytest $($env:TESTS -split ' ') -q -ra
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          python -m pytest $($env:TESTS -split ' ') -q -ra
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          python -m pytest tests -q -ra
+
+      - name: Commit and push changed golden files
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/fixtures/*.json
+          git diff --cached --quiet
+          if ($LASTEXITCODE -eq 0) { Write-Host "No golden change"; exit 0 }
+          git diff --cached --stat
+          git commit -m "test: regenerate golden ($env:REASON)" -m "Regenerated on windows-latest by regen-golden.yml for: $env:TESTS"
+          git push origin HEAD:${{ github.ref_name }}

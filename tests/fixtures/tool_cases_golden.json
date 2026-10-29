@@ -1,0 +1,985 @@
+{
+  "devmgr_all_fail": {
+    "commands": [
+      [
+        "subprocess.Popen",
+        "mmc devmgmt.msc"
+      ],
+      [
+        "subprocess.Popen",
+        "start devmgmt.msc"
+      ]
+    ],
+    "dialogs": [
+      [
+        "showerror",
+        "Error",
+        "Unable to open Device Manager:\ndevmgmt.msc not found / cannot be launched"
+      ]
+    ],
+    "log": [
+      "Error opening Device Manager: devmgmt.msc not found / cannot be launched"
+    ],
+    "queue": []
+  },
+  "drive_letters_bitmask": {
+    "free": "Y",
+    "probed": [],
+    "used": [
+      "A",
+      "C",
+      "D",
+      "Z"
+    ]
+  },
+  "drive_letters_exists_probe": {
+    "free": "Z",
+    "probed": [
+      "A:\\",
+      "B:\\",
+      "C:\\",
+      "D:\\",
+      "E:\\",
+      "F:\\",
+      "G:\\",
+      "H:\\",
+      "I:\\",
+      "J:\\",
+      "K:\\",
+      "L:\\",
+      "M:\\",
+      "N:\\",
+      "O:\\",
+      "P:\\",
+      "Q:\\",
+      "R:\\",
+      "S:\\",
+      "T:\\",
+      "U:\\",
+      "V:\\",
+      "W:\\",
+      "X:\\",
+      "Y:\\",
+      "Z:\\"
+    ],
+    "used": [
+      "C",
+      "E"
+    ]
+  },
+  "drive_letters_free_order": {
+    "a_c_to_z_used": "B",
+    "all_used": "Z",
+    "c_to_z_used": "B",
+    "d_to_z_used": "C",
+    "e_to_z_used": "D",
+    "none_used": "Z",
+    "z_used": "Y"
+  },
+  "driver_backup_popen_raises": {
+    "commands": [
+      [
+        "subprocess.Popen",
+        "pnputil.exe /export-driver * <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "TESTBOARD_drivers_backup_2024-01-02_030405/TESTBOARD_drivers_backup_2024-01-02_030405.log": [
+        "[POLICY] Hidden=exclude System=exclude",
+        "[<TS>] Driver backup folder created: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405",
+        "[<TS>] Executing command: pnputil.exe /export-driver * \"<TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\"",
+        "[<TS>] Driver backup error: pnputil missing"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Driver backup process started."
+      ],
+      [
+        "update_status",
+        "Driver backup in progress..."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\\TESTBOARD_drivers_backup_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Backup folder: TESTBOARD_drivers_backup_2024-01-02_030405"
+      ],
+      [
+        "show_error",
+        "An error occurred during driver backup: pnputil missing"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Driver backup complete!"
+      ],
+      [
+        "play_sound",
+        "error"
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "TESTBOARD_drivers_backup_2024-01-02_030405/",
+      "TESTBOARD_drivers_backup_2024-01-02_030405/TESTBOARD_drivers_backup_2024-01-02_030405.log"
+    ]
+  },
+  "driver_backup_rc0": {
+    "commands": [
+      [
+        "subprocess.Popen",
+        "pnputil.exe /export-driver * <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "TESTBOARD_drivers_backup_2024-01-02_030405/TESTBOARD_drivers_backup_2024-01-02_030405.log": [
+        "[POLICY] Hidden=exclude System=exclude",
+        "[<TS>] Driver backup folder created: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405",
+        "[<TS>] Executing command: pnputil.exe /export-driver * \"<TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\"",
+        "[<TS>] Exporting driver package: oem1.inf",
+        "[<TS>] Exported 1 driver package.",
+        "[<TS>] Driver backup successfully completed."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Driver backup process started."
+      ],
+      [
+        "update_status",
+        "Driver backup in progress..."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\\TESTBOARD_drivers_backup_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Backup folder: TESTBOARD_drivers_backup_2024-01-02_030405"
+      ],
+      [
+        "log",
+        "Driver backup completed: TESTBOARD_drivers_backup_2024-01-02_030405"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Driver backup complete!"
+      ],
+      [
+        "play_sound",
+        "complete"
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "TESTBOARD_drivers_backup_2024-01-02_030405/",
+      "TESTBOARD_drivers_backup_2024-01-02_030405/TESTBOARD_drivers_backup_2024-01-02_030405.log"
+    ]
+  },
+  "driver_backup_rc1": {
+    "commands": [
+      [
+        "subprocess.Popen",
+        "pnputil.exe /export-driver * <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "TESTBOARD_drivers_backup_2024-01-02_030405/TESTBOARD_drivers_backup_2024-01-02_030405.log": [
+        "[POLICY] Hidden=exclude System=exclude",
+        "[<TS>] Driver backup folder created: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405",
+        "[<TS>] Executing command: pnputil.exe /export-driver * \"<TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\"",
+        "[<TS>] Failed to export driver packages.",
+        "[<TS>] Driver backup completed with return code: 1"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Driver backup process started."
+      ],
+      [
+        "update_status",
+        "Driver backup in progress..."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\\TESTBOARD_drivers_backup_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Backup folder: TESTBOARD_drivers_backup_2024-01-02_030405"
+      ],
+      [
+        "log",
+        "Driver backup finished (check log for details)"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Driver backup complete!"
+      ],
+      [
+        "play_sound",
+        "error"
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "TESTBOARD_drivers_backup_2024-01-02_030405/",
+      "TESTBOARD_drivers_backup_2024-01-02_030405/TESTBOARD_drivers_backup_2024-01-02_030405.log"
+    ]
+  },
+  "driver_backup_stderr": {
+    "commands": [
+      [
+        "subprocess.Popen",
+        "pnputil.exe /export-driver * <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "TESTBOARD_drivers_backup_2024-01-02_030405/TESTBOARD_drivers_backup_2024-01-02_030405.log": [
+        "[POLICY] Hidden=exclude System=exclude",
+        "[<TS>] Driver backup folder created: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405",
+        "[<TS>] Executing command: pnputil.exe /export-driver * \"<TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\"",
+        "[<TS>] Exported 1 driver package.",
+        "[<TS>] STDERR: Warning: one driver skipped",
+        "second line",
+        "",
+        "[<TS>] Driver backup successfully completed."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Driver backup process started."
+      ],
+      [
+        "update_status",
+        "Driver backup in progress..."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\\TESTBOARD_drivers_backup_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Backup folder: TESTBOARD_drivers_backup_2024-01-02_030405"
+      ],
+      [
+        "log",
+        "Driver backup completed: TESTBOARD_drivers_backup_2024-01-02_030405"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Driver backup complete!"
+      ],
+      [
+        "play_sound",
+        "complete"
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "TESTBOARD_drivers_backup_2024-01-02_030405/",
+      "TESTBOARD_drivers_backup_2024-01-02_030405/TESTBOARD_drivers_backup_2024-01-02_030405.log"
+    ]
+  },
+  "driver_restore_mismatch_no": {
+    "commands": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "System Mismatch Warning",
+        "Current System: TESTBOARD\nBackup From: OTHERBOARD\n\nThe driver backup may not match your current system.\nDo you want to continue?"
+      ]
+    ],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Driver restore process started."
+      ],
+      [
+        "update_status",
+        "Driver restore in progress..."
+      ],
+      [
+        "ask_yes_no",
+        [
+          "System Mismatch Warning",
+          "Current System: TESTBOARD\nBackup From: OTHERBOARD\n\nThe driver backup may not match your current system.\nDo you want to continue?"
+        ]
+      ],
+      [
+        "log",
+        "Driver restore cancelled by user."
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Driver restore complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "play_sound",
+        "error"
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "OTHERBOARD_drivers_backup_2024-01-02_030405/",
+      "OTHERBOARD_drivers_backup_2024-01-02_030405/oem1.inf"
+    ]
+  },
+  "driver_restore_mismatch_yes": {
+    "commands": [
+      [
+        "subprocess.Popen",
+        "pnputil.exe /add-driver <TMP>\\drivers\\OTHERBOARD_drivers_backup_2024-01-02_030405\\*.inf /subdirs /install"
+      ]
+    ],
+    "dialogs": [
+      [
+        "askyesno",
+        "System Mismatch Warning",
+        "Current System: TESTBOARD\nBackup From: OTHERBOARD\n\nThe driver backup may not match your current system.\nDo you want to continue?"
+      ]
+    ],
+    "logs": {
+      "OTHERBOARD_drivers_backup_2024-01-02_030405/OTHERBOARD_drivers_restore_2024-01-02_030405.log": [
+        "[POLICY] Hidden=exclude System=exclude",
+        "[<TS>] Selected driver backup folder: <TMP>\\drivers\\OTHERBOARD_drivers_backup_2024-01-02_030405",
+        "[<TS>] Backup system name: OTHERBOARD",
+        "[<TS>] Current system name: TESTBOARD",
+        "[<TS>] Driver restore started from: <TMP>\\drivers\\OTHERBOARD_drivers_backup_2024-01-02_030405",
+        "[<TS>] Executing command: pnputil.exe /add-driver \"<TMP>\\drivers\\OTHERBOARD_drivers_backup_2024-01-02_030405\\*.inf\" /subdirs /install",
+        "[<TS>] Added 1 driver package.",
+        "[<TS>] Driver restore successfully completed."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Driver restore process started."
+      ],
+      [
+        "update_status",
+        "Driver restore in progress..."
+      ],
+      [
+        "ask_yes_no",
+        [
+          "System Mismatch Warning",
+          "Current System: TESTBOARD\nBackup From: OTHERBOARD\n\nThe driver backup may not match your current system.\nDo you want to continue?"
+        ]
+      ],
+      [
+        "log",
+        "Warning: Restoring from different system backup"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\drivers\\OTHERBOARD_drivers_backup_2024-01-02_030405\\OTHERBOARD_drivers_restore_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Restoring from: OTHERBOARD_drivers_backup_2024-01-02_030405"
+      ],
+      [
+        "log",
+        "Driver restore completed."
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Driver restore complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "play_sound",
+        "complete"
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "OTHERBOARD_drivers_backup_2024-01-02_030405/",
+      "OTHERBOARD_drivers_backup_2024-01-02_030405/OTHERBOARD_drivers_restore_2024-01-02_030405.log",
+      "OTHERBOARD_drivers_backup_2024-01-02_030405/oem1.inf"
+    ]
+  },
+  "driver_restore_not_backup_folder": {
+    "commands": [],
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Driver restore process started."
+      ],
+      [
+        "update_status",
+        "Driver restore in progress..."
+      ],
+      [
+        "show_error",
+        "Please select a driver backup folder.\n\nSelected: random_folder\n\nFolder name should contain '_drivers_backup_'"
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Driver restore complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "play_sound",
+        "error"
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "random_folder/",
+      "random_folder/oem1.inf"
+    ]
+  },
+  "driver_restore_popen_raises": {
+    "commands": [
+      [
+        "subprocess.Popen",
+        "pnputil.exe /add-driver <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\\*.inf /subdirs /install"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "TESTBOARD_drivers_backup_2024-01-02_030405/TESTBOARD_drivers_restore_2024-01-02_030405.log": [
+        "[POLICY] Hidden=exclude System=exclude",
+        "[<TS>] Selected driver backup folder: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405",
+        "[<TS>] Backup system name: TESTBOARD",
+        "[<TS>] Current system name: TESTBOARD",
+        "[<TS>] Driver restore started from: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405",
+        "[<TS>] Executing command: pnputil.exe /add-driver \"<TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\\*.inf\" /subdirs /install",
+        "[<TS>] Driver restore error: pnputil missing",
+        "[<TS>] Traceback: Traceback (most recent call last):",
+        "  <FRAMES>",
+        "OSError: pnputil missing",
+        ""
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Driver restore process started."
+      ],
+      [
+        "update_status",
+        "Driver restore in progress..."
+      ],
+      [
+        "log",
+        "Restoring from matching system backup"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\\TESTBOARD_drivers_restore_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Restoring from: TESTBOARD_drivers_backup_2024-01-02_030405"
+      ],
+      [
+        "show_error",
+        "An error occurred during driver restore: pnputil missing"
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Driver restore complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "play_sound",
+        "error"
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "TESTBOARD_drivers_backup_2024-01-02_030405/",
+      "TESTBOARD_drivers_backup_2024-01-02_030405/TESTBOARD_drivers_restore_2024-01-02_030405.log",
+      "TESTBOARD_drivers_backup_2024-01-02_030405/oem1.inf"
+    ]
+  },
+  "driver_restore_rc_nonzero": {
+    "commands": [
+      [
+        "subprocess.Popen",
+        "pnputil.exe /add-driver <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\\*.inf /subdirs /install"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "TESTBOARD_drivers_backup_2024-01-02_030405/TESTBOARD_drivers_restore_2024-01-02_030405.log": [
+        "[POLICY] Hidden=exclude System=exclude",
+        "[<TS>] Selected driver backup folder: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405",
+        "[<TS>] Backup system name: TESTBOARD",
+        "[<TS>] Current system name: TESTBOARD",
+        "[<TS>] Driver restore started from: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405",
+        "[<TS>] Executing command: pnputil.exe /add-driver \"<TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\\*.inf\" /subdirs /install",
+        "[<TS>] Failed to add.",
+        "[<TS>] STDERR: Access is denied.",
+        "",
+        "[<TS>] Driver restore completed with return code: 259"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Driver restore process started."
+      ],
+      [
+        "update_status",
+        "Driver restore in progress..."
+      ],
+      [
+        "log",
+        "Restoring from matching system backup"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\\TESTBOARD_drivers_restore_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Restoring from: TESTBOARD_drivers_backup_2024-01-02_030405"
+      ],
+      [
+        "log",
+        "Driver restore finished (check log for details)"
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Driver restore complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "play_sound",
+        "error"
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "TESTBOARD_drivers_backup_2024-01-02_030405/",
+      "TESTBOARD_drivers_backup_2024-01-02_030405/TESTBOARD_drivers_restore_2024-01-02_030405.log",
+      "TESTBOARD_drivers_backup_2024-01-02_030405/oem1.inf"
+    ]
+  },
+  "driver_restore_uppercase_marker": {
+    "commands": [
+      [
+        "subprocess.Popen",
+        "pnputil.exe /add-driver <TMP>\\drivers\\OTHERBOARD_DRIVERS_BACKUP_2024-01-02_030405\\*.inf /subdirs /install"
+      ]
+    ],
+    "dialogs": [
+      [
+        "askyesno",
+        "System Mismatch Warning",
+        "Current System: TESTBOARD\nBackup From: OTHERBOARD\n\nThe driver backup may not match your current system.\nDo you want to continue?"
+      ]
+    ],
+    "logs": {
+      "OTHERBOARD_DRIVERS_BACKUP_2024-01-02_030405/OTHERBOARD_drivers_restore_2024-01-02_030405.log": [
+        "[POLICY] Hidden=exclude System=exclude",
+        "[<TS>] Selected driver backup folder: <TMP>\\drivers\\OTHERBOARD_DRIVERS_BACKUP_2024-01-02_030405",
+        "[<TS>] Backup system name: OTHERBOARD",
+        "[<TS>] Current system name: TESTBOARD",
+        "[<TS>] Driver restore started from: <TMP>\\drivers\\OTHERBOARD_DRIVERS_BACKUP_2024-01-02_030405",
+        "[<TS>] Executing command: pnputil.exe /add-driver \"<TMP>\\drivers\\OTHERBOARD_DRIVERS_BACKUP_2024-01-02_030405\\*.inf\" /subdirs /install",
+        "[<TS>] Added 1 driver package.",
+        "[<TS>] Driver restore successfully completed."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Driver restore process started."
+      ],
+      [
+        "update_status",
+        "Driver restore in progress..."
+      ],
+      [
+        "ask_yes_no",
+        [
+          "System Mismatch Warning",
+          "Current System: TESTBOARD\nBackup From: OTHERBOARD\n\nThe driver backup may not match your current system.\nDo you want to continue?"
+        ]
+      ],
+      [
+        "log",
+        "Warning: Restoring from different system backup"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\drivers\\OTHERBOARD_DRIVERS_BACKUP_2024-01-02_030405\\OTHERBOARD_drivers_restore_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Restoring from: OTHERBOARD_DRIVERS_BACKUP_2024-01-02_030405"
+      ],
+      [
+        "log",
+        "Driver restore completed."
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Driver restore complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "play_sound",
+        "complete"
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "OTHERBOARD_DRIVERS_BACKUP_2024-01-02_030405/",
+      "OTHERBOARD_DRIVERS_BACKUP_2024-01-02_030405/OTHERBOARD_drivers_restore_2024-01-02_030405.log",
+      "OTHERBOARD_DRIVERS_BACKUP_2024-01-02_030405/oem1.inf"
+    ]
+  },
+  "sysinfo_all_fail_unknown": {
+    "commands": [
+      [
+        "subprocess.run",
+        "wmic baseboard get product /value"
+      ],
+      [
+        "subprocess.run",
+        "wmic computersystem get model /value"
+      ],
+      [
+        "subprocess.run",
+        "wmic computersystem get manufacturer /value"
+      ]
+    ],
+    "registry": [
+      [
+        "OpenKey",
+        "HKLM",
+        "HARDWARE\\DESCRIPTION\\System\\BIOS",
+        0,
+        "KEY_READ"
+      ]
+    ],
+    "result": "Unknown",
+    "stdout": []
+  },
+  "sysinfo_clean_chars": {
+    "commands": [
+      [
+        "subprocess.run",
+        "wmic baseboard get product /value"
+      ]
+    ],
+    "registry": [
+      [
+        "OpenKey",
+        "HKLM",
+        "HARDWARE\\DESCRIPTION\\System\\BIOS",
+        0,
+        "KEY_READ"
+      ]
+    ],
+    "result": "MyBoardXYZ_Pro_Max",
+    "stdout": []
+  },
+  "sysinfo_oem_skipped": {
+    "commands": [
+      [
+        "subprocess.run",
+        "wmic baseboard get product /value"
+      ],
+      [
+        "subprocess.run",
+        "wmic computersystem get model /value"
+      ],
+      [
+        "subprocess.run",
+        "wmic computersystem get manufacturer /value"
+      ]
+    ],
+    "registry": [
+      [
+        "OpenKey",
+        "HKLM",
+        "HARDWARE\\DESCRIPTION\\System\\BIOS",
+        0,
+        "KEY_READ"
+      ],
+      [
+        "QueryValueEx",
+        "BaseBoardProduct"
+      ],
+      [
+        "QueryValueEx",
+        "SystemProductName"
+      ],
+      [
+        "QueryValueEx",
+        "SystemManufacturer"
+      ],
+      [
+        "CloseKey"
+      ]
+    ],
+    "result": "ACME_Corp",
+    "stdout": []
+  },
+  "sysinfo_rc_nonzero": {
+    "commands": [
+      [
+        "subprocess.run",
+        "wmic baseboard get product /value"
+      ],
+      [
+        "subprocess.run",
+        "wmic computersystem get model /value"
+      ]
+    ],
+    "registry": [
+      [
+        "OpenKey",
+        "HKLM",
+        "HARDWARE\\DESCRIPTION\\System\\BIOS",
+        0,
+        "KEY_READ"
+      ]
+    ],
+    "result": "OptiPlex_7090",
+    "stdout": []
+  },
+  "sysinfo_registry_hit": {
+    "commands": [],
+    "registry": [
+      [
+        "OpenKey",
+        "HKLM",
+        "HARDWARE\\DESCRIPTION\\System\\BIOS",
+        0,
+        "KEY_READ"
+      ],
+      [
+        "QueryValueEx",
+        "BaseBoardProduct"
+      ],
+      [
+        "CloseKey"
+      ]
+    ],
+    "result": "PRIME_Z490-P",
+    "stdout": []
+  },
+  "sysinfo_registry_value_missing": {
+    "commands": [
+      [
+        "subprocess.run",
+        "wmic baseboard get product /value"
+      ]
+    ],
+    "registry": [
+      [
+        "OpenKey",
+        "HKLM",
+        "HARDWARE\\DESCRIPTION\\System\\BIOS",
+        0,
+        "KEY_READ"
+      ],
+      [
+        "QueryValueEx",
+        "BaseBoardProduct"
+      ],
+      [
+        "QueryValueEx",
+        "SystemProductName"
+      ],
+      [
+        "QueryValueEx",
+        "SystemManufacturer"
+      ],
+      [
+        "CloseKey"
+      ]
+    ],
+    "result": "B450M",
+    "stdout": []
+  },
+  "sysinfo_whitespace_only": {
+    "commands": [
+      [
+        "subprocess.run",
+        "wmic baseboard get product /value"
+      ],
+      [
+        "subprocess.run",
+        "wmic computersystem get model /value"
+      ],
+      [
+        "subprocess.run",
+        "wmic computersystem get manufacturer /value"
+      ]
+    ],
+    "registry": [
+      [
+        "OpenKey",
+        "HKLM",
+        "HARDWARE\\DESCRIPTION\\System\\BIOS",
+        0,
+        "KEY_READ"
+      ],
+      [
+        "QueryValueEx",
+        "BaseBoardProduct"
+      ],
+      [
+        "QueryValueEx",
+        "SystemProductName"
+      ],
+      [
+        "QueryValueEx",
+        "SystemManufacturer"
+      ],
+      [
+        "CloseKey"
+      ]
+    ],
+    "result": "Dell_Inc.",
+    "stdout": []
+  },
+  "sysinfo_wmic_raises": {
+    "commands": [
+      [
+        "subprocess.run",
+        "wmic baseboard get product /value"
+      ],
+      [
+        "subprocess.run",
+        "wmic computersystem get model /value"
+      ],
+      [
+        "subprocess.run",
+        "wmic computersystem get manufacturer /value"
+      ]
+    ],
+    "registry": [
+      [
+        "OpenKey",
+        "HKLM",
+        "HARDWARE\\DESCRIPTION\\System\\BIOS",
+        0,
+        "KEY_READ"
+      ]
+    ],
+    "result": "HP",
+    "stdout": []
+  }
+}

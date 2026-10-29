@@ -1,0 +1,29 @@
+# ezbak/gui/
+역할: 화면·대화상자·번역 문자열·테마·settings.json 이 바뀔 때 수정된다(UI 리디자인은 ADR 0004 범위 안에서만, U 단계)
+공개 진입점: run(entry_script) — App(entry_script) 생성·mainloop. 공개 이름(`__all__`): App, run, GuiReporter·GuiLogStream·GuiFolderStore·GuiJob·int_or, Translator, Win11Theme, copy_default_filters, 대화상자 Win11Dialog·FilterManagerDialog·SelectSourcesDialog·ScheduleBackupDialog, CTk 공용 위젯 Card·StatTile·Chip·SidebarItem·RingButton(U3-3), 하위 모듈 dpi(U8). 믹스인은 내부
+의존: 들어오는 것 ezBAK.py · 나가는 것 automation, targets, storage, core, winsys(공개 이름·`__all__` 하위 모듈) · 금지: 업무 규칙 구현(필터·복사·명령줄 조립은 하위 모듈 호출만), 다른 모듈 내부 파일 import
+| 파일 | 역할 |
+|---|---|
+| app.py | `App(<믹스인 13개>, ctk.CTk)`(U4-1): CTk 가 루트 생성 때 DPI 인식을 켬(D8, U8-3 부터) → 바로 `dpi.sync_tk_scaling`, 루트 색은 `configure(fg_color=)`(CTk 는 bg 무시), 설정 읽은 뒤·테마 전환 때 `_sync_ctk_appearance`(CTk 전역 appearance mode). 창·상태·시작(_init_window/_init_state/_init_startup), 단축키 설정(메뉴바 없음, U5-7 D1=B), 사용자 목록, 버튼 상태. entry_script 를 받아 예약 작업 스크립트 경로로 쓴다 · run() |
+| layout.py | LayoutMixin(NavMixin): create_widgets → _build_shell → 절 함수 4개(header·backup·tools·progress/log, 각 ≤150, 원래 순서, U4-2 에서 부모만 바뀜: 시계·사용자 카드 → 상단 바, 옵션·Main Operations → 백업 페이지, Tools → 도구 페이지, 진행 → 하단 줄, Activity Log → 로그 페이지, footer → 사이드바) → show_page(DEFAULT_PAGE) |
+| nav.py | NavMixin(U4-2): 사이드바(CTkFrame, 로고·상태 칩·SidebarItem 8개)·상단 바·페이지 프레임 8개(`pages`, 처음에 다 만들고 show_page 는 pack/pack_forget 만)·하단 줄. 상태 칩은 progress_bar 를 0.5초마다 읽기만 한다(같은 타이머로 홈 값·원형 진행 갱신). Activity Log 카드는 page_area 자식이고 show_page 가 홈·로그 페이지에 `pack(in_=)`(D9). 시작 페이지 home |
+| pages/ | 페이지별 모듈 함수 build(app, parent)(D12, App 메서드 아님). home.py(U5-1): RingButton home_backup_btn(start_backup_thread, set_buttons_state 대상)·선택 사용자·필터 칩·StatTile 2·시스템 카드(사용자 수·숨김/시스템 포함). 옵션 변수 trace·update_ui_texts·타이머가 refresh. U7-5: 여유 공간 타일·복사 속도 카드(Sparkline)·마지막 백업·다음 예약 카드·시스템 이름. 값은 pages/home_data.py(공개 ezbak.gui.home_data)의 HomeData(빌드 때 한 번 생성, App 속성을 나중에 늘리지 않음) — tick(app) 이 상태 칩 타이머에서 창이 보일 때만 속도를 표본하고 SLOW_EVERY 마다 데몬 스레드로 state.json·스케줄 JSON·여유 공간·시스템 이름을 읽어 필드만 바꾼다. 글자는 refresh 가 Tk 스레드에서. backup.py(U5-2): 백업 페이지 카드 3개(백업·옵션·추가 백업)와 복원 페이지 카드(안내 글 2줄 사이에 복원 버튼 2개, U5-3. 덮어쓰기 확인·폴더 선택은 대화상자 그대로)·예약 백업 페이지 카드(안내 글 + schedule_btn, U5-4. 만들기·삭제는 ScheduleBackupDialog 그대로)·도구 페이지 카드 3개(공간·복사, 시스템·파일, NAS, U5-5). Activity Log 카드 머리에 제목(activity_log 번역)·save_log_btn(U5-6, 홈·로그 페이지에 함께 보임) — build_cards 가 body 를 돌려주고 layout 절 함수가 기존 위젯을 그 안에 만든다. 버튼 색은 create_button 의 kind 3종(primary·neutral·danger) |
+| actions_backup/copy/restore/schedule/tools.py | 버튼 동작 믹스인: 대화상자 → 하위 모듈 호출(작업 스레드). 긴 흐름의 helper 는 모듈 함수(테스트 recording 이 App 메서드를 바꿔치기하므로). 복사 완료 여부는 반환값으로(App 속성 아님) |
+| bridge.py | Reporter 어댑터(GuiReporter·GuiLogStream·GuiFolderStore·GuiJob, P2 규칙 그대로) + QueueMixin: process_queue(14종, ask_yes_no 는 g-e), 작업 스레드 확인 대기 _wait_restore_folder_choice·_wait_cross_user_confirm·_wait_yes_no(공통 _poll_answer, 큐 + 속성 0.1초 폴링, 결정 D4) |
+| app_log.py, settings.py | AppLogMixin(작업 로그 파일·UI 로그·소리) · SettingsMixin + copy_default_filters(%APPDATA%\ezbak\settings.json 유일 소유자) |
+| theme.py, i18n.py | Win11Theme(U6-6 부터 토큰이 있는 키는 토큰 값)·ThemeMixin + U 단계 디자인 토큰(TOKENS·FONT_*·ICONS·font_spec, tk 위젯용 token_colors(theme)·tk_font — U6 대화상자부터) · Translator·LanguageMixin. 둘은 dialogs/message 와 import 순환이라 Win11Dialog 를 `dialogs.Win11Dialog` 로 호출 시점에 찾는다 |
+| strings_en.py, strings_ko.py | 언어별 사전 EN·KO(키 순서 그대로, 중복 키 없음 — P5-fix). `{0}` 가 있는 값은 호출처에서 `.format`. 키를 추가하면 gui_snapshot golden 의 translations 도 바뀐다 |
+| components.py | CTk 공용 위젯(U3-3): Card(제목·body)·StatTile·Chip·SidebarItem·RingButton·Sparkline(U7-4, 최근 N 값 꺾은선, 자기 캔버스 — CTkCanvas.coords 는 읽기용이 아니다). 색·반경·글꼴은 theme 토큰. SidebarItem·RingButton 은 CTkFrame 이지만 configure/cget(text·command·state)·invoke 가 버튼처럼 동작 |
+| pages/settings_page.py | U5-7: 설정 페이지(테마·언어 버튼, 소리 카드에 sound_label·sound_toggle)·도움말 페이지(단축키 보기·GitHub 릴리스 버튼, keyboard_shortcuts_content 표). 예전 메뉴바 명령과 같은 호출. 전환 뒤 "다시 시작" 안내 대화상자 그대로 |
+| dpi.py | U8: tk 부분의 DPI 배율(공개 하위 모듈). `factor`(App 루트 모니터의 CTk 배율, 비인식·실패·100% 면 1)·`px`·`geometry`·`centered_geometry`·`font_px`(tk_font 의 px 글꼴)·`sync_tk_scaling`(배율 ≠ 1 이면 `tk scaling`). tk.Toplevel 의 픽셀 geometry·wraplength·캔버스 크기는 100% 값으로 적고 이 함수로 감싼다. CTk 위젯은 스스로 배율을 곱하므로 감싸지 않는다(두 번 커짐). 대화상자에 CTk 위젯을 넣지 않는다(모니터 이동 때 CTk 가 tk.Toplevel 에 없는 메서드를 부름, ui-plan §9) |
+| widgets.py, shortcuts.py | ToggleSwitch·create_win11_button(대화상자 3개의 같은 버튼, D5, U6-1 부터 토큰 색) · DialogShortcuts·KeyboardShortcuts(F1 도움말 창도 토큰 색) |
+| dialogs/ | message(Win11Dialog, U6-1 부터 토큰 색·글꼴), filters(U6-2 토큰 색·글꼴, 글꼴 helper 는 모듈 함수 _font — 메서드면 바인딩 기록 테스트가 바꿔치기), sources(+sources_tree, U6-3 토큰 색·글꼴, 폴더 트리는 ttk 스타일 Sources.Treeview), schedule(+schedule_layout, U6-4 토큰 색·글꼴), nas(NasDialogsMixin), restore_select(RestoreSelectMixin) — 둘 다 U6-5 부터 모듈 함수 _c(app, 토큰)로 토큰 색. `__init__` 은 message 를 먼저 import(순환 방지) |
+테스트: python -m pytest tests -q -m gui · bridge 단위 test_gui_bridge.py · golden test_gui_snapshot·test_gui_dialogs(+_nas)·test_gui_cases(P5-0)
+규칙: 작업 스레드에서는 위젯을 만지지 않고 bridge 로 큐에만 넣는다(확인이 필요하면 _wait_* 로 메인 스레드에 묻는다). 큐 task 문자열·번역 키는 C3 고정
+단축키: Tk 이벤트 이름은 키를 명시한다(`<Control-Key-1>`·`<Alt-Key-1>`·`<space>`). `<Control-1>` 은 마우스 버튼, 잘못된 이름은 TclError 로 뒤 바인딩까지 끊는다(P5-fix)
+모듈 전역 이름: 테스트 facade 가 이름으로 patch 를 퍼뜨리므로 import 별칭(threading·datetime·os·filedialog·Win11Dialog·winsys_free_space·core_engine_run_backup 등)을 함부로 바꾸지 않는다
+복원 wrapper 는 복사 전 중단(교차 사용자 '아니오'·공간 부족)이면 연 작업 로그를 지운다(fix-e). 예외로 끝나면 진단용으로 남긴다. free_space 는 get_free_space_reliable(fix-c)
+상한: 파일 500, 함수 60, 배치 함수 150. 넘으면 같은 순서의 절 함수로 쪼개고, 중복은 글자까지 같을 때만 합친다(결정 D5)
+예외: `except Exception: pass` 는 위젯 꾸미기 실패에만, 이유 주석과 함께. 그 밖은 `_log.debug("event=... failed", exc_info=True)`(모듈 `_log = logging.getLogger(__name__)`, 모든 모듈 같은 이름 — P6-8). NAS 는 암호가 실릴 수 있어 error_type 만 남긴다. 맨 `except:` 금지(ADR 0003 §2)
+print 는 P6 검사 d 에서 진단 로그로 옮긴다. 새 코드에 print 를 쓰지 않는다
+ADR: docs/adr/0002-패키지-구조.md, docs/adr/0003-구현-규칙.md

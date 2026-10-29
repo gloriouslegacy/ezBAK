@@ -1,0 +1,24 @@
+build/
+dist/
+__pycache__/
+.ieda/
+.vs/
+final_build/
+obfuscated/
+.pyarmor/
+
+*.spec
+*.iml
+*.log
+*.swap
+
+#Django stuff:
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+
+# fable 자동 현황(기계마다 다시 만듦)
+docs/map.md
+# Claude Orchestration 로컬 파생물(커밋하지 않음, 훅이 자동 추가)
+docs/issue/dispatch-log*.md

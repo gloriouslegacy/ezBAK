@@ -1,0 +1,861 @@
+{
+  "devmgr_mmc": {
+    "calls": [
+      {
+        "api": "subprocess.Popen",
+        "args": [
+          [
+            "mmc",
+            "devmgmt.msc"
+          ]
+        ],
+        "kwargs": {
+          "shell": false
+        }
+      }
+    ],
+    "dialogs": []
+  },
+  "devmgr_shell_start": {
+    "calls": [
+      {
+        "api": "subprocess.Popen",
+        "args": [
+          [
+            "mmc",
+            "devmgmt.msc"
+          ]
+        ],
+        "kwargs": {
+          "shell": false
+        }
+      },
+      {
+        "api": "subprocess.Popen",
+        "args": [
+          "start devmgmt.msc"
+        ],
+        "kwargs": {
+          "shell": true
+        }
+      }
+    ],
+    "dialogs": []
+  },
+  "devmgr_startfile": {
+    "calls": [
+      {
+        "api": "os.startfile",
+        "args": [
+          "<TMP>\\Windows\\system32\\devmgmt.msc"
+        ],
+        "kwargs": {}
+      }
+    ],
+    "dialogs": []
+  },
+  "driver_backup": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "wmic",
+            "baseboard",
+            "get",
+            "product",
+            "/value"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "<PREFERRED>",
+          "errors": "replace",
+          "text": true
+        }
+      },
+      {
+        "api": "subprocess.Popen",
+        "args": [
+          [
+            "pnputil.exe",
+            "/export-driver",
+            "*",
+            "<TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405"
+          ]
+        ],
+        "kwargs": {
+          "encoding": "oem",
+          "errors": "replace",
+          "shell": false,
+          "stderr": "PIPE",
+          "stdout": "PIPE",
+          "universal_newlines": true
+        }
+      }
+    ],
+    "dialogs": []
+  },
+  "driver_restore": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "wmic",
+            "baseboard",
+            "get",
+            "product",
+            "/value"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "<PREFERRED>",
+          "errors": "replace",
+          "text": true
+        }
+      },
+      {
+        "api": "subprocess.Popen",
+        "args": [
+          [
+            "pnputil.exe",
+            "/add-driver",
+            "<TMP>\\drivers\\TESTBOARD_drivers_backup_2024-01-02_030405\\*.inf",
+            "/subdirs",
+            "/install"
+          ]
+        ],
+        "kwargs": {
+          "encoding": "oem",
+          "errors": "replace",
+          "shell": false,
+          "stderr": "PIPE",
+          "stdout": "PIPE",
+          "universal_newlines": true
+        }
+      }
+    ],
+    "dialogs": []
+  },
+  "explorer": {
+    "calls": [
+      {
+        "api": "os.startfile",
+        "args": [
+          "<TMP>\\home"
+        ],
+        "kwargs": {}
+      }
+    ],
+    "dialogs": []
+  },
+  "github_link": {
+    "calls": [
+      {
+        "api": "webbrowser.open_new",
+        "args": [
+          "https://github.com/gloriouslegacy/ezBAK/releases"
+        ],
+        "kwargs": {}
+      }
+    ],
+    "dialogs": []
+  },
+  "nas_connect_drive_user": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "net",
+            "use",
+            "Z:",
+            "\\\\nas\\share",
+            "/user:nasuser",
+            "dummy-pw",
+            "/persistent:yes"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "cp949",
+          "errors": "ignore",
+          "shell": false,
+          "text": true
+        }
+      },
+      {
+        "api": "os.startfile",
+        "args": [
+          "Z:"
+        ],
+        "kwargs": {}
+      }
+    ],
+    "dialogs": [
+      "askyesno"
+    ]
+  },
+  "nas_connect_retry_path": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "net",
+            "use",
+            "X:",
+            "\\\\nas\\share",
+            "/persistent:yes"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "cp949",
+          "errors": "ignore",
+          "shell": false,
+          "text": true
+        }
+      },
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "net",
+            "use",
+            "X:",
+            "\\\\nas\\share",
+            "/persistent:yes"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "shell": false,
+          "text": true
+        }
+      }
+    ],
+    "dialogs": [
+      "showerror"
+    ]
+  },
+  "nas_disconnect_retry_path": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "net",
+            "use",
+            "Z:",
+            "/delete",
+            "/y"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "cp949",
+          "errors": "ignore",
+          "shell": false,
+          "text": true
+        }
+      },
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "net",
+            "use",
+            "Z:",
+            "/delete",
+            "/y"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "shell": false,
+          "text": true
+        }
+      }
+    ],
+    "dialogs": [
+      "showerror"
+    ]
+  },
+  "nas_disconnect_unc": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "net",
+            "use",
+            "\\\\nas\\share",
+            "/delete",
+            "/y"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "cp949",
+          "errors": "ignore",
+          "shell": false,
+          "text": true
+        }
+      }
+    ],
+    "dialogs": [
+      "showinfo"
+    ]
+  },
+  "queue_open_folder": {
+    "calls": [
+      {
+        "api": "os.startfile",
+        "args": [
+          "<TMP>\\out"
+        ],
+        "kwargs": {}
+      }
+    ],
+    "dialogs": []
+  },
+  "relaunch_runas": {
+    "calls": [
+      {
+        "api": "ShellExecuteW",
+        "args": [
+          null,
+          "runas",
+          "<PY>",
+          "<REPO>\\ezBAK.py --lang \"a b\"",
+          null,
+          1
+        ],
+        "kwargs": {}
+      }
+    ],
+    "dialogs": []
+  },
+  "schedule_create_daily": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "schtasks",
+            "/create",
+            "/tn",
+            "ezBAK_Test",
+            "/xml",
+            "<TMP>\\home\\AppData\\Local\\ezBAK\\schedules\\ezBAK_Test_task.xml",
+            "/f"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "check": false,
+          "encoding": "<PREFERRED>",
+          "errors": "replace",
+          "shell": false,
+          "text": true,
+          "timeout": 180
+        }
+      }
+    ],
+    "dialogs": [],
+    "message": [
+      "Scheduled task 'ezBAK_Test' created successfully!",
+      "",
+      "Schedule: Daily at 09:05",
+      "User: tester",
+      "Destination: <TMP>\\dest",
+      "Retention: 2 backups, 30 days logs",
+      "Hidden files: Excluded",
+      "System files: Excluded",
+      "",
+      "Run Level: Administrator (Highest Privileges)",
+      "Run As: TESTPC\\tester"
+    ],
+    "task_xml": [
+      "<?xml version=\"1.0\" encoding=\"UTF-16\"?>",
+      "<Task version=\"1.2\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\">",
+      "  <RegistrationInfo>",
+      "    <Date>2024-01-02T03:04:05</Date>",
+      "    <Author>TESTPC\\tester</Author>",
+      "    <Description>ezBAK Automated Backup Task</Description>",
+      "  </RegistrationInfo>",
+      "  <Triggers>",
+      "    <CalendarTrigger>",
+      "      <StartBoundary>2024-01-03T09:05:00</StartBoundary>",
+      "      <Enabled>true</Enabled>",
+      "      <ScheduleByDay>",
+      "        <DaysInterval>1</DaysInterval>",
+      "      </ScheduleByDay>",
+      "    </CalendarTrigger>",
+      "  </Triggers>",
+      "  <Principals>",
+      "    <Principal id=\"Author\">",
+      "      <UserId>TESTPC\\tester</UserId>",
+      "      <LogonType>InteractiveToken</LogonType>",
+      "      <RunLevel>HighestAvailable</RunLevel>",
+      "    </Principal>",
+      "  </Principals>",
+      "  <Settings>",
+      "    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>",
+      "    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>",
+      "    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>",
+      "    <AllowHardTerminate>true</AllowHardTerminate>",
+      "    <StartWhenAvailable>true</StartWhenAvailable>",
+      "    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>",
+      "    <IdleSettings>",
+      "      <StopOnIdleEnd>false</StopOnIdleEnd>",
+      "      <RestartOnIdle>false</RestartOnIdle>",
+      "    </IdleSettings>",
+      "    <AllowStartOnDemand>true</AllowStartOnDemand>",
+      "    <Enabled>true</Enabled>",
+      "    <Hidden>false</Hidden>",
+      "    <RunOnlyIfIdle>false</RunOnlyIfIdle>",
+      "    <WakeToRun>false</WakeToRun>",
+      "    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>",
+      "    <Priority>7</Priority>",
+      "  </Settings>",
+      "  <Actions Context=\"Author\">",
+      "    <Exec>",
+      "      <Command><PY></Command>",
+      "      <Arguments>\"<REPO>\\ezBAK.py\" --schedule-config \"<TMP>\\env\\AppData\\Roaming\\ezBAK\\ezBAK_Schedule\\ezBAK_Test.json\"</Arguments>",
+      "    </Exec>",
+      "  </Actions>",
+      "</Task>"
+    ]
+  },
+  "schedule_create_monthly": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "schtasks",
+            "/create",
+            "/tn",
+            "ezBAK_Test",
+            "/xml",
+            "<TMP>\\home\\AppData\\Local\\ezBAK\\schedules\\ezBAK_Test_task.xml",
+            "/f"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "check": false,
+          "encoding": "<PREFERRED>",
+          "errors": "replace",
+          "shell": false,
+          "text": true,
+          "timeout": 180
+        }
+      }
+    ],
+    "dialogs": [],
+    "message": [
+      "Scheduled task 'ezBAK_Test' created successfully!",
+      "",
+      "Schedule: Monthly at 09:05",
+      "User: tester",
+      "Destination: <TMP>\\dest",
+      "Retention: 2 backups, 30 days logs",
+      "Hidden files: Excluded",
+      "System files: Excluded",
+      "",
+      "Run Level: Administrator (Highest Privileges)",
+      "Run As: TESTPC\\tester"
+    ],
+    "task_xml": [
+      "<?xml version=\"1.0\" encoding=\"UTF-16\"?>",
+      "<Task version=\"1.2\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\">",
+      "  <RegistrationInfo>",
+      "    <Date>2024-01-02T03:04:05</Date>",
+      "    <Author>TESTPC\\tester</Author>",
+      "    <Description>ezBAK Automated Backup Task</Description>",
+      "  </RegistrationInfo>",
+      "  <Triggers>",
+      "    <CalendarTrigger>",
+      "      <StartBoundary>2024-01-03T09:05:00</StartBoundary>",
+      "      <Enabled>true</Enabled>",
+      "      <ScheduleByMonth>",
+      "        <DaysOfMonth>",
+      "          <Day>15</Day>",
+      "        </DaysOfMonth>",
+      "        <Months>",
+      "          <January />",
+      "          <February />",
+      "          <March />",
+      "          <April />",
+      "          <May />",
+      "          <June />",
+      "          <July />",
+      "          <August />",
+      "          <September />",
+      "          <October />",
+      "          <November />",
+      "          <December />",
+      "        </Months>",
+      "      </ScheduleByMonth>",
+      "    </CalendarTrigger>",
+      "  </Triggers>",
+      "  <Principals>",
+      "    <Principal id=\"Author\">",
+      "      <UserId>TESTPC\\tester</UserId>",
+      "      <LogonType>InteractiveToken</LogonType>",
+      "      <RunLevel>HighestAvailable</RunLevel>",
+      "    </Principal>",
+      "  </Principals>",
+      "  <Settings>",
+      "    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>",
+      "    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>",
+      "    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>",
+      "    <AllowHardTerminate>true</AllowHardTerminate>",
+      "    <StartWhenAvailable>true</StartWhenAvailable>",
+      "    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>",
+      "    <IdleSettings>",
+      "      <StopOnIdleEnd>false</StopOnIdleEnd>",
+      "      <RestartOnIdle>false</RestartOnIdle>",
+      "    </IdleSettings>",
+      "    <AllowStartOnDemand>true</AllowStartOnDemand>",
+      "    <Enabled>true</Enabled>",
+      "    <Hidden>false</Hidden>",
+      "    <RunOnlyIfIdle>false</RunOnlyIfIdle>",
+      "    <WakeToRun>false</WakeToRun>",
+      "    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>",
+      "    <Priority>7</Priority>",
+      "  </Settings>",
+      "  <Actions Context=\"Author\">",
+      "    <Exec>",
+      "      <Command><PY></Command>",
+      "      <Arguments>\"<REPO>\\ezBAK.py\" --schedule-config \"<TMP>\\env\\AppData\\Roaming\\ezBAK\\ezBAK_Schedule\\ezBAK_Test.json\"</Arguments>",
+      "    </Exec>",
+      "  </Actions>",
+      "</Task>"
+    ]
+  },
+  "schedule_create_weekly": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "schtasks",
+            "/create",
+            "/tn",
+            "ezBAK_Test",
+            "/xml",
+            "<TMP>\\home\\AppData\\Local\\ezBAK\\schedules\\ezBAK_Test_task.xml",
+            "/f"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "check": false,
+          "encoding": "<PREFERRED>",
+          "errors": "replace",
+          "shell": false,
+          "text": true,
+          "timeout": 180
+        }
+      }
+    ],
+    "dialogs": [],
+    "message": [
+      "Scheduled task 'ezBAK_Test' created successfully!",
+      "",
+      "Schedule: Weekly at 09:05",
+      "User: tester",
+      "Destination: <TMP>\\dest",
+      "Retention: 2 backups, 30 days logs",
+      "Hidden files: Excluded",
+      "System files: Excluded",
+      "",
+      "Run Level: Administrator (Highest Privileges)",
+      "Run As: TESTPC\\tester"
+    ],
+    "task_xml": [
+      "<?xml version=\"1.0\" encoding=\"UTF-16\"?>",
+      "<Task version=\"1.2\" xmlns=\"http://schemas.microsoft.com/windows/2004/02/mit/task\">",
+      "  <RegistrationInfo>",
+      "    <Date>2024-01-02T03:04:05</Date>",
+      "    <Author>TESTPC\\tester</Author>",
+      "    <Description>ezBAK Automated Backup Task</Description>",
+      "  </RegistrationInfo>",
+      "  <Triggers>",
+      "    <CalendarTrigger>",
+      "      <StartBoundary>2024-01-03T09:05:00</StartBoundary>",
+      "      <Enabled>true</Enabled>",
+      "      <ScheduleByWeek>",
+      "        <DaysOfWeek>",
+      "          <Sunday />",
+      "        </DaysOfWeek>",
+      "        <WeeksInterval>1</WeeksInterval>",
+      "      </ScheduleByWeek>",
+      "    </CalendarTrigger>",
+      "  </Triggers>",
+      "  <Principals>",
+      "    <Principal id=\"Author\">",
+      "      <UserId>TESTPC\\tester</UserId>",
+      "      <LogonType>InteractiveToken</LogonType>",
+      "      <RunLevel>HighestAvailable</RunLevel>",
+      "    </Principal>",
+      "  </Principals>",
+      "  <Settings>",
+      "    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>",
+      "    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>",
+      "    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>",
+      "    <AllowHardTerminate>true</AllowHardTerminate>",
+      "    <StartWhenAvailable>true</StartWhenAvailable>",
+      "    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>",
+      "    <IdleSettings>",
+      "      <StopOnIdleEnd>false</StopOnIdleEnd>",
+      "      <RestartOnIdle>false</RestartOnIdle>",
+      "    </IdleSettings>",
+      "    <AllowStartOnDemand>true</AllowStartOnDemand>",
+      "    <Enabled>true</Enabled>",
+      "    <Hidden>false</Hidden>",
+      "    <RunOnlyIfIdle>false</RunOnlyIfIdle>",
+      "    <WakeToRun>false</WakeToRun>",
+      "    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>",
+      "    <Priority>7</Priority>",
+      "  </Settings>",
+      "  <Actions Context=\"Author\">",
+      "    <Exec>",
+      "      <Command><PY></Command>",
+      "      <Arguments>\"<REPO>\\ezBAK.py\" --schedule-config \"<TMP>\\env\\AppData\\Roaming\\ezBAK\\ezBAK_Schedule\\ezBAK_Test.json\"</Arguments>",
+      "    </Exec>",
+      "  </Actions>",
+      "</Task>"
+    ]
+  },
+  "schedule_delete": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "schtasks",
+            "/Delete",
+            "/TN",
+            "ezBAK_Test",
+            "/F"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "shell": true,
+          "text": true
+        }
+      }
+    ],
+    "dialogs": [
+      "showinfo"
+    ]
+  },
+  "sysinfo_fallback_chain": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "wmic",
+            "baseboard",
+            "get",
+            "product",
+            "/value"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "<PREFERRED>",
+          "errors": "replace",
+          "text": true
+        }
+      },
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "wmic",
+            "computersystem",
+            "get",
+            "model",
+            "/value"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "<PREFERRED>",
+          "errors": "replace",
+          "text": true
+        }
+      },
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "wmic",
+            "computersystem",
+            "get",
+            "manufacturer",
+            "/value"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "<PREFERRED>",
+          "errors": "replace",
+          "text": true
+        }
+      }
+    ],
+    "dialogs": [],
+    "result": "ACME_Corp"
+  },
+  "winget_export_ok": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "winget",
+            "--version"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "utf-8",
+          "errors": "ignore",
+          "shell": false,
+          "text": true
+        }
+      },
+      {
+        "api": "subprocess.Popen",
+        "args": [
+          [
+            "winget",
+            "export",
+            "--output",
+            "<TMP>\\apps\\winget_export_20240102_030405.json",
+            "--include-versions",
+            "--accept-source-agreements",
+            "--disable-interactivity"
+          ]
+        ],
+        "kwargs": {
+          "encoding": "utf-8",
+          "errors": "ignore",
+          "shell": false,
+          "stderr": "PIPE",
+          "stdout": "PIPE",
+          "universal_newlines": true
+        }
+      }
+    ],
+    "dialogs": []
+  },
+  "winget_fallbacks": {
+    "calls": [
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "winget",
+            "--version"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "utf-8",
+          "errors": "ignore",
+          "shell": false,
+          "text": true
+        }
+      },
+      {
+        "api": "subprocess.Popen",
+        "args": [
+          [
+            "winget",
+            "export",
+            "--output",
+            "<TMP>\\apps\\winget_export_20240102_030405.json",
+            "--include-versions",
+            "--accept-source-agreements",
+            "--disable-interactivity"
+          ]
+        ],
+        "kwargs": {
+          "encoding": "utf-8",
+          "errors": "ignore",
+          "shell": false,
+          "stderr": "PIPE",
+          "stdout": "PIPE",
+          "universal_newlines": true
+        }
+      },
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "winget",
+            "export",
+            "--output",
+            "<TMP>\\apps\\winget_export_20240102_030405.json"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "utf-8",
+          "errors": "ignore",
+          "shell": false,
+          "text": true,
+          "timeout": 300
+        }
+      },
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "winget",
+            "list",
+            "--accept-source-agreements"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "utf-8",
+          "errors": "ignore",
+          "shell": false,
+          "text": true,
+          "timeout": 300
+        }
+      },
+      {
+        "api": "subprocess.run",
+        "args": [
+          [
+            "winget",
+            "list"
+          ]
+        ],
+        "kwargs": {
+          "capture_output": true,
+          "encoding": "utf-8",
+          "errors": "ignore",
+          "shell": false,
+          "text": true,
+          "timeout": 180
+        }
+      }
+    ],
+    "dialogs": []
+  }
+}

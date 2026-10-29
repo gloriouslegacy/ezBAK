@@ -1,0 +1,516 @@
+{
+  "auto_backup": {
+    "argv": [
+      "--auto-backup",
+      "--user",
+      "Public",
+      "--dest",
+      "<TMP>\\dest"
+    ],
+    "code": 0,
+    "dest": {
+      "Public_backup_2024-01-02_030405.log": [
+        "[<TS>] Backup start for 'Public' → <TMP>\\dest\\Public_backup_2024-01-02_030405",
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------"
+      ],
+      "Public_backup_2024-01-02_030405/": null
+    },
+    "end": "SystemExit",
+    "engine_calls": [
+      {
+        "backup_path": "<TMP>\\dest\\Public_backup_2024-01-02_030405",
+        "clock": "<TS>",
+        "fmt": "JobLogFormat.HEADLESS",
+        "job": {
+          "dest": "<TMP>\\dest",
+          "filters": {
+            "exclude": [
+              {
+                "pattern": "onedrive*",
+                "type": "name"
+              },
+              {
+                "pattern": "thumbs.db",
+                "type": "name"
+              },
+              {
+                "pattern": "desktop.ini",
+                "type": "name"
+              },
+              {
+                "pattern": "$recycle.bin",
+                "type": "name"
+              }
+            ],
+            "include": []
+          },
+          "include_hidden": false,
+          "include_system": false,
+          "log_folder": "logs",
+          "log_retention_days": 30,
+          "retention_count": 2,
+          "user": "Public"
+        },
+        "job_log": "<JobLog>",
+        "log_path": "<TMP>\\dest\\Public_backup_2024-01-02_030405.log",
+        "now_ts": "<lambda>",
+        "policy": "BackupPolicy.HEADLESS",
+        "reporter": "<_HeadlessReporter>",
+        "store": "<LocalFolderStore>",
+        "targets": [
+          "<Bookmarks>"
+        ],
+        "users_root": "C:\\Users"
+      }
+    ],
+    "shell_execute": [],
+    "stderr": [],
+    "stdout": [
+      "[<TS>] Headless backup start for user 'Public'",
+      "[<TS>] Command line args: retention=2, log_retention=30",
+      "[<TS>] Backup finished → <TMP>\\dest\\Public_backup_2024-01-02_030405",
+      "[<TS>] Log saved at <TMP>\\dest\\Public_backup_2024-01-02_030405.log"
+    ]
+  },
+  "config_bad_json": {
+    "argv": [
+      "--schedule-config",
+      "<TMP>\\config\\ezBAK_Test.json"
+    ],
+    "code": 1,
+    "dest": {},
+    "end": "SystemExit",
+    "engine_calls": [],
+    "shell_execute": [],
+    "stderr": [
+      "Traceback (most recent call last):",
+      "  <FRAMES>",
+      "json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 19 (char 18)"
+    ],
+    "stdout": [
+      "[<TS>] Scheduled backup start using config: <TMP>\\config\\ezBAK_Test.json",
+      "[<TS>] ERROR during scheduled backup: Expecting property name enclosed in double quotes: line 1 column 19 (char 18)"
+    ]
+  },
+  "config_missing": {
+    "argv": [
+      "--schedule-config",
+      "<TMP>\\config\\absent.json"
+    ],
+    "code": 1,
+    "dest": {},
+    "end": "SystemExit",
+    "engine_calls": [],
+    "shell_execute": [],
+    "stderr": [],
+    "stdout": [
+      "[<TS>] Scheduled backup start using config: <TMP>\\config\\absent.json",
+      "[<TS>] ERROR: Configuration file not found: <TMP>\\config\\absent.json"
+    ]
+  },
+  "config_ok": {
+    "argv": [
+      "--schedule-config",
+      "<TMP>\\config\\ezBAK_Test.json"
+    ],
+    "code": 0,
+    "dest": {
+      "Public_backup_2024-01-02_030405.log": [
+        "[<TS>] Backup start for 'Public' → <TMP>\\dest\\Public_backup_2024-01-02_030405",
+        "[<TS>] Policy: Hidden=include, System=exclude, BackupKeep=3, LogKeep=15",
+        "[<TS>] Filters: Include=[None], Exclude=[name:*.tmp]",
+        "[<TS>] --------------------------------------------------"
+      ],
+      "Public_backup_2024-01-02_030405/": null
+    },
+    "end": "SystemExit",
+    "engine_calls": [
+      {
+        "backup_path": "<TMP>\\dest\\Public_backup_2024-01-02_030405",
+        "clock": "<TS>",
+        "fmt": "JobLogFormat.HEADLESS",
+        "job": {
+          "dest": "<TMP>\\dest",
+          "filters": {
+            "exclude": [
+              {
+                "pattern": "*.tmp",
+                "type": "name"
+              }
+            ],
+            "include": []
+          },
+          "include_hidden": true,
+          "include_system": false,
+          "log_folder": "logs",
+          "log_retention_days": 15,
+          "retention_count": 3,
+          "user": "Public"
+        },
+        "job_log": "<JobLog>",
+        "log_path": "<TMP>\\dest\\Public_backup_2024-01-02_030405.log",
+        "now_ts": "<lambda>",
+        "policy": "BackupPolicy.HEADLESS",
+        "reporter": "<_HeadlessReporter>",
+        "store": "<LocalFolderStore>",
+        "targets": [
+          "<Bookmarks>"
+        ],
+        "users_root": "C:\\Users"
+      }
+    ],
+    "shell_execute": [],
+    "stderr": [],
+    "stdout": [
+      "[<TS>] Scheduled backup start using config: <TMP>\\config\\ezBAK_Test.json",
+      "[<TS>] Configuration loaded successfully",
+      "[<TS>] Task: ezBAK_Test",
+      "[<TS>] User: Public",
+      "[<TS>] Destination: <TMP>\\dest",
+      "[<TS>] Retention: 3 backups, 15 days logs",
+      "[<TS>] Backup finished → <TMP>\\dest\\Public_backup_2024-01-02_030405",
+      "[<TS>] Log saved at <TMP>\\dest\\Public_backup_2024-01-02_030405.log"
+    ]
+  },
+  "config_user_missing": {
+    "argv": [
+      "--schedule-config",
+      "<TMP>\\config\\ezBAK_Test.json"
+    ],
+    "code": 1,
+    "dest": {
+      "NoSuchUser_ezbak_cli_backup_2024-01-02_030405/": null
+    },
+    "end": "SystemExit",
+    "engine_calls": [],
+    "shell_execute": [],
+    "stderr": [
+      "Traceback (most recent call last):",
+      "  <FRAMES>",
+      "FileNotFoundError: User folder 'C:\\Users\\NoSuchUser_ezbak_cli' not found."
+    ],
+    "stdout": [
+      "[<TS>] Scheduled backup start using config: <TMP>\\config\\ezBAK_Test.json",
+      "[<TS>] Configuration loaded successfully",
+      "[<TS>] Task: ezBAK_Test",
+      "[<TS>] User: NoSuchUser_ezbak_cli",
+      "[<TS>] Destination: <TMP>\\dest",
+      "[<TS>] Retention: 3 backups, 15 days logs",
+      "[<TS>] ERROR during scheduled backup: User folder 'C:\\Users\\NoSuchUser_ezbak_cli' not found."
+    ]
+  },
+  "direct_bad_filters": {
+    "argv": [
+      "--user",
+      "Public",
+      "--dest",
+      "<TMP>\\dest",
+      "--filters",
+      "{not json"
+    ],
+    "code": 0,
+    "dest": {
+      "Public_backup_2024-01-02_030405.log": [
+        "[<TS>] Backup start for 'Public' → <TMP>\\dest\\Public_backup_2024-01-02_030405",
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------"
+      ],
+      "Public_backup_2024-01-02_030405/": null
+    },
+    "end": "SystemExit",
+    "engine_calls": [
+      {
+        "backup_path": "<TMP>\\dest\\Public_backup_2024-01-02_030405",
+        "clock": "<TS>",
+        "fmt": "JobLogFormat.HEADLESS",
+        "job": {
+          "dest": "<TMP>\\dest",
+          "filters": {
+            "exclude": [
+              {
+                "pattern": "onedrive*",
+                "type": "name"
+              },
+              {
+                "pattern": "thumbs.db",
+                "type": "name"
+              },
+              {
+                "pattern": "desktop.ini",
+                "type": "name"
+              },
+              {
+                "pattern": "$recycle.bin",
+                "type": "name"
+              }
+            ],
+            "include": []
+          },
+          "include_hidden": false,
+          "include_system": false,
+          "log_folder": "logs",
+          "log_retention_days": 30,
+          "retention_count": 2,
+          "user": "Public"
+        },
+        "job_log": "<JobLog>",
+        "log_path": "<TMP>\\dest\\Public_backup_2024-01-02_030405.log",
+        "now_ts": "<lambda>",
+        "policy": "BackupPolicy.HEADLESS",
+        "reporter": "<_HeadlessReporter>",
+        "store": "<LocalFolderStore>",
+        "targets": [
+          "<Bookmarks>"
+        ],
+        "users_root": "C:\\Users"
+      }
+    ],
+    "shell_execute": [],
+    "stderr": [],
+    "stdout": [
+      "[<TS>] Headless backup start for user 'Public'",
+      "[<TS>] Command line args: retention=2, log_retention=30",
+      "[<TS>] WARNING: Failed to parse filters JSON: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)",
+      "[<TS>] Backup finished → <TMP>\\dest\\Public_backup_2024-01-02_030405",
+      "[<TS>] Log saved at <TMP>\\dest\\Public_backup_2024-01-02_030405.log"
+    ]
+  },
+  "direct_engine_error": {
+    "argv": [
+      "--user",
+      "Public",
+      "--dest",
+      "<TMP>\\dest"
+    ],
+    "code": 0,
+    "dest": {
+      "Public_backup_2024-01-02_030405.log": [
+        "[<TS>] Backup start for 'Public' → <TMP>\\dest\\Public_backup_2024-01-02_030405",
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------"
+      ],
+      "Public_backup_2024-01-02_030405/": null
+    },
+    "end": "SystemExit",
+    "engine_calls": [
+      {
+        "backup_path": "<TMP>\\dest\\Public_backup_2024-01-02_030405",
+        "clock": "<TS>",
+        "fmt": "JobLogFormat.HEADLESS",
+        "job": {
+          "dest": "<TMP>\\dest",
+          "filters": {
+            "exclude": [
+              {
+                "pattern": "onedrive*",
+                "type": "name"
+              },
+              {
+                "pattern": "thumbs.db",
+                "type": "name"
+              },
+              {
+                "pattern": "desktop.ini",
+                "type": "name"
+              },
+              {
+                "pattern": "$recycle.bin",
+                "type": "name"
+              }
+            ],
+            "include": []
+          },
+          "include_hidden": false,
+          "include_system": false,
+          "log_folder": "logs",
+          "log_retention_days": 30,
+          "retention_count": 2,
+          "user": "Public"
+        },
+        "job_log": "<JobLog>",
+        "log_path": "<TMP>\\dest\\Public_backup_2024-01-02_030405.log",
+        "now_ts": "<lambda>",
+        "policy": "BackupPolicy.HEADLESS",
+        "reporter": "<_HeadlessReporter>",
+        "store": "<LocalFolderStore>",
+        "targets": [
+          "<Bookmarks>"
+        ],
+        "users_root": "C:\\Users"
+      }
+    ],
+    "shell_execute": [],
+    "stderr": [],
+    "stdout": [
+      "[<TS>] Headless backup start for user 'Public'",
+      "[<TS>] Command line args: retention=2, log_retention=30",
+      "[<TS>] ERROR during headless backup: engine failed (stub)"
+    ]
+  },
+  "direct_filters_list": {
+    "argv": [
+      "--user",
+      "Public",
+      "--dest",
+      "<TMP>\\dest",
+      "--filters",
+      "[{\"type\": \"exclude\", \"pattern\": \"*.tmp\"}]"
+    ],
+    "code": 0,
+    "dest": {
+      "Public_backup_2024-01-02_030405.log": [
+        "[<TS>] Backup start for 'Public' → <TMP>\\dest\\Public_backup_2024-01-02_030405",
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30"
+      ],
+      "Public_backup_2024-01-02_030405/": null
+    },
+    "end": "SystemExit",
+    "engine_calls": [],
+    "shell_execute": [],
+    "stderr": [],
+    "stdout": [
+      "[<TS>] Headless backup start for user 'Public'",
+      "[<TS>] Command line args: retention=2, log_retention=30",
+      "[<TS>] Filters loaded: [{'type': 'exclude', 'pattern': '*.tmp'}]",
+      "[<TS>] ERROR during headless backup: 'list' object has no attribute 'get'"
+    ]
+  },
+  "direct_ok": {
+    "argv": [
+      "--user",
+      "Public",
+      "--dest",
+      "<TMP>\\dest",
+      "--include-system",
+      "--retention",
+      "4",
+      "--log-retention",
+      "7",
+      "--log-folder",
+      "mylogs",
+      "--filters",
+      "{\"include\": [], \"exclude\": [{\"type\": \"name\", \"pattern\": \"*.tmp\"}]}"
+    ],
+    "code": 0,
+    "dest": {
+      "Public_backup_2024-01-02_030405.log": [
+        "[<TS>] Backup start for 'Public' → <TMP>\\dest\\Public_backup_2024-01-02_030405",
+        "[<TS>] Policy: Hidden=exclude, System=include, BackupKeep=4, LogKeep=7",
+        "[<TS>] Filters: Include=[None], Exclude=[name:*.tmp]",
+        "[<TS>] --------------------------------------------------"
+      ],
+      "Public_backup_2024-01-02_030405/": null
+    },
+    "end": "SystemExit",
+    "engine_calls": [
+      {
+        "backup_path": "<TMP>\\dest\\Public_backup_2024-01-02_030405",
+        "clock": "<TS>",
+        "fmt": "JobLogFormat.HEADLESS",
+        "job": {
+          "dest": "<TMP>\\dest",
+          "filters": {
+            "exclude": [
+              {
+                "pattern": "*.tmp",
+                "type": "name"
+              }
+            ],
+            "include": []
+          },
+          "include_hidden": false,
+          "include_system": true,
+          "log_folder": "mylogs",
+          "log_retention_days": 7,
+          "retention_count": 4,
+          "user": "Public"
+        },
+        "job_log": "<JobLog>",
+        "log_path": "<TMP>\\dest\\Public_backup_2024-01-02_030405.log",
+        "now_ts": "<lambda>",
+        "policy": "BackupPolicy.HEADLESS",
+        "reporter": "<_HeadlessReporter>",
+        "store": "<LocalFolderStore>",
+        "targets": [
+          "<Bookmarks>"
+        ],
+        "users_root": "C:\\Users"
+      }
+    ],
+    "shell_execute": [],
+    "stderr": [],
+    "stdout": [
+      "[<TS>] Headless backup start for user 'Public'",
+      "[<TS>] Command line args: retention=4, log_retention=7",
+      "[<TS>] Filters loaded: {'include': [], 'exclude': [{'type': 'name', 'pattern': '*.tmp'}]}",
+      "[<TS>] Backup finished → <TMP>\\dest\\Public_backup_2024-01-02_030405",
+      "[<TS>] Log saved at <TMP>\\dest\\Public_backup_2024-01-02_030405.log"
+    ]
+  },
+  "retention_not_int": {
+    "argv": [
+      "--user",
+      "Public",
+      "--dest",
+      "<TMP>\\dest",
+      "--retention",
+      "abc"
+    ],
+    "code": 2,
+    "dest": {},
+    "end": "SystemExit",
+    "engine_calls": [],
+    "shell_execute": [],
+    "stderr": [
+      "usage: ezBAK.py [-h] [--schedule-config SCHEDULE_CONFIG] [--user USER]",
+      "                [--dest DEST] [--include-hidden] [--include-system]",
+      "                [--retention RETENTION] [--log-retention LOG_RETENTION]",
+      "                [--log-folder LOG_FOLDER] [--filters FILTERS]",
+      "ezBAK.py: error: argument --retention: invalid int value: 'abc'"
+    ],
+    "stdout": []
+  },
+  "user_only_admin": {
+    "argv": [
+      "--user",
+      "Public"
+    ],
+    "code": null,
+    "dest": {},
+    "end": "App()",
+    "engine_calls": [],
+    "shell_execute": [],
+    "stderr": [],
+    "stdout": []
+  },
+  "user_only_not_admin": {
+    "argv": [
+      "--user",
+      "Public"
+    ],
+    "code": 0,
+    "dest": {},
+    "end": "os._exit",
+    "engine_calls": [],
+    "shell_execute": [
+      {
+        "api": "ShellExecuteW",
+        "args": [
+          null,
+          "runas",
+          "<PY>",
+          "<REPO>\\ezBAK.py --user Public",
+          null,
+          1
+        ],
+        "kwargs": {}
+      }
+    ],
+    "stderr": [],
+    "stdout": []
+  }
+}

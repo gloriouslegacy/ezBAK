@@ -1,0 +1,1852 @@
+{
+  "copy_dest_cancel-nopywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Destination selection cancelled."
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "copy_dest_cancel-pywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Destination selection cancelled."
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "copy_disk_usage_fail-nopywin32": {
+    "dialogs": [],
+    "logs": {
+      "copy_data_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Created copy destination folder: <TMP>\\dest\\copy_data_20240102_030405",
+        "[<TS>] Copy total bytes: 13",
+        "[<TS>] Copying file: <TMP>\\src\\single.txt -> <TMP>\\dest\\copy_data_20240102_030405\\single.txt",
+        "[<TS>] Copy completed: 1 files, 13.00 B"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\copy_data_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Copy process started."
+      ],
+      [
+        "update_status",
+        "Starting copy process..."
+      ],
+      [
+        "update_status",
+        "Calculating total size..."
+      ],
+      [
+        "update_progress_max",
+        13
+      ],
+      [
+        "log",
+        "Found 13.00 B to copy."
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "update_progress",
+        13
+      ],
+      [
+        "log",
+        "Copy complete (1 files)."
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\copy_data_20240102_030405"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": [
+      "copy_data_2024-01-02_030405.log",
+      "copy_data_20240102_030405/",
+      "copy_data_20240102_030405/single.txt"
+    ]
+  },
+  "copy_disk_usage_fail-pywin32": {
+    "dialogs": [],
+    "logs": {
+      "copy_data_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Created copy destination folder: <TMP>\\dest\\copy_data_20240102_030405",
+        "[<TS>] Copy total bytes: 13",
+        "[<TS>] Copying file: <TMP>\\src\\single.txt -> <TMP>\\dest\\copy_data_20240102_030405\\single.txt",
+        "[<TS>] Copy completed: 1 files, 13.00 B"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\copy_data_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Copy process started."
+      ],
+      [
+        "update_status",
+        "Starting copy process..."
+      ],
+      [
+        "update_status",
+        "Calculating total size..."
+      ],
+      [
+        "update_progress_max",
+        13
+      ],
+      [
+        "log",
+        "Found 13.00 B to copy."
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "update_progress",
+        13
+      ],
+      [
+        "log",
+        "Copy complete (1 files)."
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\copy_data_20240102_030405"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": [
+      "copy_data_2024-01-02_030405.log",
+      "copy_data_20240102_030405/",
+      "copy_data_20240102_030405/single.txt"
+    ]
+  },
+  "copy_include_hidden_system-nopywin32": {
+    "dialogs": [],
+    "logs": {
+      "copy_data_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=include, System=include, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Created copy destination folder: <TMP>\\dest\\copy_data_20240102_030405",
+        "[<TS>] Copy total bytes: 230",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\.gitconfig -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\.gitconfig",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\hidden.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\hidden.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\NTUSER.DAT -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\NTUSER.DAT",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\system.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\system.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\.ssh\\known_hosts -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\.ssh\\known_hosts",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\AppData\\Roaming\\app.cfg -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\AppData\\Roaming\\app.cfg",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Desktop\\todo.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\notes.md -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\notes.md",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\report.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\report.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\hiddendir\\inner.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\hiddendir\\inner.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\sub\\deep.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\sub\\deep.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Pictures\\photo.jpg -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Pictures\\photo.jpg",
+        "[<TS>] Copying file: <TMP>\\src\\single.txt -> <TMP>\\dest\\copy_data_20240102_030405\\single.txt",
+        "[<TS>] Copying file: <TMP>\\src\\hidden_single.txt -> <TMP>\\dest\\copy_data_20240102_030405\\hidden_single.txt",
+        "[<TS>] Copy completed: 15 files, 230.00 B"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\copy_data_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Copy process started."
+      ],
+      [
+        "update_status",
+        "Starting copy process..."
+      ],
+      [
+        "update_status",
+        "Calculating total size..."
+      ],
+      [
+        "update_progress_max",
+        230
+      ],
+      [
+        "log",
+        "Found 230.00 B to copy."
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "update_progress",
+        7
+      ],
+      [
+        "log",
+        "Copied 10 files..."
+      ],
+      [
+        "update_status",
+        "Copied 10 files"
+      ],
+      [
+        "update_progress",
+        230
+      ],
+      [
+        "log",
+        "Copy complete (15 files)."
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\copy_data_20240102_030405"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": [
+      "copy_data_2024-01-02_030405.log",
+      "copy_data_20240102_030405/",
+      "copy_data_20240102_030405/hidden_single.txt",
+      "copy_data_20240102_030405/single.txt",
+      "copy_data_20240102_030405/tester/",
+      "copy_data_20240102_030405/tester/.gitconfig",
+      "copy_data_20240102_030405/tester/.ssh/",
+      "copy_data_20240102_030405/tester/.ssh/known_hosts",
+      "copy_data_20240102_030405/tester/AppData/",
+      "copy_data_20240102_030405/tester/AppData/Local/",
+      "copy_data_20240102_030405/tester/AppData/Local/Google/",
+      "copy_data_20240102_030405/tester/AppData/Local/Google/Chrome/",
+      "copy_data_20240102_030405/tester/AppData/Local/Google/Chrome/User Data/",
+      "copy_data_20240102_030405/tester/AppData/Local/Google/Chrome/User Data/Default/",
+      "copy_data_20240102_030405/tester/AppData/Local/Google/Chrome/User Data/Default/Bookmarks",
+      "copy_data_20240102_030405/tester/AppData/Roaming/",
+      "copy_data_20240102_030405/tester/AppData/Roaming/app.cfg",
+      "copy_data_20240102_030405/tester/Desktop/",
+      "copy_data_20240102_030405/tester/Desktop/todo.txt",
+      "copy_data_20240102_030405/tester/Documents/",
+      "copy_data_20240102_030405/tester/Documents/hiddendir/",
+      "copy_data_20240102_030405/tester/Documents/hiddendir/inner.txt",
+      "copy_data_20240102_030405/tester/Documents/notes.md",
+      "copy_data_20240102_030405/tester/Documents/report.txt",
+      "copy_data_20240102_030405/tester/Documents/sub/",
+      "copy_data_20240102_030405/tester/Documents/sub/deep.txt",
+      "copy_data_20240102_030405/tester/Empty/",
+      "copy_data_20240102_030405/tester/NTUSER.DAT",
+      "copy_data_20240102_030405/tester/Pictures/",
+      "copy_data_20240102_030405/tester/Pictures/photo.jpg",
+      "copy_data_20240102_030405/tester/hidden.txt",
+      "copy_data_20240102_030405/tester/system.txt"
+    ]
+  },
+  "copy_include_hidden_system-pywin32": {
+    "dialogs": [],
+    "logs": {
+      "copy_data_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=include, System=include, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Created copy destination folder: <TMP>\\dest\\copy_data_20240102_030405",
+        "[<TS>] Copy total bytes: 230",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\.gitconfig -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\.gitconfig",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\hidden.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\hidden.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\NTUSER.DAT -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\NTUSER.DAT",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\system.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\system.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\.ssh\\known_hosts -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\.ssh\\known_hosts",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\AppData\\Roaming\\app.cfg -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\AppData\\Roaming\\app.cfg",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Desktop\\todo.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\notes.md -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\notes.md",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\report.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\report.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\hiddendir\\inner.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\hiddendir\\inner.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\sub\\deep.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\sub\\deep.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Pictures\\photo.jpg -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Pictures\\photo.jpg",
+        "[<TS>] Copying file: <TMP>\\src\\single.txt -> <TMP>\\dest\\copy_data_20240102_030405\\single.txt",
+        "[<TS>] Copying file: <TMP>\\src\\hidden_single.txt -> <TMP>\\dest\\copy_data_20240102_030405\\hidden_single.txt",
+        "[<TS>] Copy completed: 15 files, 230.00 B"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\copy_data_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Copy process started."
+      ],
+      [
+        "update_status",
+        "Starting copy process..."
+      ],
+      [
+        "update_status",
+        "Calculating total size..."
+      ],
+      [
+        "update_progress_max",
+        230
+      ],
+      [
+        "log",
+        "Found 230.00 B to copy."
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "update_progress",
+        7
+      ],
+      [
+        "log",
+        "Copied 10 files..."
+      ],
+      [
+        "update_status",
+        "Copied 10 files"
+      ],
+      [
+        "update_progress",
+        230
+      ],
+      [
+        "log",
+        "Copy complete (15 files)."
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\copy_data_20240102_030405"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": [
+      "copy_data_2024-01-02_030405.log",
+      "copy_data_20240102_030405/",
+      "copy_data_20240102_030405/hidden_single.txt",
+      "copy_data_20240102_030405/single.txt",
+      "copy_data_20240102_030405/tester/",
+      "copy_data_20240102_030405/tester/.gitconfig",
+      "copy_data_20240102_030405/tester/.ssh/",
+      "copy_data_20240102_030405/tester/.ssh/known_hosts",
+      "copy_data_20240102_030405/tester/AppData/",
+      "copy_data_20240102_030405/tester/AppData/Local/",
+      "copy_data_20240102_030405/tester/AppData/Local/Google/",
+      "copy_data_20240102_030405/tester/AppData/Local/Google/Chrome/",
+      "copy_data_20240102_030405/tester/AppData/Local/Google/Chrome/User Data/",
+      "copy_data_20240102_030405/tester/AppData/Local/Google/Chrome/User Data/Default/",
+      "copy_data_20240102_030405/tester/AppData/Local/Google/Chrome/User Data/Default/Bookmarks",
+      "copy_data_20240102_030405/tester/AppData/Roaming/",
+      "copy_data_20240102_030405/tester/AppData/Roaming/app.cfg",
+      "copy_data_20240102_030405/tester/Desktop/",
+      "copy_data_20240102_030405/tester/Desktop/todo.txt",
+      "copy_data_20240102_030405/tester/Documents/",
+      "copy_data_20240102_030405/tester/Documents/hiddendir/",
+      "copy_data_20240102_030405/tester/Documents/hiddendir/inner.txt",
+      "copy_data_20240102_030405/tester/Documents/notes.md",
+      "copy_data_20240102_030405/tester/Documents/report.txt",
+      "copy_data_20240102_030405/tester/Documents/sub/",
+      "copy_data_20240102_030405/tester/Documents/sub/deep.txt",
+      "copy_data_20240102_030405/tester/Empty/",
+      "copy_data_20240102_030405/tester/NTUSER.DAT",
+      "copy_data_20240102_030405/tester/Pictures/",
+      "copy_data_20240102_030405/tester/Pictures/photo.jpg",
+      "copy_data_20240102_030405/tester/hidden.txt",
+      "copy_data_20240102_030405/tester/system.txt"
+    ]
+  },
+  "copy_insufficient_space-nopywin32": {
+    "dialogs": [],
+    "logs": {
+      "copy_data_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Created copy destination folder: <TMP>\\dest\\copy_data_20240102_030405",
+        "[<TS>] Copy total bytes: 145",
+        "[<TS>] Insufficient free space. Required=145 Free=10"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\copy_data_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Copy process started."
+      ],
+      [
+        "update_status",
+        "Starting copy process..."
+      ],
+      [
+        "update_status",
+        "Calculating total size..."
+      ],
+      [
+        "update_progress_max",
+        145
+      ],
+      [
+        "log",
+        "Found 145.00 B to copy."
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "show_error",
+        "Not enough free space.\nRequired: 145.00 B\nAvailable: 10.00 B"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": [
+      "copy_data_2024-01-02_030405.log",
+      "copy_data_20240102_030405/"
+    ]
+  },
+  "copy_insufficient_space-pywin32": {
+    "dialogs": [],
+    "logs": {
+      "copy_data_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Created copy destination folder: <TMP>\\dest\\copy_data_20240102_030405",
+        "[<TS>] Copy total bytes: 145",
+        "[<TS>] Insufficient free space. Required=145 Free=10"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\copy_data_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Copy process started."
+      ],
+      [
+        "update_status",
+        "Starting copy process..."
+      ],
+      [
+        "update_status",
+        "Calculating total size..."
+      ],
+      [
+        "update_progress_max",
+        145
+      ],
+      [
+        "log",
+        "Found 145.00 B to copy."
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "show_error",
+        "Not enough free space.\nRequired: 145.00 B\nAvailable: 10.00 B"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": [
+      "copy_data_2024-01-02_030405.log",
+      "copy_data_20240102_030405/"
+    ]
+  },
+  "copy_missing_source-nopywin32": {
+    "dialogs": [],
+    "logs": {
+      "copy_data_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Created copy destination folder: <TMP>\\dest\\copy_data_20240102_030405",
+        "[<TS>] Copy total bytes: 13",
+        "[<TS>] Copying file: <TMP>\\src\\single.txt -> <TMP>\\dest\\copy_data_20240102_030405\\single.txt",
+        "[<TS>] Copy completed: 1 files, 13.00 B"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\copy_data_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Copy process started."
+      ],
+      [
+        "update_status",
+        "Starting copy process..."
+      ],
+      [
+        "update_status",
+        "Calculating total size..."
+      ],
+      [
+        "update_progress_max",
+        13
+      ],
+      [
+        "log",
+        "Found 13.00 B to copy."
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "update_progress",
+        13
+      ],
+      [
+        "log",
+        "Copy complete (1 files)."
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\copy_data_20240102_030405"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": [
+      "copy_data_2024-01-02_030405.log",
+      "copy_data_20240102_030405/",
+      "copy_data_20240102_030405/single.txt"
+    ]
+  },
+  "copy_missing_source-pywin32": {
+    "dialogs": [],
+    "logs": {
+      "copy_data_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Created copy destination folder: <TMP>\\dest\\copy_data_20240102_030405",
+        "[<TS>] Copy total bytes: 13",
+        "[<TS>] Copying file: <TMP>\\src\\single.txt -> <TMP>\\dest\\copy_data_20240102_030405\\single.txt",
+        "[<TS>] Copy completed: 1 files, 13.00 B"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\copy_data_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Copy process started."
+      ],
+      [
+        "update_status",
+        "Starting copy process..."
+      ],
+      [
+        "update_status",
+        "Calculating total size..."
+      ],
+      [
+        "update_progress_max",
+        13
+      ],
+      [
+        "log",
+        "Found 13.00 B to copy."
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "update_progress",
+        13
+      ],
+      [
+        "log",
+        "Copy complete (1 files)."
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\copy_data_20240102_030405"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": [
+      "copy_data_2024-01-02_030405.log",
+      "copy_data_20240102_030405/",
+      "copy_data_20240102_030405/single.txt"
+    ]
+  },
+  "copy_sources_cancel-nopywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Source selection cancelled."
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "copy_sources_cancel-pywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Source selection cancelled."
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "copy_sources_dialog_error-nopywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Source selection failed: sources dialog failed"
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "copy_sources_dialog_error-pywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Source selection failed: sources dialog failed"
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "copy_tree-nopywin32": {
+    "dialogs": [],
+    "logs": {
+      "copy_data_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Created copy destination folder: <TMP>\\dest\\copy_data_20240102_030405",
+        "[<TS>] Copy total bytes: 145",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\.gitconfig -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\.gitconfig",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\.ssh\\known_hosts -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\.ssh\\known_hosts",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Desktop\\todo.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\notes.md -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\notes.md",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\report.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\report.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\sub\\deep.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\sub\\deep.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Pictures\\photo.jpg -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Pictures\\photo.jpg",
+        "[<TS>] Copying file: <TMP>\\src\\single.txt -> <TMP>\\dest\\copy_data_20240102_030405\\single.txt",
+        "[<TS>] Copy completed: 8 files, 145.00 B"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\copy_data_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Copy process started."
+      ],
+      [
+        "update_status",
+        "Starting copy process..."
+      ],
+      [
+        "update_status",
+        "Calculating total size..."
+      ],
+      [
+        "update_progress_max",
+        145
+      ],
+      [
+        "log",
+        "Found 145.00 B to copy."
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "update_progress",
+        145
+      ],
+      [
+        "log",
+        "Copy complete (8 files)."
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\copy_data_20240102_030405"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": [
+      "copy_data_2024-01-02_030405.log",
+      "copy_data_20240102_030405/",
+      "copy_data_20240102_030405/single.txt",
+      "copy_data_20240102_030405/tester/",
+      "copy_data_20240102_030405/tester/.gitconfig",
+      "copy_data_20240102_030405/tester/.ssh/",
+      "copy_data_20240102_030405/tester/.ssh/known_hosts",
+      "copy_data_20240102_030405/tester/Desktop/",
+      "copy_data_20240102_030405/tester/Desktop/todo.txt",
+      "copy_data_20240102_030405/tester/Documents/",
+      "copy_data_20240102_030405/tester/Documents/notes.md",
+      "copy_data_20240102_030405/tester/Documents/report.txt",
+      "copy_data_20240102_030405/tester/Documents/sub/",
+      "copy_data_20240102_030405/tester/Documents/sub/deep.txt",
+      "copy_data_20240102_030405/tester/Empty/",
+      "copy_data_20240102_030405/tester/Pictures/",
+      "copy_data_20240102_030405/tester/Pictures/photo.jpg"
+    ]
+  },
+  "copy_tree-pywin32": {
+    "dialogs": [],
+    "logs": {
+      "copy_data_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Created copy destination folder: <TMP>\\dest\\copy_data_20240102_030405",
+        "[<TS>] Copy total bytes: 145",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\.gitconfig -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\.gitconfig",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\.ssh\\known_hosts -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\.ssh\\known_hosts",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Desktop\\todo.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\notes.md -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\notes.md",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\report.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\report.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Documents\\sub\\deep.txt -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Documents\\sub\\deep.txt",
+        "[<TS>] Copying file: <TMP>\\src\\tester\\Pictures\\photo.jpg -> <TMP>\\dest\\copy_data_20240102_030405\\tester\\Pictures\\photo.jpg",
+        "[<TS>] Copying file: <TMP>\\src\\single.txt -> <TMP>\\dest\\copy_data_20240102_030405\\single.txt",
+        "[<TS>] Copy completed: 8 files, 145.00 B"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Copy process initiated."
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\copy_data_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Copy process started."
+      ],
+      [
+        "update_status",
+        "Starting copy process..."
+      ],
+      [
+        "update_status",
+        "Calculating total size..."
+      ],
+      [
+        "update_progress_max",
+        145
+      ],
+      [
+        "log",
+        "Found 145.00 B to copy."
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "update_progress",
+        145
+      ],
+      [
+        "log",
+        "Copy complete (8 files)."
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\dest\\copy_data_20240102_030405"
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Copy complete!"
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Select Sources"
+    ],
+    "stdout": [],
+    "tree": [
+      "copy_data_2024-01-02_030405.log",
+      "copy_data_20240102_030405/",
+      "copy_data_20240102_030405/single.txt",
+      "copy_data_20240102_030405/tester/",
+      "copy_data_20240102_030405/tester/.gitconfig",
+      "copy_data_20240102_030405/tester/.ssh/",
+      "copy_data_20240102_030405/tester/.ssh/known_hosts",
+      "copy_data_20240102_030405/tester/Desktop/",
+      "copy_data_20240102_030405/tester/Desktop/todo.txt",
+      "copy_data_20240102_030405/tester/Documents/",
+      "copy_data_20240102_030405/tester/Documents/notes.md",
+      "copy_data_20240102_030405/tester/Documents/report.txt",
+      "copy_data_20240102_030405/tester/Documents/sub/",
+      "copy_data_20240102_030405/tester/Documents/sub/deep.txt",
+      "copy_data_20240102_030405/tester/Empty/",
+      "copy_data_20240102_030405/tester/Pictures/",
+      "copy_data_20240102_030405/tester/Pictures/photo.jpg"
+    ]
+  },
+  "space_check_error-nopywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Calculating space..."
+      ],
+      [
+        "update_status",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Checking 1/2: tester"
+      ],
+      [
+        "show_error",
+        "Space calculation error: check failed for Documents"
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_check_error-pywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Calculating space..."
+      ],
+      [
+        "update_status",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Checking 1/2: tester"
+      ],
+      [
+        "show_error",
+        "Space calculation error: check failed for Documents"
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_dest_cancel-nopywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Space check cancelled (no destination)."
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_dest_cancel-pywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Space check cancelled (no destination)."
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_disk_usage_fail-nopywin32": {
+    "dialogs": [
+      [
+        "showinfo",
+        "Space Check",
+        "✓ Sufficient space available.\n\nComplete:\n\nSources: 2 items\nFiles: 8 items\nRequired Space: 145.00 B\nAvailable: 931.32 GB\nMargin: 931.32 GB\n"
+      ]
+    ],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Calculating space..."
+      ],
+      [
+        "update_status",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Checking 1/2: tester"
+      ],
+      [
+        "update_status",
+        "Checking 2/2: single.txt"
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "space_check_result",
+        {
+          "available": 1000000000000,
+          "file_count": 8,
+          "required": 145,
+          "sources_count": 2
+        }
+      ],
+      [
+        "<shown>",
+        [
+          [
+            "log",
+            "Space OK. Required=145.00 B Available=931.32 GB"
+          ],
+          [
+            "update_status",
+            "Space check completed - OK"
+          ]
+        ]
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_disk_usage_fail-pywin32": {
+    "dialogs": [
+      [
+        "showinfo",
+        "Space Check",
+        "✓ Sufficient space available.\n\nComplete:\n\nSources: 2 items\nFiles: 8 items\nRequired Space: 145.00 B\nAvailable: 931.32 GB\nMargin: 931.32 GB\n"
+      ]
+    ],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Calculating space..."
+      ],
+      [
+        "update_status",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Checking 1/2: tester"
+      ],
+      [
+        "update_status",
+        "Checking 2/2: single.txt"
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "space_check_result",
+        {
+          "available": 1000000000000,
+          "file_count": 8,
+          "required": 145,
+          "sources_count": 2
+        }
+      ],
+      [
+        "<shown>",
+        [
+          [
+            "log",
+            "Space OK. Required=145.00 B Available=931.32 GB"
+          ],
+          [
+            "update_status",
+            "Space check completed - OK"
+          ]
+        ]
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_include_hidden_system-nopywin32": {
+    "dialogs": [
+      [
+        "showinfo",
+        "Space Check",
+        "✓ Sufficient space available.\n\nComplete:\n\nSources: 4 items\nFiles: 15 items\nRequired Space: 230.00 B\nAvailable: 931.32 GB\nMargin: 931.32 GB\n"
+      ]
+    ],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Calculating space..."
+      ],
+      [
+        "update_status",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Checking 1/4: tester"
+      ],
+      [
+        "update_status",
+        "Checking 2/4: single.txt"
+      ],
+      [
+        "update_status",
+        "Checking 3/4: hidden_single.txt"
+      ],
+      [
+        "update_status",
+        "Checking 4/4: missing"
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "space_check_result",
+        {
+          "available": 1000000000000,
+          "file_count": 15,
+          "required": 230,
+          "sources_count": 4
+        }
+      ],
+      [
+        "<shown>",
+        [
+          [
+            "log",
+            "Space OK. Required=230.00 B Available=931.32 GB"
+          ],
+          [
+            "update_status",
+            "Space check completed - OK"
+          ]
+        ]
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_include_hidden_system-pywin32": {
+    "dialogs": [
+      [
+        "showinfo",
+        "Space Check",
+        "✓ Sufficient space available.\n\nComplete:\n\nSources: 4 items\nFiles: 15 items\nRequired Space: 230.00 B\nAvailable: 931.32 GB\nMargin: 931.32 GB\n"
+      ]
+    ],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Calculating space..."
+      ],
+      [
+        "update_status",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Checking 1/4: tester"
+      ],
+      [
+        "update_status",
+        "Checking 2/4: single.txt"
+      ],
+      [
+        "update_status",
+        "Checking 3/4: hidden_single.txt"
+      ],
+      [
+        "update_status",
+        "Checking 4/4: missing"
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "space_check_result",
+        {
+          "available": 1000000000000,
+          "file_count": 15,
+          "required": 230,
+          "sources_count": 4
+        }
+      ],
+      [
+        "<shown>",
+        [
+          [
+            "log",
+            "Space OK. Required=230.00 B Available=931.32 GB"
+          ],
+          [
+            "update_status",
+            "Space check completed - OK"
+          ]
+        ]
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_insufficient-nopywin32": {
+    "dialogs": [
+      [
+        "showwarning",
+        "Space Check",
+        "⚠ Insufficient space available.\n\nComplete:\n\nSources: 2 items\nFiles: 8 items\nRequired Space: 145.00 B\nAvailable: 10.00 B\nMargin: -135.00 B\n"
+      ]
+    ],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Calculating space..."
+      ],
+      [
+        "update_status",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Checking 1/2: tester"
+      ],
+      [
+        "update_status",
+        "Checking 2/2: single.txt"
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "space_check_result",
+        {
+          "available": 10,
+          "file_count": 8,
+          "required": 145,
+          "sources_count": 2
+        }
+      ],
+      [
+        "<shown>",
+        [
+          [
+            "log",
+            "Space LOW. Required=145.00 B Available=10.00 B"
+          ],
+          [
+            "update_status",
+            "Space check completed - Insufficient"
+          ]
+        ]
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_insufficient-pywin32": {
+    "dialogs": [
+      [
+        "showwarning",
+        "Space Check",
+        "⚠ Insufficient space available.\n\nComplete:\n\nSources: 2 items\nFiles: 8 items\nRequired Space: 145.00 B\nAvailable: 10.00 B\nMargin: -135.00 B\n"
+      ]
+    ],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Calculating space..."
+      ],
+      [
+        "update_status",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Checking 1/2: tester"
+      ],
+      [
+        "update_status",
+        "Checking 2/2: single.txt"
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "space_check_result",
+        {
+          "available": 10,
+          "file_count": 8,
+          "required": 145,
+          "sources_count": 2
+        }
+      ],
+      [
+        "<shown>",
+        [
+          [
+            "log",
+            "Space LOW. Required=145.00 B Available=10.00 B"
+          ],
+          [
+            "update_status",
+            "Space check completed - Insufficient"
+          ]
+        ]
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_sources_cancel-nopywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Space check cancelled (no sources)."
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_sources_cancel-pywin32": {
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Space check cancelled (no sources)."
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_sources_dialog_error-nopywin32": {
+    "dialogs": [
+      [
+        "showerror",
+        "Error",
+        "Source selection failed: sources dialog failed"
+      ]
+    ],
+    "logs": {},
+    "queue": [],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_sources_dialog_error-pywin32": {
+    "dialogs": [
+      [
+        "showerror",
+        "Error",
+        "Source selection failed: sources dialog failed"
+      ]
+    ],
+    "logs": {},
+    "queue": [],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_sufficient-nopywin32": {
+    "dialogs": [
+      [
+        "showinfo",
+        "Space Check",
+        "✓ Sufficient space available.\n\nComplete:\n\nSources: 4 items\nFiles: 8 items\nRequired Space: 145.00 B\nAvailable: 931.32 GB\nMargin: 931.32 GB\n"
+      ]
+    ],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Calculating space..."
+      ],
+      [
+        "update_status",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Checking 1/4: tester"
+      ],
+      [
+        "update_status",
+        "Checking 2/4: single.txt"
+      ],
+      [
+        "update_status",
+        "Checking 3/4: hidden_single.txt"
+      ],
+      [
+        "update_status",
+        "Checking 4/4: missing"
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "space_check_result",
+        {
+          "available": 1000000000000,
+          "file_count": 8,
+          "required": 145,
+          "sources_count": 4
+        }
+      ],
+      [
+        "<shown>",
+        [
+          [
+            "log",
+            "Space OK. Required=145.00 B Available=931.32 GB"
+          ],
+          [
+            "update_status",
+            "Space check completed - OK"
+          ]
+        ]
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "space_sufficient-pywin32": {
+    "dialogs": [
+      [
+        "showinfo",
+        "Space Check",
+        "✓ Sufficient space available.\n\nComplete:\n\nSources: 4 items\nFiles: 8 items\nRequired Space: 145.00 B\nAvailable: 931.32 GB\nMargin: 931.32 GB\n"
+      ]
+    ],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Calculating space..."
+      ],
+      [
+        "update_status",
+        "Calculating required space..."
+      ],
+      [
+        "update_status",
+        "Checking 1/4: tester"
+      ],
+      [
+        "update_status",
+        "Checking 2/4: single.txt"
+      ],
+      [
+        "update_status",
+        "Checking 3/4: hidden_single.txt"
+      ],
+      [
+        "update_status",
+        "Checking 4/4: missing"
+      ],
+      [
+        "update_status",
+        "Checking available space..."
+      ],
+      [
+        "space_check_result",
+        {
+          "available": 1000000000000,
+          "file_count": 8,
+          "required": 145,
+          "sources_count": 4
+        }
+      ],
+      [
+        "<shown>",
+        [
+          [
+            "log",
+            "Space OK. Required=145.00 B Available=931.32 GB"
+          ],
+          [
+            "update_status",
+            "Space check completed - OK"
+          ]
+        ]
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "returned": "None",
+    "source_dialog_titles": [
+      "Check Required Space"
+    ],
+    "stdout": [],
+    "tree": []
+  }
+}

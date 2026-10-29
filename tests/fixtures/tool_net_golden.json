@@ -1,0 +1,986 @@
+{
+  "nas_connect_bad_drive": {
+    "commands": [],
+    "detailed": [],
+    "dialogs": [
+      [
+        "showerror",
+        "Error",
+        "Please enter a valid drive letter (ex: Z)"
+      ]
+    ],
+    "queue": [
+      [
+        "log",
+        "NAS connect cancelled."
+      ]
+    ],
+    "raised": null
+  },
+  "nas_connect_cancel": {
+    "commands": [],
+    "detailed": [],
+    "dialogs": [],
+    "queue": [
+      [
+        "log",
+        "NAS connect cancelled."
+      ]
+    ],
+    "raised": null
+  },
+  "nas_connect_rc_code": {
+    "commands": [
+      [
+        "subprocess.run",
+        "net use Z: \\\\nas\\share /user:nasuser dummy-pw /persistent:yes"
+      ]
+    ],
+    "detailed": [],
+    "dialogs": [
+      [
+        "showerror",
+        "NAS Connect",
+        "Failed to connect.\n\nFailed with code 2"
+      ]
+    ],
+    "queue": [
+      [
+        "log",
+        "Connecting to \\\\nas\\share..."
+      ],
+      [
+        "log",
+        "NAS connect failed: Failed with code 2"
+      ]
+    ],
+    "raised": null
+  },
+  "nas_connect_rc_err": {
+    "commands": [
+      [
+        "subprocess.run",
+        "net use Z: \\\\nas\\share /user:nasuser dummy-pw /persistent:yes"
+      ]
+    ],
+    "detailed": [
+      "out text",
+      "System error 53 has occurred."
+    ],
+    "dialogs": [
+      [
+        "showerror",
+        "NAS Connect",
+        "Failed to connect.\n\nSystem error 53 has occurred."
+      ]
+    ],
+    "queue": [
+      [
+        "log",
+        "Connecting to \\\\nas\\share..."
+      ],
+      [
+        "log",
+        "NAS connect failed: System error 53 has occurred."
+      ]
+    ],
+    "raised": null
+  },
+  "nas_connect_rc_out": {
+    "commands": [
+      [
+        "subprocess.run",
+        "net use Z: \\\\nas\\share /user:nasuser dummy-pw /persistent:yes"
+      ]
+    ],
+    "detailed": [
+      "The network path was not found."
+    ],
+    "dialogs": [
+      [
+        "showerror",
+        "NAS Connect",
+        "Failed to connect.\n\nThe network path was not found."
+      ]
+    ],
+    "queue": [
+      [
+        "log",
+        "Connecting to \\\\nas\\share..."
+      ],
+      [
+        "log",
+        "NAS connect failed: The network path was not found."
+      ]
+    ],
+    "raised": null
+  },
+  "nas_connect_retry_ok": {
+    "commands": [
+      [
+        "subprocess.run",
+        "net use X: \\\\nas\\share /user:nasuser dummy-pw /persistent:yes"
+      ],
+      [
+        "subprocess.run",
+        "net use X: \\\\nas\\share /user:nasuser dummy-pw /persistent:yes"
+      ]
+    ],
+    "detailed": [],
+    "dialogs": [
+      [
+        "showerror",
+        "Error",
+        "NAS connect error: net use failed"
+      ]
+    ],
+    "queue": [
+      [
+        "log",
+        "Connecting to \\\\nas\\share..."
+      ],
+      [
+        "log",
+        "NAS connect error: net use failed"
+      ]
+    ],
+    "raised": null
+  },
+  "nas_connect_retry_raises": {
+    "commands": [
+      [
+        "subprocess.run",
+        "net use X: \\\\nas\\share /user:nasuser dummy-pw /persistent:yes"
+      ],
+      [
+        "subprocess.run",
+        "net use X: \\\\nas\\share /user:nasuser dummy-pw /persistent:yes"
+      ]
+    ],
+    "detailed": [],
+    "dialogs": [
+      [
+        "showerror",
+        "Error",
+        "NAS connect error: net use failed"
+      ]
+    ],
+    "queue": [
+      [
+        "log",
+        "Connecting to \\\\nas\\share..."
+      ],
+      [
+        "log",
+        "NAS connect error: net use failed"
+      ]
+    ],
+    "raised": null
+  },
+  "nas_connect_unc_no_user": {
+    "commands": [
+      [
+        "subprocess.run",
+        "net use Y: \\\\nas\\share /persistent:yes"
+      ]
+    ],
+    "detailed": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Connected",
+        "Open the share now?"
+      ]
+    ],
+    "queue": [
+      [
+        "log",
+        "Connecting to \\\\nas\\share..."
+      ],
+      [
+        "log",
+        "NAS connected: Y:"
+      ]
+    ],
+    "raised": null
+  },
+  "nas_connect_user_ok": {
+    "commands": [
+      [
+        "subprocess.run",
+        "net use Z: \\\\nas\\share /user:nasuser dummy-pw /persistent:yes"
+      ],
+      [
+        "os.startfile",
+        "Z:"
+      ]
+    ],
+    "detailed": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Connected",
+        "Open the share now?"
+      ]
+    ],
+    "queue": [
+      [
+        "log",
+        "Connecting to \\\\nas\\share..."
+      ],
+      [
+        "log",
+        "NAS connected: Z:"
+      ]
+    ],
+    "raised": null
+  },
+  "nas_disconnect_bad_drive": {
+    "commands": [],
+    "detailed": [],
+    "dialogs": [
+      [
+        "showerror",
+        "Error",
+        "Please enter a valid drive letter (ex: Z)"
+      ]
+    ],
+    "queue": [],
+    "raised": null
+  },
+  "nas_disconnect_cancel": {
+    "commands": [],
+    "detailed": [],
+    "dialogs": [],
+    "queue": [
+      [
+        "log",
+        "NAS disconnect cancelled."
+      ]
+    ],
+    "raised": null
+  },
+  "nas_disconnect_drive_ok": {
+    "commands": [
+      [
+        "subprocess.run",
+        "net use Z: /delete /y"
+      ]
+    ],
+    "detailed": [],
+    "dialogs": [
+      [
+        "showinfo",
+        "NAS Disconnect",
+        "Disconnected: Z:"
+      ]
+    ],
+    "queue": [
+      [
+        "log",
+        "Disconnecting Z:..."
+      ],
+      [
+        "log",
+        "NAS disconnected: Z:"
+      ]
+    ],
+    "raised": null
+  },
+  "nas_disconnect_rc_code": {
+    "commands": [
+      [
+        "subprocess.run",
+        "net use Z: /delete /y"
+      ]
+    ],
+    "detailed": [],
+    "dialogs": [
+      [
+        "showerror",
+        "NAS Disconnect",
+        "Failed to disconnect.\n\nFailed with code 1"
+      ]
+    ],
+    "queue": [
+      [
+        "log",
+        "Disconnecting Z:..."
+      ],
+      [
+        "log",
+        "NAS disconnect failed: Failed with code 1"
+      ]
+    ],
+    "raised": null
+  },
+  "nas_disconnect_rc_err": {
+    "commands": [
+      [
+        "subprocess.run",
+        "net use \\\\nas\\share /delete /y"
+      ]
+    ],
+    "detailed": [],
+    "dialogs": [
+      [
+        "showerror",
+        "NAS Disconnect",
+        "Failed to disconnect.\n\nThe network connection could not be found."
+      ]
+    ],
+    "queue": [
+      [
+        "log",
+        "Disconnecting \\\\nas\\share..."
+      ],
+      [
+        "log",
+        "NAS disconnect failed: The network connection could not be found."
+      ]
+    ],
+    "raised": null
+  },
+  "nas_disconnect_retry_raises": {
+    "commands": [
+      [
+        "subprocess.run",
+        "net use Z: /delete /y"
+      ],
+      [
+        "subprocess.run",
+        "net use Z: /delete /y"
+      ]
+    ],
+    "detailed": [],
+    "dialogs": [
+      [
+        "showerror",
+        "Error",
+        "NAS disconnect error: net use failed"
+      ]
+    ],
+    "queue": [
+      [
+        "log",
+        "Disconnecting Z:..."
+      ],
+      [
+        "log",
+        "NAS disconnect error: net use failed"
+      ]
+    ],
+    "raised": null
+  },
+  "winget_all_raise": {
+    "commands": [
+      [
+        "subprocess.run",
+        "winget --version"
+      ],
+      [
+        "subprocess.Popen",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity"
+      ],
+      [
+        "subprocess.run",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json"
+      ],
+      [
+        "subprocess.run",
+        "winget list --accept-source-agreements"
+      ],
+      [
+        "subprocess.run",
+        "winget list"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "winget_export_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] winget --version -> rc=0, out=v1.9.0",
+        "[<TS>] Executing winget export command: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity",
+        "[<TS>] partial",
+        "[<TS>] winget export stderr: export error",
+        "[<TS>] winget export completed with return code: 1",
+        "[<TS>] winget export failed with code 1. Trying basic export command.",
+        "[<TS>] Executing basic winget export: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json",
+        "[<TS>] Basic export attempt failed: basic raised",
+        "[<TS>] Attempting fallback: winget list.",
+        "[<TS>] Executing winget list: winget list --accept-source-agreements",
+        "[<TS>] winget list fallback error: list raised",
+        "[<TS>] Attempting most basic winget list.",
+        "[<TS>] Simple winget list also failed: simple raised",
+        "[<TS>] Winget export error: All winget export/list attempts failed. Primary error code: 1"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\apps\\winget_export_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Exporting installed applications (winget)..."
+      ],
+      [
+        "update_status",
+        "Winget export in progress..."
+      ],
+      [
+        "show_error",
+        "Winget export failed: All winget export/list attempts failed. Primary error code: 1\n\nPossible solutions:\n1. Update 'App Installer' from Microsoft Store\n2. Run: winget source reset --force\n3. Check if winget export is enabled in settings\n4. Try running as administrator"
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Winget export complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "winget_export_2024-01-02_030405.log"
+    ]
+  },
+  "winget_basic_ok": {
+    "commands": [
+      [
+        "subprocess.run",
+        "winget --version"
+      ],
+      [
+        "subprocess.Popen",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity"
+      ],
+      [
+        "subprocess.run",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "winget_export_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] winget --version -> rc=0, out=v1.9.0",
+        "[<TS>] Executing winget export command: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity",
+        "[<TS>] partial",
+        "[<TS>] winget export stderr: export error",
+        "[<TS>] winget export completed with return code: 1",
+        "[<TS>] winget export failed with code 1. Trying basic export command.",
+        "[<TS>] Executing basic winget export: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json",
+        "[<TS>] Basic winget export succeeded!",
+        "[<TS>] Winget export completed: <TMP>\\apps\\winget_export_20240102_030405.json"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\apps\\winget_export_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Exporting installed applications (winget)..."
+      ],
+      [
+        "update_status",
+        "Winget export in progress..."
+      ],
+      [
+        "log",
+        "Winget export completed: <TMP>\\apps\\winget_export_20240102_030405.json"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\apps"
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Winget export complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "winget_export_2024-01-02_030405.log"
+    ]
+  },
+  "winget_folder_cancel": {
+    "commands": [],
+    "dialogs": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Winget export cancelled (no folder)."
+      ]
+    ],
+    "stdout": [],
+    "tree": []
+  },
+  "winget_list_ok": {
+    "commands": [
+      [
+        "subprocess.run",
+        "winget --version"
+      ],
+      [
+        "subprocess.Popen",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity"
+      ],
+      [
+        "subprocess.run",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json"
+      ],
+      [
+        "subprocess.run",
+        "winget list --accept-source-agreements"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "winget_export_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] winget --version -> rc=0, out=v1.9.0",
+        "[<TS>] Executing winget export command: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity",
+        "[<TS>] partial",
+        "[<TS>] winget export stderr: export error",
+        "[<TS>] winget export completed with return code: 1",
+        "[<TS>] winget export failed with code 1. Trying basic export command.",
+        "[<TS>] Executing basic winget export: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json",
+        "[<TS>] Basic export also failed with code 2",
+        "[<TS>] Basic export stderr: basic error",
+        "[<TS>] Attempting fallback: winget list.",
+        "[<TS>] Executing winget list: winget list --accept-source-agreements",
+        "[<TS>] Saved fallback list to <TMP>\\apps\\winget_list_20240102_030405.txt"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\apps\\winget_export_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Exporting installed applications (winget)..."
+      ],
+      [
+        "update_status",
+        "Winget export in progress..."
+      ],
+      [
+        "log",
+        "winget export failed (code 1). Saved fallback (winget list) to <TMP>\\apps\\winget_list_20240102_030405.txt"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\apps"
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Winget export complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "winget_export_2024-01-02_030405.log",
+      "winget_list_20240102_030405.txt"
+    ]
+  },
+  "winget_list_timeout": {
+    "commands": [
+      [
+        "subprocess.run",
+        "winget --version"
+      ],
+      [
+        "subprocess.Popen",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity"
+      ],
+      [
+        "subprocess.run",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json"
+      ],
+      [
+        "subprocess.run",
+        "winget list --accept-source-agreements"
+      ],
+      [
+        "subprocess.run",
+        "winget list"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "winget_export_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] winget --version -> rc=0, out=v1.9.0",
+        "[<TS>] Executing winget export command: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity",
+        "[<TS>] partial",
+        "[<TS>] winget export stderr: export error",
+        "[<TS>] winget export completed with return code: 1",
+        "[<TS>] winget export failed with code 1. Trying basic export command.",
+        "[<TS>] Executing basic winget export: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json",
+        "[<TS>] Basic export also failed with code 2",
+        "[<TS>] Attempting fallback: winget list.",
+        "[<TS>] Executing winget list: winget list --accept-source-agreements",
+        "[<TS>] winget list command timed out after 300 seconds",
+        "[<TS>] Attempting most basic winget list.",
+        "[<TS>] Saved simple fallback list to <TMP>\\apps\\winget_simple_list_20240102_030405.txt"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\apps\\winget_export_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Exporting installed applications (winget)..."
+      ],
+      [
+        "update_status",
+        "Winget export in progress..."
+      ],
+      [
+        "log",
+        "All winget export attempts failed. Saved basic list to <TMP>\\apps\\winget_simple_list_20240102_030405.txt"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\apps"
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Winget export complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "winget_export_2024-01-02_030405.log",
+      "winget_simple_list_20240102_030405.txt"
+    ]
+  },
+  "winget_popen_not_found": {
+    "commands": [
+      [
+        "subprocess.run",
+        "winget --version"
+      ],
+      [
+        "subprocess.Popen",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "winget_export_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] Executing winget export command: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity",
+        "[<TS>] winget not found on system."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\apps\\winget_export_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Exporting installed applications (winget)..."
+      ],
+      [
+        "update_status",
+        "Winget export in progress..."
+      ],
+      [
+        "show_error",
+        "winget is not available. Install 'App Installer' from Microsoft Store."
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Winget export complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "winget_export_2024-01-02_030405.log"
+    ]
+  },
+  "winget_primary_ok": {
+    "commands": [
+      [
+        "subprocess.run",
+        "winget --version"
+      ],
+      [
+        "subprocess.Popen",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "winget_export_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] winget --version -> rc=0, out=v1.9.0",
+        "[<TS>] Executing winget export command: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity",
+        "[<TS>] Exporting...",
+        "[<TS>] Done",
+        "[<TS>] winget export completed with return code: 0",
+        "[<TS>] Winget export completed successfully: <TMP>\\apps\\winget_export_20240102_030405.json"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\apps\\winget_export_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Exporting installed applications (winget)..."
+      ],
+      [
+        "update_status",
+        "Winget export in progress..."
+      ],
+      [
+        "log",
+        "Winget export completed: <TMP>\\apps\\winget_export_20240102_030405.json"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\apps"
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Winget export complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "winget_export_2024-01-02_030405.log"
+    ]
+  },
+  "winget_simple_fail": {
+    "commands": [
+      [
+        "subprocess.run",
+        "winget --version"
+      ],
+      [
+        "subprocess.Popen",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity"
+      ],
+      [
+        "subprocess.run",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json"
+      ],
+      [
+        "subprocess.run",
+        "winget list --accept-source-agreements"
+      ],
+      [
+        "subprocess.run",
+        "winget list"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "winget_export_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] winget --version -> rc=0, out=v1.9.0",
+        "[<TS>] Executing winget export command: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity",
+        "[<TS>] partial",
+        "[<TS>] winget export stderr: export error",
+        "[<TS>] winget export completed with return code: 1",
+        "[<TS>] winget export failed with code 1. Trying basic export command.",
+        "[<TS>] Executing basic winget export: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json",
+        "[<TS>] Basic export also failed with code 2",
+        "[<TS>] Attempting fallback: winget list.",
+        "[<TS>] Executing winget list: winget list --accept-source-agreements",
+        "[<TS>] winget list fallback failed with code 3",
+        "[<TS>] Attempting most basic winget list.",
+        "[<TS>] Winget export error: All winget export/list attempts failed. Primary error code: 1"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\apps\\winget_export_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Exporting installed applications (winget)..."
+      ],
+      [
+        "update_status",
+        "Winget export in progress..."
+      ],
+      [
+        "show_error",
+        "Winget export failed: All winget export/list attempts failed. Primary error code: 1\n\nPossible solutions:\n1. Update 'App Installer' from Microsoft Store\n2. Run: winget source reset --force\n3. Check if winget export is enabled in settings\n4. Try running as administrator"
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Winget export complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "winget_export_2024-01-02_030405.log"
+    ]
+  },
+  "winget_simple_ok": {
+    "commands": [
+      [
+        "subprocess.run",
+        "winget --version"
+      ],
+      [
+        "subprocess.Popen",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity"
+      ],
+      [
+        "subprocess.run",
+        "winget export --output <TMP>\\apps\\winget_export_20240102_030405.json"
+      ],
+      [
+        "subprocess.run",
+        "winget list --accept-source-agreements"
+      ],
+      [
+        "subprocess.run",
+        "winget list"
+      ]
+    ],
+    "dialogs": [],
+    "logs": {
+      "winget_export_2024-01-02_030405.log": [
+        "[<TS>] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[<TS>] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+        "[<TS>] --------------------------------------------------",
+        "[<TS>] winget --version -> rc=0, out=v1.9.0",
+        "[<TS>] Executing winget export command: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json --include-versions --accept-source-agreements --disable-interactivity",
+        "[<TS>] partial",
+        "[<TS>] winget export stderr: export error",
+        "[<TS>] winget export completed with return code: 1",
+        "[<TS>] winget export failed with code 1. Trying basic export command.",
+        "[<TS>] Executing basic winget export: winget export --output <TMP>\\apps\\winget_export_20240102_030405.json",
+        "[<TS>] Basic export also failed with code 2",
+        "[<TS>] Attempting fallback: winget list.",
+        "[<TS>] Executing winget list: winget list --accept-source-agreements",
+        "[<TS>] winget list fallback failed with code 3",
+        "[<TS>] winget list stderr: list error",
+        "[<TS>] Attempting most basic winget list.",
+        "[<TS>] Saved simple fallback list to <TMP>\\apps\\winget_simple_list_20240102_030405.txt"
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "Detailed log: <TMP>\\apps\\winget_export_2024-01-02_030405.log"
+      ],
+      [
+        "log",
+        "Exporting installed applications (winget)..."
+      ],
+      [
+        "update_status",
+        "Winget export in progress..."
+      ],
+      [
+        "log",
+        "All winget export attempts failed. Saved basic list to <TMP>\\apps\\winget_simple_list_20240102_030405.txt"
+      ],
+      [
+        "open_folder",
+        "<TMP>\\apps"
+      ],
+      [
+        "stop_progress",
+        null
+      ],
+      [
+        "update_status",
+        "Winget export complete!"
+      ],
+      [
+        "enable_buttons",
+        null
+      ]
+    ],
+    "stdout": [],
+    "tree": [
+      "winget_export_2024-01-02_030405.log",
+      "winget_simple_list_20240102_030405.txt"
+    ]
+  }
+}

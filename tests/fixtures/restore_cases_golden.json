@@ -1,0 +1,1408 @@
+{
+  "backup_without_user_folders": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest\\tester_backup_2023-12-01_000000"
+      ],
+      [
+        "show_error",
+        "The selected folder appears to be named like a backup but does not contain user data:\n<TMP>\\dest\\tester_backup_2023-12-01_000000\n\nPlease select either:\n1. A parent folder containing backup folders, or\n2. A valid backup folder with user data"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "play_sound",
+        "error"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": []
+  },
+  "cross_direct_no": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest\\other_backup_2023-09-01_000000"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\other_backup_2023-09-01_000000_restore_2024-01-02_030405.log"
+      ],
+      [
+        "show_cross_user_warning",
+        [
+          "other",
+          "tester",
+          "other_backup_2023-09-01_000000"
+        ]
+      ],
+      [
+        "log",
+        "Data restore cancelled by user."
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "play_sound",
+        "error"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": []
+  },
+  "cross_direct_yes": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {
+      "other_backup_2023-09-01_000000_restore_2024-01-02_030405.log": [
+        "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[2024-01-02 03:04:05] --------------------------------------------------",
+        "[2024-01-02 03:04:05] Direct backup folder selection detected: other_backup_2023-09-01_000000",
+        "[2024-01-02 03:04:05] Parent folder: <TMP>\\dest",
+        "[2024-01-02 03:04:05] Cross-user restore detected: other → tester",
+        "[2024-01-02 03:04:05] User confirmed cross-user restore",
+        "[2024-01-02 03:04:05] Restoring from <TMP>\\dest\\other_backup_2023-09-01_000000 to <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Total bytes to restore: 7",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester\\Documents",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\other_backup_2023-09-01_000000\\Documents\\theirs.txt -> <TMP>\\Users\\tester\\Documents\\theirs.txt",
+        "[2024-01-02 03:04:05] Restore completed. Files restored: 1, Total size: 7.00 B",
+        "[2024-01-02 03:04:05] Restore successfully completed.",
+        "[2024-01-02 03:04:05] Restoring Chrome and Edge browser bookmarks...",
+        "[2024-01-02 03:04:05] - Backed-up Chrome bookmark file not found.",
+        "[2024-01-02 03:04:05] - Backed-up Edge bookmark file not found.",
+        "[2024-01-02 03:04:05] ",
+        "[Old log cleanup]",
+        "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+        "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+        "[2024-01-02 03:04:05] Cutoff time: <TS>",
+        "[2024-01-02 03:04:05] Total files in folder: 2",
+        "[2024-01-02 03:04:05] Log files found: 1",
+        "[2024-01-02 03:04:05]   File: other_backup_2023-09-01_000000_restore_2024-01-02_030405.log",
+        "[2024-01-02 03:04:05]     Modified: <TS>",
+        "[2024-01-02 03:04:05]     Age: <AGE> days",
+        "[2024-01-02 03:04:05]     Should delete: False",
+        "[2024-01-02 03:04:05] No old log files found to delete."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest\\other_backup_2023-09-01_000000"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\other_backup_2023-09-01_000000_restore_2024-01-02_030405.log"
+      ],
+      [
+        "show_cross_user_warning",
+        [
+          "other",
+          "tester",
+          "other_backup_2023-09-01_000000"
+        ]
+      ],
+      [
+        "update_progress_max",
+        7
+      ],
+      [
+        "update_progress",
+        7
+      ],
+      [
+        "log",
+        "Restore complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "play_sound",
+        "complete"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": [
+      "Documents/",
+      "Documents/theirs.txt"
+    ]
+  },
+  "cross_parent_no": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\other_backup_2023-09-01_000000_restore_2024-01-02_030405.log"
+      ],
+      [
+        "show_cross_user_warning",
+        [
+          "other",
+          "tester",
+          "other_backup_2023-09-01_000000"
+        ]
+      ],
+      [
+        "log",
+        "Data restore cancelled by user."
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "play_sound",
+        "error"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": []
+  },
+  "cross_parent_yes": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {
+      "other_backup_2023-09-01_000000_restore_2024-01-02_030405.log": [
+        "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[2024-01-02 03:04:05] --------------------------------------------------",
+        "[2024-01-02 03:04:05] User selected backup: other_backup_2023-09-01_000000",
+        "[2024-01-02 03:04:05] Cross-user restore detected: other → tester",
+        "[2024-01-02 03:04:05] User confirmed cross-user restore",
+        "[2024-01-02 03:04:05] Restoring from <TMP>\\dest\\other_backup_2023-09-01_000000 to <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Total bytes to restore: 7",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester\\Documents",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\other_backup_2023-09-01_000000\\Documents\\theirs.txt -> <TMP>\\Users\\tester\\Documents\\theirs.txt",
+        "[2024-01-02 03:04:05] Restore completed. Files restored: 1, Total size: 7.00 B",
+        "[2024-01-02 03:04:05] Restore successfully completed.",
+        "[2024-01-02 03:04:05] Restoring Chrome and Edge browser bookmarks...",
+        "[2024-01-02 03:04:05] - Backed-up Chrome bookmark file not found.",
+        "[2024-01-02 03:04:05] - Backed-up Edge bookmark file not found.",
+        "[2024-01-02 03:04:05] ",
+        "[Old log cleanup]",
+        "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+        "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+        "[2024-01-02 03:04:05] Cutoff time: <TS>",
+        "[2024-01-02 03:04:05] Total files in folder: 2",
+        "[2024-01-02 03:04:05] Log files found: 1",
+        "[2024-01-02 03:04:05]   File: other_backup_2023-09-01_000000_restore_2024-01-02_030405.log",
+        "[2024-01-02 03:04:05]     Modified: <TS>",
+        "[2024-01-02 03:04:05]     Age: <AGE> days",
+        "[2024-01-02 03:04:05]     Should delete: False",
+        "[2024-01-02 03:04:05] No old log files found to delete."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\other_backup_2023-09-01_000000_restore_2024-01-02_030405.log"
+      ],
+      [
+        "show_cross_user_warning",
+        [
+          "other",
+          "tester",
+          "other_backup_2023-09-01_000000"
+        ]
+      ],
+      [
+        "update_progress_max",
+        7
+      ],
+      [
+        "update_progress",
+        7
+      ],
+      [
+        "log",
+        "Restore complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "play_sound",
+        "complete"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": [
+      "Documents/",
+      "Documents/theirs.txt"
+    ]
+  },
+  "disk_usage_fail": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {
+      "tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log": [
+        "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[2024-01-02 03:04:05] --------------------------------------------------",
+        "[2024-01-02 03:04:05] User selected backup: tester_backup_2023-12-01_000000",
+        "[2024-01-02 03:04:05] Restoring from <TMP>\\dest\\tester_backup_2023-12-01_000000 to <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Total bytes to restore: 22",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester\\Desktop",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Desktop\\todo.txt -> <TMP>\\Users\\tester\\Desktop\\todo.txt",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester\\Documents",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\report.txt -> <TMP>\\Users\\tester\\Documents\\report.txt",
+        "[2024-01-02 03:04:05] Restore completed. Files restored: 2, Total size: 22.00 B",
+        "[2024-01-02 03:04:05] Restore successfully completed.",
+        "[2024-01-02 03:04:05] Restoring Chrome and Edge browser bookmarks...",
+        "[2024-01-02 03:04:05] - Backed-up Chrome bookmark file not found.",
+        "[2024-01-02 03:04:05] - Backed-up Edge bookmark file not found.",
+        "[2024-01-02 03:04:05] ",
+        "[Old log cleanup]",
+        "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+        "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+        "[2024-01-02 03:04:05] Cutoff time: <TS>",
+        "[2024-01-02 03:04:05] Total files in folder: 2",
+        "[2024-01-02 03:04:05] Log files found: 1",
+        "[2024-01-02 03:04:05]   File: tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log",
+        "[2024-01-02 03:04:05]     Modified: <TS>",
+        "[2024-01-02 03:04:05]     Age: <AGE> days",
+        "[2024-01-02 03:04:05]     Should delete: False",
+        "[2024-01-02 03:04:05] No old log files found to delete."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log"
+      ],
+      [
+        "update_progress_max",
+        22
+      ],
+      [
+        "update_progress",
+        22
+      ],
+      [
+        "log",
+        "Restore complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "play_sound",
+        "complete"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": [
+      "Desktop/",
+      "Desktop/todo.txt",
+      "Documents/",
+      "Documents/report.txt"
+    ]
+  },
+  "log_file": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "show_error",
+        "The selected path is a log file.\n\n'<TMP>\\dest\\tester_backup_2023-12-01_000000.log'\n\nYou must select a backup folder"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "play_sound",
+        "error"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": []
+  },
+  "low_space": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log"
+      ],
+      [
+        "update_progress_max",
+        22
+      ],
+      [
+        "show_error",
+        "Not enough free space to restore.\nRequired: 22.00 B\nAvailable: 0.00 B"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "play_sound",
+        "error"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": []
+  },
+  "many_files": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {
+      "tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log": [
+        "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[2024-01-02 03:04:05] --------------------------------------------------",
+        "[2024-01-02 03:04:05] Direct backup folder selection detected: tester_backup_2023-12-01_000000",
+        "[2024-01-02 03:04:05] Parent folder: <TMP>\\dest",
+        "[2024-01-02 03:04:05] Restoring from <TMP>\\dest\\tester_backup_2023-12-01_000000 to <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Total bytes to restore: 155",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester\\Documents",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester\\Documents\\many",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f00.txt -> <TMP>\\Users\\tester\\Documents\\many\\f00.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f01.txt -> <TMP>\\Users\\tester\\Documents\\many\\f01.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f02.txt -> <TMP>\\Users\\tester\\Documents\\many\\f02.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f03.txt -> <TMP>\\Users\\tester\\Documents\\many\\f03.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f04.txt -> <TMP>\\Users\\tester\\Documents\\many\\f04.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f05.txt -> <TMP>\\Users\\tester\\Documents\\many\\f05.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f06.txt -> <TMP>\\Users\\tester\\Documents\\many\\f06.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f07.txt -> <TMP>\\Users\\tester\\Documents\\many\\f07.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f08.txt -> <TMP>\\Users\\tester\\Documents\\many\\f08.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f09.txt -> <TMP>\\Users\\tester\\Documents\\many\\f09.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f10.txt -> <TMP>\\Users\\tester\\Documents\\many\\f10.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f11.txt -> <TMP>\\Users\\tester\\Documents\\many\\f11.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f12.txt -> <TMP>\\Users\\tester\\Documents\\many\\f12.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f13.txt -> <TMP>\\Users\\tester\\Documents\\many\\f13.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f14.txt -> <TMP>\\Users\\tester\\Documents\\many\\f14.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f15.txt -> <TMP>\\Users\\tester\\Documents\\many\\f15.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f16.txt -> <TMP>\\Users\\tester\\Documents\\many\\f16.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f17.txt -> <TMP>\\Users\\tester\\Documents\\many\\f17.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f18.txt -> <TMP>\\Users\\tester\\Documents\\many\\f18.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f19.txt -> <TMP>\\Users\\tester\\Documents\\many\\f19.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f20.txt -> <TMP>\\Users\\tester\\Documents\\many\\f20.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f21.txt -> <TMP>\\Users\\tester\\Documents\\many\\f21.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f22.txt -> <TMP>\\Users\\tester\\Documents\\many\\f22.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f23.txt -> <TMP>\\Users\\tester\\Documents\\many\\f23.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f24.txt -> <TMP>\\Users\\tester\\Documents\\many\\f24.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f25.txt -> <TMP>\\Users\\tester\\Documents\\many\\f25.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f26.txt -> <TMP>\\Users\\tester\\Documents\\many\\f26.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f27.txt -> <TMP>\\Users\\tester\\Documents\\many\\f27.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f28.txt -> <TMP>\\Users\\tester\\Documents\\many\\f28.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f29.txt -> <TMP>\\Users\\tester\\Documents\\many\\f29.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f30.txt -> <TMP>\\Users\\tester\\Documents\\many\\f30.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f31.txt -> <TMP>\\Users\\tester\\Documents\\many\\f31.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f32.txt -> <TMP>\\Users\\tester\\Documents\\many\\f32.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f33.txt -> <TMP>\\Users\\tester\\Documents\\many\\f33.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f34.txt -> <TMP>\\Users\\tester\\Documents\\many\\f34.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f35.txt -> <TMP>\\Users\\tester\\Documents\\many\\f35.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f36.txt -> <TMP>\\Users\\tester\\Documents\\many\\f36.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f37.txt -> <TMP>\\Users\\tester\\Documents\\many\\f37.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f38.txt -> <TMP>\\Users\\tester\\Documents\\many\\f38.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f39.txt -> <TMP>\\Users\\tester\\Documents\\many\\f39.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f40.txt -> <TMP>\\Users\\tester\\Documents\\many\\f40.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f41.txt -> <TMP>\\Users\\tester\\Documents\\many\\f41.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f42.txt -> <TMP>\\Users\\tester\\Documents\\many\\f42.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f43.txt -> <TMP>\\Users\\tester\\Documents\\many\\f43.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f44.txt -> <TMP>\\Users\\tester\\Documents\\many\\f44.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f45.txt -> <TMP>\\Users\\tester\\Documents\\many\\f45.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f46.txt -> <TMP>\\Users\\tester\\Documents\\many\\f46.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f47.txt -> <TMP>\\Users\\tester\\Documents\\many\\f47.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f48.txt -> <TMP>\\Users\\tester\\Documents\\many\\f48.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f49.txt -> <TMP>\\Users\\tester\\Documents\\many\\f49.txt",
+        "[2024-01-02 03:04:05] 50 files restored so far; bytes_copied=140",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f50.txt -> <TMP>\\Users\\tester\\Documents\\many\\f50.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f51.txt -> <TMP>\\Users\\tester\\Documents\\many\\f51.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f52.txt -> <TMP>\\Users\\tester\\Documents\\many\\f52.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f53.txt -> <TMP>\\Users\\tester\\Documents\\many\\f53.txt",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\many\\f54.txt -> <TMP>\\Users\\tester\\Documents\\many\\f54.txt",
+        "[2024-01-02 03:04:05] Restore completed. Files restored: 55, Total size: 155.00 B",
+        "[2024-01-02 03:04:05] Restore successfully completed.",
+        "[2024-01-02 03:04:05] Restoring Chrome and Edge browser bookmarks...",
+        "[2024-01-02 03:04:05] - Backed-up Chrome bookmark file not found.",
+        "[2024-01-02 03:04:05] - Backed-up Edge bookmark file not found.",
+        "[2024-01-02 03:04:05] ",
+        "[Old log cleanup]",
+        "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+        "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+        "[2024-01-02 03:04:05] Cutoff time: <TS>",
+        "[2024-01-02 03:04:05] Total files in folder: 2",
+        "[2024-01-02 03:04:05] Log files found: 1",
+        "[2024-01-02 03:04:05]   File: tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log",
+        "[2024-01-02 03:04:05]     Modified: <TS>",
+        "[2024-01-02 03:04:05]     Age: <AGE> days",
+        "[2024-01-02 03:04:05]     Should delete: False",
+        "[2024-01-02 03:04:05] No old log files found to delete."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest\\tester_backup_2023-12-01_000000"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log"
+      ],
+      [
+        "update_progress_max",
+        155
+      ],
+      [
+        "update_progress",
+        2
+      ],
+      [
+        "log",
+        "Restored 50 files..."
+      ],
+      [
+        "update_progress",
+        155
+      ],
+      [
+        "log",
+        "Restore complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "play_sound",
+        "complete"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": [
+      "Documents/",
+      "Documents/many/",
+      "Documents/many/f00.txt",
+      "Documents/many/f01.txt",
+      "Documents/many/f02.txt",
+      "Documents/many/f03.txt",
+      "Documents/many/f04.txt",
+      "Documents/many/f05.txt",
+      "Documents/many/f06.txt",
+      "Documents/many/f07.txt",
+      "Documents/many/f08.txt",
+      "Documents/many/f09.txt",
+      "Documents/many/f10.txt",
+      "Documents/many/f11.txt",
+      "Documents/many/f12.txt",
+      "Documents/many/f13.txt",
+      "Documents/many/f14.txt",
+      "Documents/many/f15.txt",
+      "Documents/many/f16.txt",
+      "Documents/many/f17.txt",
+      "Documents/many/f18.txt",
+      "Documents/many/f19.txt",
+      "Documents/many/f20.txt",
+      "Documents/many/f21.txt",
+      "Documents/many/f22.txt",
+      "Documents/many/f23.txt",
+      "Documents/many/f24.txt",
+      "Documents/many/f25.txt",
+      "Documents/many/f26.txt",
+      "Documents/many/f27.txt",
+      "Documents/many/f28.txt",
+      "Documents/many/f29.txt",
+      "Documents/many/f30.txt",
+      "Documents/many/f31.txt",
+      "Documents/many/f32.txt",
+      "Documents/many/f33.txt",
+      "Documents/many/f34.txt",
+      "Documents/many/f35.txt",
+      "Documents/many/f36.txt",
+      "Documents/many/f37.txt",
+      "Documents/many/f38.txt",
+      "Documents/many/f39.txt",
+      "Documents/many/f40.txt",
+      "Documents/many/f41.txt",
+      "Documents/many/f42.txt",
+      "Documents/many/f43.txt",
+      "Documents/many/f44.txt",
+      "Documents/many/f45.txt",
+      "Documents/many/f46.txt",
+      "Documents/many/f47.txt",
+      "Documents/many/f48.txt",
+      "Documents/many/f49.txt",
+      "Documents/many/f50.txt",
+      "Documents/many/f51.txt",
+      "Documents/many/f52.txt",
+      "Documents/many/f53.txt",
+      "Documents/many/f54.txt"
+    ]
+  },
+  "missing_path": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "show_error",
+        "Backup folder not found:\n<TMP>\\dest\\nowhere"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "play_sound",
+        "error"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": []
+  },
+  "multi_cancel": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest"
+      ],
+      [
+        "select_folder",
+        [
+          "tester_backup_2023-12-01_000000",
+          "other_backup_2023-09-01_000000"
+        ]
+      ],
+      [
+        "log",
+        "Data restore cancelled by user."
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "play_sound",
+        "error"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": []
+  },
+  "multi_select": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {
+      "tester_backup_2023-06-01_000000_restore_2024-01-02_030405.log": [
+        "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[2024-01-02 03:04:05] --------------------------------------------------",
+        "[2024-01-02 03:04:05] User selected backup: tester_backup_2023-06-01_000000",
+        "[2024-01-02 03:04:05] Restoring from <TMP>\\dest\\tester_backup_2023-06-01_000000 to <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Total bytes to restore: 4",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester\\Documents",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-06-01_000000\\Documents\\old.txt -> <TMP>\\Users\\tester\\Documents\\old.txt",
+        "[2024-01-02 03:04:05] Restore completed. Files restored: 1, Total size: 4.00 B",
+        "[2024-01-02 03:04:05] Restore successfully completed.",
+        "[2024-01-02 03:04:05] Restoring Chrome and Edge browser bookmarks...",
+        "[2024-01-02 03:04:05] - Backed-up Chrome bookmark file not found.",
+        "[2024-01-02 03:04:05] - Backed-up Edge bookmark file not found.",
+        "[2024-01-02 03:04:05] ",
+        "[Old log cleanup]",
+        "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+        "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+        "[2024-01-02 03:04:05] Cutoff time: <TS>",
+        "[2024-01-02 03:04:05] Total files in folder: 4",
+        "[2024-01-02 03:04:05] Log files found: 1",
+        "[2024-01-02 03:04:05]   File: tester_backup_2023-06-01_000000_restore_2024-01-02_030405.log",
+        "[2024-01-02 03:04:05]     Modified: <TS>",
+        "[2024-01-02 03:04:05]     Age: <AGE> days",
+        "[2024-01-02 03:04:05]     Should delete: False",
+        "[2024-01-02 03:04:05] No old log files found to delete."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest"
+      ],
+      [
+        "select_folder",
+        [
+          "tester_backup_2023-12-01_000000",
+          "tester_backup_2023-06-01_000000",
+          "other_backup_2023-09-01_000000"
+        ]
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\tester_backup_2023-06-01_000000_restore_2024-01-02_030405.log"
+      ],
+      [
+        "update_progress_max",
+        4
+      ],
+      [
+        "update_progress",
+        4
+      ],
+      [
+        "log",
+        "Restore complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "play_sound",
+        "complete"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": [
+      "Documents/",
+      "Documents/old.txt"
+    ]
+  },
+  "no_bookmarks": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {
+      "tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log": [
+        "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[2024-01-02 03:04:05] --------------------------------------------------",
+        "[2024-01-02 03:04:05] User selected backup: tester_backup_2023-12-01_000000",
+        "[2024-01-02 03:04:05] Restoring from <TMP>\\dest\\tester_backup_2023-12-01_000000 to <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Total bytes to restore: 22",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester\\Desktop",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Desktop\\todo.txt -> <TMP>\\Users\\tester\\Desktop\\todo.txt",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester\\Documents",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\report.txt -> <TMP>\\Users\\tester\\Documents\\report.txt",
+        "[2024-01-02 03:04:05] Restore completed. Files restored: 2, Total size: 22.00 B",
+        "[2024-01-02 03:04:05] Restore successfully completed.",
+        "[2024-01-02 03:04:05] Restoring Chrome and Edge browser bookmarks...",
+        "[2024-01-02 03:04:05] - Backed-up Chrome bookmark file not found.",
+        "[2024-01-02 03:04:05] - Backed-up Edge bookmark file not found.",
+        "[2024-01-02 03:04:05] ",
+        "[Old log cleanup]",
+        "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+        "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+        "[2024-01-02 03:04:05] Cutoff time: <TS>",
+        "[2024-01-02 03:04:05] Total files in folder: 2",
+        "[2024-01-02 03:04:05] Log files found: 1",
+        "[2024-01-02 03:04:05]   File: tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log",
+        "[2024-01-02 03:04:05]     Modified: <TS>",
+        "[2024-01-02 03:04:05]     Age: <AGE> days",
+        "[2024-01-02 03:04:05]     Should delete: False",
+        "[2024-01-02 03:04:05] No old log files found to delete."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log"
+      ],
+      [
+        "update_progress_max",
+        22
+      ],
+      [
+        "update_progress",
+        22
+      ],
+      [
+        "log",
+        "Restore complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "play_sound",
+        "complete"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": [
+      "Desktop/",
+      "Desktop/todo.txt",
+      "Documents/",
+      "Documents/report.txt"
+    ]
+  },
+  "no_user": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "showwarning",
+        "Warning",
+        "Please select a user."
+      ]
+    ],
+    "localappdata": [],
+    "logs": {},
+    "queue": [],
+    "target": []
+  },
+  "overwrite_no": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Restore process cancelled."
+      ]
+    ],
+    "target": []
+  },
+  "parent_without_backups": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest"
+      ],
+      [
+        "show_error",
+        "No backup folders found in:\n<TMP>\\dest\n\nPlease select either:\n1. A parent folder containing backup folders (e.g., E:\\), or\n2. A backup folder directly (e.g., test_backup_2025-12-04_091400)"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "play_sound",
+        "error"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": []
+  },
+  "picker_cancel": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "Restore folder selection cancelled."
+      ]
+    ],
+    "target": []
+  },
+  "plain_file": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [],
+    "logs": {},
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "show_error",
+        "The selected path is a file. Please select a folder:\n<TMP>\\dest\\notes.txt"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ],
+      [
+        "play_sound",
+        "error"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": []
+  },
+  "success": {
+    "answers_left": [],
+    "dialogs": [
+      [
+        "askyesno",
+        "Warning",
+        "Existing data for 'tester' will be overwritten. Do you want to continue?"
+      ]
+    ],
+    "localappdata": [
+      "Google/",
+      "Google/Chrome/",
+      "Google/Chrome/User Data/",
+      "Google/Chrome/User Data/Default/",
+      "Microsoft/",
+      "Microsoft/Edge/",
+      "Microsoft/Edge/User Data/",
+      "Microsoft/Edge/User Data/Default/"
+    ],
+    "logs": {
+      "tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log": [
+        "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+        "[2024-01-02 03:04:05] --------------------------------------------------",
+        "[2024-01-02 03:04:05] User selected backup: tester_backup_2023-12-01_000000",
+        "[2024-01-02 03:04:05] Restoring from <TMP>\\dest\\tester_backup_2023-12-01_000000 to <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Total bytes to restore: 22",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester\\Desktop",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Desktop\\todo.txt -> <TMP>\\Users\\tester\\Desktop\\todo.txt",
+        "[2024-01-02 03:04:05] Created folder: <TMP>\\Users\\tester\\Documents",
+        "[2024-01-02 03:04:05] Restoring file: <TMP>\\dest\\tester_backup_2023-12-01_000000\\Documents\\report.txt -> <TMP>\\Users\\tester\\Documents\\report.txt",
+        "[2024-01-02 03:04:05] Restore completed. Files restored: 2, Total size: 22.00 B",
+        "[2024-01-02 03:04:05] Restore successfully completed.",
+        "[2024-01-02 03:04:05] Restoring Chrome and Edge browser bookmarks...",
+        "[2024-01-02 03:04:05] - Chrome bookmarks restored.",
+        "[2024-01-02 03:04:05] - Edge bookmarks restored.",
+        "[2024-01-02 03:04:05] ",
+        "[Old log cleanup]",
+        "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+        "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+        "[2024-01-02 03:04:05] Cutoff time: <TS>",
+        "[2024-01-02 03:04:05] Total files in folder: 4",
+        "[2024-01-02 03:04:05] Log files found: 1",
+        "[2024-01-02 03:04:05]   File: tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log",
+        "[2024-01-02 03:04:05]     Modified: <TS>",
+        "[2024-01-02 03:04:05]     Age: <AGE> days",
+        "[2024-01-02 03:04:05]     Should delete: False",
+        "[2024-01-02 03:04:05] No old log files found to delete."
+      ]
+    },
+    "queue": [
+      [
+        "log",
+        "User data restore process started."
+      ],
+      [
+        "log",
+        "Selected backup folder: <TMP>\\dest"
+      ],
+      [
+        "log",
+        "Detailed log: <TMP>\\dest\\tester_backup_2023-12-01_000000_restore_2024-01-02_030405.log"
+      ],
+      [
+        "update_progress_max",
+        22
+      ],
+      [
+        "update_progress",
+        22
+      ],
+      [
+        "log",
+        "Restore complete (detailed log saved)."
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "update_progress",
+        100
+      ],
+      [
+        "reset_progress",
+        null
+      ],
+      [
+        "enable_buttons",
+        null
+      ],
+      [
+        "update_status",
+        "Restore complete!"
+      ],
+      [
+        "play_sound",
+        "complete"
+      ],
+      [
+        "update_status",
+        "Operation finished"
+      ]
+    ],
+    "target": [
+      "AppData/",
+      "AppData/Local/",
+      "AppData/Local/Google/",
+      "AppData/Local/Google/Chrome/",
+      "AppData/Local/Google/Chrome/User Data/",
+      "AppData/Local/Google/Chrome/User Data/Default/",
+      "AppData/Local/Google/Chrome/User Data/Default/Bookmarks",
+      "AppData/Local/Microsoft/",
+      "AppData/Local/Microsoft/Edge/",
+      "AppData/Local/Microsoft/Edge/User Data/",
+      "AppData/Local/Microsoft/Edge/User Data/Default/",
+      "AppData/Local/Microsoft/Edge/User Data/Default/Bookmarks",
+      "Desktop/",
+      "Desktop/todo.txt",
+      "Documents/",
+      "Documents/report.txt"
+    ]
+  }
+}

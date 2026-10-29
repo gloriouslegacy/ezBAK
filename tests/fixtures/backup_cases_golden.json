@@ -1,0 +1,1808 @@
+{
+  "bookmarks": {
+    "gui": {
+      "nopywin32": {
+        "bookmarks": {
+          "Chrome_Bookmarks": "{\"chrome\": 1}\n",
+          "Edge_Bookmarks": "{\"edge\": 1}\n"
+        },
+        "dialogs": [],
+        "log": [
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Backup start: <TMP>\\Users\\tester -> <TMP>\\dest",
+          "[2024-01-02 03:04:05] Created new backup folder '<TMP>\\dest\\tester_backup_2024-01-02_030405'.",
+          "[2024-01-02 03:04:05] Calculating total size... 48.00 B",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester (relative: .)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData (relative: AppData)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local (relative: AppData\\Local)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Google (relative: AppData\\Local\\Google)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Google",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome (relative: AppData\\Local\\Google\\Chrome)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Google\\Chrome",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data (relative: AppData\\Local\\Google\\Chrome\\User Data)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Google\\Chrome\\User Data",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default (relative: AppData\\Local\\Google\\Chrome\\User Data\\Default)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Google\\Chrome\\User Data\\Default",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft (relative: AppData\\Local\\Microsoft)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Microsoft",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge (relative: AppData\\Local\\Microsoft\\Edge)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Microsoft\\Edge",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data (relative: AppData\\Local\\Microsoft\\Edge\\User Data)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Microsoft\\Edge\\User Data",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default (relative: AppData\\Local\\Microsoft\\Edge\\User Data\\Default)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Bookmarks -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Bookmarks",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Desktop (relative: Desktop)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Documents (relative: Documents)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 4, Folders: 13, Total size: 48.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmarks backed up.",
+          "[2024-01-02 03:04:05] - Edge bookmarks backed up.",
+          "[2024-01-02 03:04:05] ",
+          "[Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 1 backups. No old backups to clean up (retention policy: keep 2).",
+          "[2024-01-02 03:04:05] ",
+          "[Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Total files in folder: 4",
+          "[2024-01-02 03:04:05] Log files found: 1",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] No old log files found to delete.",
+          "[2024-01-02 03:04:05] Backup successfully completed."
+        ],
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\tester_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "log",
+            "Backing up user: tester"
+          ],
+          [
+            "update_status",
+            "Calculating total size..."
+          ],
+          [
+            "update_progress_max",
+            48
+          ],
+          [
+            "update_status",
+            "Checking available space..."
+          ],
+          [
+            "update_status",
+            "Starting backup..."
+          ],
+          [
+            "update_status",
+            "Processing folder 5: Chrome"
+          ],
+          [
+            "update_progress",
+            14
+          ],
+          [
+            "update_status",
+            "Processing folder 10: User Data"
+          ],
+          [
+            "update_progress",
+            48
+          ],
+          [
+            "log",
+            "Backup complete (detailed log saved)."
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "open_folder",
+            "<TMP>\\dest\\tester_backup_2024-01-02_030405"
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "play_sound",
+            "complete"
+          ]
+        ],
+        "tree": [
+          "Chrome_Bookmarks",
+          "Edge_Bookmarks",
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/AppData/",
+          "tester_backup_2024-01-02_030405/AppData/Local/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Google/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Google/Chrome/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Google/Chrome/User Data/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Google/Chrome/User Data/Default/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Google/Chrome/User Data/Default/Bookmarks",
+          "tester_backup_2024-01-02_030405/AppData/Local/Microsoft/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Microsoft/Edge/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Microsoft/Edge/User Data/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Microsoft/Edge/User Data/Default/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Microsoft/Edge/User Data/Default/Bookmarks",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      },
+      "pywin32": {
+        "bookmarks": {
+          "Chrome_Bookmarks": "{\"chrome\": 1}\n",
+          "Edge_Bookmarks": "{\"edge\": 1}\n"
+        },
+        "dialogs": [],
+        "log": [
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Backup start: <TMP>\\Users\\tester -> <TMP>\\dest",
+          "[2024-01-02 03:04:05] Created new backup folder '<TMP>\\dest\\tester_backup_2024-01-02_030405'.",
+          "[2024-01-02 03:04:05] Calculating total size... 48.00 B",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester (relative: .)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData (relative: AppData)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local (relative: AppData\\Local)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Google (relative: AppData\\Local\\Google)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Google",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome (relative: AppData\\Local\\Google\\Chrome)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Google\\Chrome",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data (relative: AppData\\Local\\Google\\Chrome\\User Data)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Google\\Chrome\\User Data",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default (relative: AppData\\Local\\Google\\Chrome\\User Data\\Default)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Google\\Chrome\\User Data\\Default",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft (relative: AppData\\Local\\Microsoft)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Microsoft",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge (relative: AppData\\Local\\Microsoft\\Edge)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Microsoft\\Edge",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data (relative: AppData\\Local\\Microsoft\\Edge\\User Data)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Microsoft\\Edge\\User Data",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default (relative: AppData\\Local\\Microsoft\\Edge\\User Data\\Default)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Bookmarks -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Bookmarks",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Desktop (relative: Desktop)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Documents (relative: Documents)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 4, Folders: 13, Total size: 48.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmarks backed up.",
+          "[2024-01-02 03:04:05] - Edge bookmarks backed up.",
+          "[2024-01-02 03:04:05] ",
+          "[Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 1 backups. No old backups to clean up (retention policy: keep 2).",
+          "[2024-01-02 03:04:05] ",
+          "[Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Total files in folder: 4",
+          "[2024-01-02 03:04:05] Log files found: 1",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] No old log files found to delete.",
+          "[2024-01-02 03:04:05] Backup successfully completed."
+        ],
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\tester_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "log",
+            "Backing up user: tester"
+          ],
+          [
+            "update_status",
+            "Calculating total size..."
+          ],
+          [
+            "update_progress_max",
+            48
+          ],
+          [
+            "update_status",
+            "Checking available space..."
+          ],
+          [
+            "update_status",
+            "Starting backup..."
+          ],
+          [
+            "update_status",
+            "Processing folder 5: Chrome"
+          ],
+          [
+            "update_progress",
+            14
+          ],
+          [
+            "update_status",
+            "Processing folder 10: User Data"
+          ],
+          [
+            "update_progress",
+            48
+          ],
+          [
+            "log",
+            "Backup complete (detailed log saved)."
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "open_folder",
+            "<TMP>\\dest\\tester_backup_2024-01-02_030405"
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "play_sound",
+            "complete"
+          ]
+        ],
+        "tree": [
+          "Chrome_Bookmarks",
+          "Edge_Bookmarks",
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/AppData/",
+          "tester_backup_2024-01-02_030405/AppData/Local/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Google/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Google/Chrome/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Google/Chrome/User Data/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Google/Chrome/User Data/Default/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Google/Chrome/User Data/Default/Bookmarks",
+          "tester_backup_2024-01-02_030405/AppData/Local/Microsoft/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Microsoft/Edge/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Microsoft/Edge/User Data/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Microsoft/Edge/User Data/Default/",
+          "tester_backup_2024-01-02_030405/AppData/Local/Microsoft/Edge/User Data/Default/Bookmarks",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      }
+    },
+    "headless": {
+      "nopywin32": {
+        "bookmarks": {
+          "Chrome_Bookmarks": "{\"chrome\": 1}\n",
+          "Edge_Bookmarks": "{\"edge\": 1}\n"
+        },
+        "exception": null,
+        "log": [
+          "[2024-01-02 03:04:05] Backup start for 'tester' → <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Skipping hidden directory: <TMP>\\Users\\tester\\AppData",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmarks backed up.",
+          "[2024-01-02 03:04:05] - Edge bookmarks backed up.",
+          "[2024-01-02 03:04:05] [Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 1 backups. No old backups to clean up (retention policy: keep 2).",
+          "[2024-01-02 03:04:05] [Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Log files found: 1",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] No old log files found to delete."
+        ],
+        "tree": [
+          "Chrome_Bookmarks",
+          "Edge_Bookmarks",
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      },
+      "pywin32": {
+        "bookmarks": {
+          "Chrome_Bookmarks": "{\"chrome\": 1}\n",
+          "Edge_Bookmarks": "{\"edge\": 1}\n"
+        },
+        "exception": null,
+        "log": [
+          "[2024-01-02 03:04:05] Backup start for 'tester' → <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Skipping hidden directory: <TMP>\\Users\\tester\\AppData",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmarks backed up.",
+          "[2024-01-02 03:04:05] - Edge bookmarks backed up.",
+          "[2024-01-02 03:04:05] [Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 1 backups. No old backups to clean up (retention policy: keep 2).",
+          "[2024-01-02 03:04:05] [Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Log files found: 1",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] No old log files found to delete."
+        ],
+        "tree": [
+          "Chrome_Bookmarks",
+          "Edge_Bookmarks",
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      }
+    }
+  },
+  "low_space": {
+    "gui": {
+      "nopywin32": {
+        "dialogs": [],
+        "log": [
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Backup start: <TMP>\\Users\\tester -> <TMP>\\dest",
+          "[2024-01-02 03:04:05] Created new backup folder '<TMP>\\dest\\tester_backup_2024-01-02_030405'.",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Insufficient free space for backup. Required=22 Free=0"
+        ],
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\tester_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "log",
+            "Backing up user: tester"
+          ],
+          [
+            "update_status",
+            "Calculating total size..."
+          ],
+          [
+            "update_progress_max",
+            22
+          ],
+          [
+            "update_status",
+            "Checking available space..."
+          ],
+          [
+            "show_error",
+            "There is not enough space in the destination.\nRequired: 22.00 B\nAvailable: 0.00 B"
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Operation finished"
+          ],
+          [
+            "play_sound",
+            "error"
+          ]
+        ],
+        "tree": [
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/"
+        ]
+      },
+      "pywin32": {
+        "dialogs": [],
+        "log": [
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Backup start: <TMP>\\Users\\tester -> <TMP>\\dest",
+          "[2024-01-02 03:04:05] Created new backup folder '<TMP>\\dest\\tester_backup_2024-01-02_030405'.",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Insufficient free space for backup. Required=22 Free=0"
+        ],
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\tester_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "log",
+            "Backing up user: tester"
+          ],
+          [
+            "update_status",
+            "Calculating total size..."
+          ],
+          [
+            "update_progress_max",
+            22
+          ],
+          [
+            "update_status",
+            "Checking available space..."
+          ],
+          [
+            "show_error",
+            "There is not enough space in the destination.\nRequired: 22.00 B\nAvailable: 0.00 B"
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Operation finished"
+          ],
+          [
+            "play_sound",
+            "error"
+          ]
+        ],
+        "tree": [
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/"
+        ]
+      }
+    }
+  },
+  "old_backups": {
+    "gui": {
+      "nopywin32": {
+        "dialogs": [],
+        "log": [
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Backup start: <TMP>\\Users\\tester -> <TMP>\\dest",
+          "[2024-01-02 03:04:05] Created new backup folder '<TMP>\\dest\\tester_backup_2024-01-02_030405'.",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester (relative: .)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Desktop (relative: Desktop)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Documents (relative: Documents)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmark file not found.",
+          "[2024-01-02 03:04:05] - Edge bookmark file not found.",
+          "[2024-01-02 03:04:05] ",
+          "[Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 4 backups. Keeping the 2 most recent.",
+          "[2024-01-02 03:04:05]   Deleting old backup: <TMP>\\dest\\tester_backup_2023-01-01_000000",
+          "[2024-01-02 03:04:05] INFO: Removed read-only and successfully deleted <TMP>\\dest\\tester_backup_2023-01-01_000000\\Documents\\old.txt",
+          "[2024-01-02 03:04:05]   Deleting old backup: <TMP>\\dest\\tester_backup_2023-06-01_000000",
+          "[2024-01-02 03:04:05] Cleanup finished.",
+          "[2024-01-02 03:04:05] ",
+          "[Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Total files in folder: 4",
+          "[2024-01-02 03:04:05] Log files found: 1",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] No old log files found to delete.",
+          "[2024-01-02 03:04:05] Backup successfully completed."
+        ],
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\tester_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "log",
+            "Backing up user: tester"
+          ],
+          [
+            "update_status",
+            "Calculating total size..."
+          ],
+          [
+            "update_progress_max",
+            22
+          ],
+          [
+            "update_status",
+            "Checking available space..."
+          ],
+          [
+            "update_status",
+            "Starting backup..."
+          ],
+          [
+            "update_progress",
+            22
+          ],
+          [
+            "log",
+            "Backup complete (detailed log saved)."
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "open_folder",
+            "<TMP>\\dest\\tester_backup_2024-01-02_030405"
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "play_sound",
+            "complete"
+          ]
+        ],
+        "tree": [
+          "other_backup_2020-01-01_000000/",
+          "other_backup_2020-01-01_000000/c.txt",
+          "tester_backup_2023-12-01_000000/",
+          "tester_backup_2023-12-01_000000/b.txt",
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      },
+      "pywin32": {
+        "dialogs": [],
+        "log": [
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Backup start: <TMP>\\Users\\tester -> <TMP>\\dest",
+          "[2024-01-02 03:04:05] Created new backup folder '<TMP>\\dest\\tester_backup_2024-01-02_030405'.",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester (relative: .)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Desktop (relative: Desktop)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Documents (relative: Documents)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmark file not found.",
+          "[2024-01-02 03:04:05] - Edge bookmark file not found.",
+          "[2024-01-02 03:04:05] ",
+          "[Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 4 backups. Keeping the 2 most recent.",
+          "[2024-01-02 03:04:05]   Deleting old backup: <TMP>\\dest\\tester_backup_2023-01-01_000000",
+          "[2024-01-02 03:04:05] INFO: Removed read-only and successfully deleted <TMP>\\dest\\tester_backup_2023-01-01_000000\\Documents\\old.txt",
+          "[2024-01-02 03:04:05]   Deleting old backup: <TMP>\\dest\\tester_backup_2023-06-01_000000",
+          "[2024-01-02 03:04:05] Cleanup finished.",
+          "[2024-01-02 03:04:05] ",
+          "[Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Total files in folder: 4",
+          "[2024-01-02 03:04:05] Log files found: 1",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] No old log files found to delete.",
+          "[2024-01-02 03:04:05] Backup successfully completed."
+        ],
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\tester_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "log",
+            "Backing up user: tester"
+          ],
+          [
+            "update_status",
+            "Calculating total size..."
+          ],
+          [
+            "update_progress_max",
+            22
+          ],
+          [
+            "update_status",
+            "Checking available space..."
+          ],
+          [
+            "update_status",
+            "Starting backup..."
+          ],
+          [
+            "update_progress",
+            22
+          ],
+          [
+            "log",
+            "Backup complete (detailed log saved)."
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "open_folder",
+            "<TMP>\\dest\\tester_backup_2024-01-02_030405"
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "play_sound",
+            "complete"
+          ]
+        ],
+        "tree": [
+          "other_backup_2020-01-01_000000/",
+          "other_backup_2020-01-01_000000/c.txt",
+          "tester_backup_2023-12-01_000000/",
+          "tester_backup_2023-12-01_000000/b.txt",
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      }
+    },
+    "headless": {
+      "nopywin32": {
+        "exception": null,
+        "log": [
+          "[2024-01-02 03:04:05] Backup start for 'tester' → <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmark file not found.",
+          "[2024-01-02 03:04:05] - Edge bookmark file not found.",
+          "[2024-01-02 03:04:05] [Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 4 backups. Keeping the 2 most recent.",
+          "[2024-01-02 03:04:05]   Deleting old backup: <TMP>\\dest\\tester_backup_2023-01-01_000000",
+          "[2024-01-02 03:04:05] INFO: Removed read-only and successfully deleted <TMP>\\dest\\tester_backup_2023-01-01_000000\\Documents\\old.txt",
+          "[2024-01-02 03:04:05]   Deleting old backup: <TMP>\\dest\\tester_backup_2023-06-01_000000",
+          "[2024-01-02 03:04:05] Cleanup finished.",
+          "[2024-01-02 03:04:05] [Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Log files found: 1",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] No old log files found to delete."
+        ],
+        "tree": [
+          "other_backup_2020-01-01_000000/",
+          "other_backup_2020-01-01_000000/c.txt",
+          "tester_backup_2023-12-01_000000/",
+          "tester_backup_2023-12-01_000000/b.txt",
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      },
+      "pywin32": {
+        "exception": null,
+        "log": [
+          "[2024-01-02 03:04:05] Backup start for 'tester' → <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmark file not found.",
+          "[2024-01-02 03:04:05] - Edge bookmark file not found.",
+          "[2024-01-02 03:04:05] [Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 4 backups. Keeping the 2 most recent.",
+          "[2024-01-02 03:04:05]   Deleting old backup: <TMP>\\dest\\tester_backup_2023-01-01_000000",
+          "[2024-01-02 03:04:05] INFO: Removed read-only and successfully deleted <TMP>\\dest\\tester_backup_2023-01-01_000000\\Documents\\old.txt",
+          "[2024-01-02 03:04:05]   Deleting old backup: <TMP>\\dest\\tester_backup_2023-06-01_000000",
+          "[2024-01-02 03:04:05] Cleanup finished.",
+          "[2024-01-02 03:04:05] [Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Log files found: 1",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] No old log files found to delete."
+        ],
+        "tree": [
+          "other_backup_2020-01-01_000000/",
+          "other_backup_2020-01-01_000000/c.txt",
+          "tester_backup_2023-12-01_000000/",
+          "tester_backup_2023-12-01_000000/b.txt",
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      }
+    }
+  },
+  "old_logs": {
+    "gui": {
+      "nopywin32": {
+        "dialogs": [],
+        "log": [
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Backup start: <TMP>\\Users\\tester -> <TMP>\\dest",
+          "[2024-01-02 03:04:05] Created new backup folder '<TMP>\\dest\\tester_backup_2024-01-02_030405'.",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester (relative: .)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Desktop (relative: Desktop)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Documents (relative: Documents)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmark file not found.",
+          "[2024-01-02 03:04:05] - Edge bookmark file not found.",
+          "[2024-01-02 03:04:05] ",
+          "[Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 1 backups. No old backups to clean up (retention policy: keep 2).",
+          "[2024-01-02 03:04:05] ",
+          "[Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Total files in folder: 5",
+          "[2024-01-02 03:04:05] Log files found: 3",
+          "[2024-01-02 03:04:05]   File: tester_backup_2023-01-01_000000.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: 60.0 days",
+          "[2024-01-02 03:04:05]     Should delete: True",
+          "[2024-01-02 03:04:05]     ✓ Deleted: tester_backup_2023-01-01_000000.log",
+          "[2024-01-02 03:04:05]   File: tester_backup_2023-12-31_000000.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: 1.0 days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] Log cleanup completed. Deleted 1 files.",
+          "[2024-01-02 03:04:05] Backup successfully completed."
+        ],
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\tester_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "log",
+            "Backing up user: tester"
+          ],
+          [
+            "update_status",
+            "Calculating total size..."
+          ],
+          [
+            "update_progress_max",
+            22
+          ],
+          [
+            "update_status",
+            "Checking available space..."
+          ],
+          [
+            "update_status",
+            "Starting backup..."
+          ],
+          [
+            "update_progress",
+            22
+          ],
+          [
+            "log",
+            "Backup complete (detailed log saved)."
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "open_folder",
+            "<TMP>\\dest\\tester_backup_2024-01-02_030405"
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "play_sound",
+            "complete"
+          ]
+        ],
+        "tree": [
+          "notes.txt",
+          "tester_backup_2023-12-31_000000.log",
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      },
+      "pywin32": {
+        "dialogs": [],
+        "log": [
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Backup start: <TMP>\\Users\\tester -> <TMP>\\dest",
+          "[2024-01-02 03:04:05] Created new backup folder '<TMP>\\dest\\tester_backup_2024-01-02_030405'.",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester (relative: .)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Desktop (relative: Desktop)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Documents (relative: Documents)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmark file not found.",
+          "[2024-01-02 03:04:05] - Edge bookmark file not found.",
+          "[2024-01-02 03:04:05] ",
+          "[Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 1 backups. No old backups to clean up (retention policy: keep 2).",
+          "[2024-01-02 03:04:05] ",
+          "[Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Total files in folder: 5",
+          "[2024-01-02 03:04:05] Log files found: 3",
+          "[2024-01-02 03:04:05]   File: tester_backup_2023-01-01_000000.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: 60.0 days",
+          "[2024-01-02 03:04:05]     Should delete: True",
+          "[2024-01-02 03:04:05]     ✓ Deleted: tester_backup_2023-01-01_000000.log",
+          "[2024-01-02 03:04:05]   File: tester_backup_2023-12-31_000000.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: 1.0 days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] Log cleanup completed. Deleted 1 files.",
+          "[2024-01-02 03:04:05] Backup successfully completed."
+        ],
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\tester_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "log",
+            "Backing up user: tester"
+          ],
+          [
+            "update_status",
+            "Calculating total size..."
+          ],
+          [
+            "update_progress_max",
+            22
+          ],
+          [
+            "update_status",
+            "Checking available space..."
+          ],
+          [
+            "update_status",
+            "Starting backup..."
+          ],
+          [
+            "update_progress",
+            22
+          ],
+          [
+            "log",
+            "Backup complete (detailed log saved)."
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "open_folder",
+            "<TMP>\\dest\\tester_backup_2024-01-02_030405"
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "play_sound",
+            "complete"
+          ]
+        ],
+        "tree": [
+          "notes.txt",
+          "tester_backup_2023-12-31_000000.log",
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      }
+    },
+    "headless": {
+      "nopywin32": {
+        "exception": null,
+        "log": [
+          "[2024-01-02 03:04:05] Backup start for 'tester' → <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmark file not found.",
+          "[2024-01-02 03:04:05] - Edge bookmark file not found.",
+          "[2024-01-02 03:04:05] [Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 1 backups. No old backups to clean up (retention policy: keep 2).",
+          "[2024-01-02 03:04:05] [Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Log files found: 3",
+          "[2024-01-02 03:04:05]   File: tester_backup_2023-01-01_000000.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: 60.0 days",
+          "[2024-01-02 03:04:05]     Should delete: True",
+          "[2024-01-02 03:04:05]     ✓ Deleted: tester_backup_2023-01-01_000000.log",
+          "[2024-01-02 03:04:05]   File: tester_backup_2023-12-31_000000.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: 1.0 days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] Log cleanup completed. Deleted 1 files."
+        ],
+        "tree": [
+          "notes.txt",
+          "tester_backup_2023-12-31_000000.log",
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      },
+      "pywin32": {
+        "exception": null,
+        "log": [
+          "[2024-01-02 03:04:05] Backup start for 'tester' → <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmark file not found.",
+          "[2024-01-02 03:04:05] - Edge bookmark file not found.",
+          "[2024-01-02 03:04:05] [Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 1 backups. No old backups to clean up (retention policy: keep 2).",
+          "[2024-01-02 03:04:05] [Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Log files found: 3",
+          "[2024-01-02 03:04:05]   File: tester_backup_2023-01-01_000000.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: 60.0 days",
+          "[2024-01-02 03:04:05]     Should delete: True",
+          "[2024-01-02 03:04:05]     ✓ Deleted: tester_backup_2023-01-01_000000.log",
+          "[2024-01-02 03:04:05]   File: tester_backup_2023-12-31_000000.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: 1.0 days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] Log cleanup completed. Deleted 1 files."
+        ],
+        "tree": [
+          "notes.txt",
+          "tester_backup_2023-12-31_000000.log",
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      }
+    }
+  },
+  "queue": {
+    "gui": {
+      "nopywin32": {
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\tester_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "log",
+            "Backing up user: tester"
+          ],
+          [
+            "update_status",
+            "Calculating total size..."
+          ],
+          [
+            "update_progress_max",
+            212
+          ],
+          [
+            "update_status",
+            "Checking available space..."
+          ],
+          [
+            "update_status",
+            "Starting backup..."
+          ],
+          [
+            "update_progress",
+            7
+          ],
+          [
+            "update_status",
+            "Processing folder 5: Google"
+          ],
+          [
+            "update_status",
+            "Processing folder 10: Application Data"
+          ],
+          [
+            "log",
+            "Copied 10 files..."
+          ],
+          [
+            "update_status",
+            "Copied 10 files"
+          ],
+          [
+            "update_status",
+            "Processing folder 15: Empty"
+          ],
+          [
+            "update_progress",
+            212
+          ],
+          [
+            "log",
+            "Backup complete (detailed log saved)."
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "open_folder",
+            "<TMP>\\dest\\tester_backup_2024-01-02_030405"
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "play_sound",
+            "complete"
+          ]
+        ]
+      },
+      "pywin32": {
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\tester_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "log",
+            "Backing up user: tester"
+          ],
+          [
+            "update_status",
+            "Calculating total size..."
+          ],
+          [
+            "update_progress_max",
+            132
+          ],
+          [
+            "update_status",
+            "Checking available space..."
+          ],
+          [
+            "update_status",
+            "Starting backup..."
+          ],
+          [
+            "update_progress",
+            7
+          ],
+          [
+            "update_status",
+            "Processing folder 5: sub"
+          ],
+          [
+            "update_progress",
+            132
+          ],
+          [
+            "log",
+            "Backup complete (detailed log saved)."
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "open_folder",
+            "<TMP>\\dest\\tester_backup_2024-01-02_030405"
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "play_sound",
+            "complete"
+          ]
+        ]
+      }
+    }
+  },
+  "same_name": {
+    "gui": {
+      "nopywin32": {
+        "dialogs": [],
+        "log": [
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Backup start: <TMP>\\Users\\tester -> <TMP>\\dest",
+          "[2024-01-02 03:04:05] Failed to delete existing backup folder: [WinError 5] <MSG>: '<TMP>\\\\dest\\\\tester_backup_2024-01-02_030405\\\\stale.txt'",
+          "[2024-01-02 03:04:05] Created new backup folder '<TMP>\\dest\\tester_backup_2024-01-02_030405'.",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester (relative: .)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Desktop (relative: Desktop)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Documents (relative: Documents)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmark file not found.",
+          "[2024-01-02 03:04:05] - Edge bookmark file not found.",
+          "[2024-01-02 03:04:05] ",
+          "[Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 1 backups. No old backups to clean up (retention policy: keep 2).",
+          "[2024-01-02 03:04:05] ",
+          "[Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Total files in folder: 2",
+          "[2024-01-02 03:04:05] Log files found: 1",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] No old log files found to delete.",
+          "[2024-01-02 03:04:05] Backup successfully completed."
+        ],
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\tester_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "log",
+            "Backing up user: tester"
+          ],
+          [
+            "update_status",
+            "Calculating total size..."
+          ],
+          [
+            "update_progress_max",
+            22
+          ],
+          [
+            "update_status",
+            "Checking available space..."
+          ],
+          [
+            "update_status",
+            "Starting backup..."
+          ],
+          [
+            "update_progress",
+            22
+          ],
+          [
+            "log",
+            "Backup complete (detailed log saved)."
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "open_folder",
+            "<TMP>\\dest\\tester_backup_2024-01-02_030405"
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "play_sound",
+            "complete"
+          ]
+        ],
+        "tree": [
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt",
+          "tester_backup_2024-01-02_030405/stale.txt [ro]"
+        ]
+      },
+      "pywin32": {
+        "dialogs": [],
+        "log": [
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Backup start: <TMP>\\Users\\tester -> <TMP>\\dest",
+          "[2024-01-02 03:04:05] Failed to delete existing backup folder: [WinError 5] <MSG>: '<TMP>\\\\dest\\\\tester_backup_2024-01-02_030405\\\\stale.txt'",
+          "[2024-01-02 03:04:05] Created new backup folder '<TMP>\\dest\\tester_backup_2024-01-02_030405'.",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester (relative: .)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Desktop (relative: Desktop)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Processing directory: <TMP>\\Users\\tester\\Documents (relative: Documents)",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmark file not found.",
+          "[2024-01-02 03:04:05] - Edge bookmark file not found.",
+          "[2024-01-02 03:04:05] ",
+          "[Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 1 backups. No old backups to clean up (retention policy: keep 2).",
+          "[2024-01-02 03:04:05] ",
+          "[Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Total files in folder: 2",
+          "[2024-01-02 03:04:05] Log files found: 1",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] No old log files found to delete.",
+          "[2024-01-02 03:04:05] Backup successfully completed."
+        ],
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\tester_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "log",
+            "Backing up user: tester"
+          ],
+          [
+            "update_status",
+            "Calculating total size..."
+          ],
+          [
+            "update_progress_max",
+            22
+          ],
+          [
+            "update_status",
+            "Checking available space..."
+          ],
+          [
+            "update_status",
+            "Starting backup..."
+          ],
+          [
+            "update_progress",
+            22
+          ],
+          [
+            "log",
+            "Backup complete (detailed log saved)."
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "open_folder",
+            "<TMP>\\dest\\tester_backup_2024-01-02_030405"
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Backup complete!"
+          ],
+          [
+            "play_sound",
+            "complete"
+          ]
+        ],
+        "tree": [
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt",
+          "tester_backup_2024-01-02_030405/stale.txt [ro]"
+        ]
+      }
+    },
+    "headless": {
+      "nopywin32": {
+        "exception": null,
+        "log": [
+          "[2024-01-02 03:04:05] Backup start for 'tester' → <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmark file not found.",
+          "[2024-01-02 03:04:05] - Edge bookmark file not found.",
+          "[2024-01-02 03:04:05] [Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 1 backups. No old backups to clean up (retention policy: keep 2).",
+          "[2024-01-02 03:04:05] [Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Log files found: 1",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] No old log files found to delete."
+        ],
+        "tree": [
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      },
+      "pywin32": {
+        "exception": null,
+        "log": [
+          "[2024-01-02 03:04:05] Backup start for 'tester' → <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------",
+          "[2024-01-02 03:04:05] Calculating total size... 22.00 B",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Desktop\\todo.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Desktop\\todo.txt",
+          "[2024-01-02 03:04:05] Created folder: <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents",
+          "[2024-01-02 03:04:05] Copying file: <TMP>\\Users\\tester\\Documents\\report.txt -> <TMP>\\dest\\tester_backup_2024-01-02_030405\\Documents\\report.txt",
+          "[2024-01-02 03:04:05] Backup completed. Files backed up: 2, Folders: 3, Total size: 22.00 B",
+          "[2024-01-02 03:04:05] Backing up Chrome and Edge browser bookmarks...",
+          "[2024-01-02 03:04:05] - Chrome bookmark file not found.",
+          "[2024-01-02 03:04:05] - Edge bookmark file not found.",
+          "[2024-01-02 03:04:05] [Old backup cleanup]",
+          "[2024-01-02 03:04:05] Found 1 backups. No old backups to clean up (retention policy: keep 2).",
+          "[2024-01-02 03:04:05] [Old log cleanup]",
+          "[2024-01-02 03:04:05] Scanning '<TMP>\\dest' for logs older than 30 days...",
+          "[2024-01-02 03:04:05] Current time: 2024-01-02 03:04:05",
+          "[2024-01-02 03:04:05] Cutoff time: <TS>",
+          "[2024-01-02 03:04:05] Log files found: 1",
+          "[2024-01-02 03:04:05]   File: tester_backup_2024-01-02_030405.log",
+          "[2024-01-02 03:04:05]     Modified: <TS>",
+          "[2024-01-02 03:04:05]     Age: <AGE> days",
+          "[2024-01-02 03:04:05]     Should delete: False",
+          "[2024-01-02 03:04:05] No old log files found to delete."
+        ],
+        "tree": [
+          "tester_backup_2024-01-02_030405.log",
+          "tester_backup_2024-01-02_030405/",
+          "tester_backup_2024-01-02_030405/Desktop/",
+          "tester_backup_2024-01-02_030405/Desktop/todo.txt",
+          "tester_backup_2024-01-02_030405/Documents/",
+          "tester_backup_2024-01-02_030405/Documents/report.txt"
+        ]
+      }
+    }
+  },
+  "user_missing": {
+    "gui": {
+      "nopywin32": {
+        "dialogs": [],
+        "log": [
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------"
+        ],
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\ghost_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "show_error",
+            "User folder '<TMP>\\Users\\ghost' not found."
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Operation finished"
+          ],
+          [
+            "play_sound",
+            "error"
+          ]
+        ],
+        "tree": [
+          "ghost_backup_2024-01-02_030405.log"
+        ]
+      },
+      "pywin32": {
+        "dialogs": [],
+        "log": [
+          "[2024-01-02 03:04:05] Policy: Hidden=exclude, System=exclude, BackupKeep=2, LogKeep=30",
+          "[2024-01-02 03:04:05] Filters: Include=[None], Exclude=[name:onedrive*, name:thumbs.db, name:desktop.ini, name:$recycle.bin]",
+          "[2024-01-02 03:04:05] --------------------------------------------------"
+        ],
+        "queue": [
+          [
+            "log",
+            "Detailed log: <TMP>\\dest\\ghost_backup_2024-01-02_030405.log"
+          ],
+          [
+            "log",
+            "User data backup process started."
+          ],
+          [
+            "show_error",
+            "User folder '<TMP>\\Users\\ghost' not found."
+          ],
+          [
+            "update_progress",
+            100
+          ],
+          [
+            "enable_buttons",
+            null
+          ],
+          [
+            "update_status",
+            "Operation finished"
+          ],
+          [
+            "play_sound",
+            "error"
+          ]
+        ],
+        "tree": [
+          "ghost_backup_2024-01-02_030405.log"
+        ]
+      }
+    },
+    "headless": {
+      "nopywin32": {
+        "exception": [
+          "FileNotFoundError",
+          "User folder '<TMP>\\Users\\ghost' not found."
+        ],
+        "log": null,
+        "tree": [
+          "ghost_backup_2024-01-02_030405/"
+        ]
+      },
+      "pywin32": {
+        "exception": [
+          "FileNotFoundError",
+          "User folder '<TMP>\\Users\\ghost' not found."
+        ],
+        "log": null,
+        "tree": [
+          "ghost_backup_2024-01-02_030405/"
+        ]
+      }
+    }
+  }
+}
